@@ -1,7 +1,47 @@
 @page "/admin-panel"
+@using SEM.App.Data
+@using SEM.App.Utilities
+
+@inject UsersService UsersService
+@inject ILocalStorage LocalStorage
 
 <PageTitle>Admin Panel</PageTitle>
 
-<h1>Admin Panel</h1>
+<div class="admin-panel-page">
+    <h1>Admin Panel</h1> 
 
-    
+    @if (users == null)
+    {
+        <div class="spinner-border" role="status"></div>
+        <p>Loading active users in the application... Please wait</p>
+    } 
+    else
+    {
+        <h2>Users</h2>
+        @foreach (var user in users)
+        {
+            <div class="user-container">
+                <p>Name: @user.Name</p>
+                <p>User Name: @user.UserName</p>
+                <p>Email: @user.Email</p>
+                <p>Confirmed email: @user.EmailConfirmed</p>
+                <p>Registration date: @user.RegistrationDate</p>
+                <p>Last login time: @user.LastLoginTime</p>
+                
+            </div>
+        }
+    }
+</div>
+
+
+@code
+{
+    private List<UserDto> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetStringAsync("token");
+        users = await UsersService.GetUsers(token);
+        await base.OnInitializedAsync();
+    }
+}
