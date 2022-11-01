@@ -1,0 +1,162 @@
+@page "/organizer-panel"
+
+@using SportEventManager.Data
+@using SEM.App.Utilities
+@using SEM.App.Components
+
+@inject EventsService EventService
+@inject ILocalStorage LocalStorage
+
+<PageTitle>Organizer Panel</PageTitle>
+
+<h1>Organizer Panel</h1>
+
+<button class="btn btn-primary" @onclick="() => Open()">Create Event</button>
+
+<h2>My events:</h2> 
+
+ @if (myEvents == null)
+    {
+        <div class="spinner-border" role="status"></div>
+        <p>Loading your events... Please wait</p>
+    }
+ else
+ {
+     @foreach (var myEvent in myEvents)
+     {
+         <div class="event-container">
+             <h2>Title: @myEvent.Name</h2>
+             <p>Description: @myEvent.Description</p>
+             <p>Created: @myEvent.CreationDate By: @myEvent.CreatorNickName</p>
+             <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
+         </div>
+     }
+ }
+
+@* Modal Create Event *@
+
+<div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Event</h5>
+            </div>
+            <div class="modal-body">
+             	<div class="mb-3">
+             		<label for="eventName" class="form-label">Event Name</label>
+             		<input type="text" class="form-control" id="eventName" required @bind-value="eventName" />
+             	</div>
+             	<div class="mb-3">
+                    <label for="eventDescription" class="form-label">Event Description</label>
+                    <input type="text" class="form-control" id="eventDescription" required @bind-value="eventDescription" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" @onclick="CreateEvent">Create</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Close</button>
+            </div>
+            @if (isCreated.HasValue)
+            {
+                @if (!isCreated.Value)
+                {
+                    <div class="modal-footer">
+                        <div class="alert alert-danger" role="alert">
+                            Something went wrong
+                        </div>
+                    </div>
+                }
+                @if (isCreated.Value)
+                {
+                    <div class="modal-footer">
+                        <div class="alert alert-success" role="alert">
+                            Event Created!
+                        </div>
+                    </div>
+                }
+            }
+        </div>  
+    </div>
+</div>
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code
+{
+    [CascadingParameter]
+    public MainLayout mainLayout { get; set; }
+    
+    [CascadingParameter]
+    public string Token { get; set; }
+    
+    private CreateEventModal CreateEventModal { get; set; }
+    private List<SportEvent> myEvents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshEvents();
+    }
+
+    private async Task Delete(Guid id)
+    {
+        await EventService.DeleteEvent(id, Token);
+        await RefreshEvents();
+    }
+
+    public async Task RefreshEvents()
+    {
+        myEvents = await EventService.GetMyEventsAsOrganizer(Token);
+    }
+    
+    // Modal Create Event
+    public Guid Guid = Guid.NewGuid();
+    public string ModalDisplay = "none;";
+    public string ModalClass = "";
+    public bool ShowBackdrop = false;   
+    private bool? isCreated = null;
+
+    private string eventName = "";      
+    private string eventDescription = "";
+
+    private async Task CreateEvent()
+    {
+        if (!string.IsNullOrEmpty(eventName) && !string.IsNullOrEmpty(eventDescription))
+        {
+            var token = await LocalStorage.GetStringAsync("token");
+            var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, token);
+
+            if (isCreatedResponse)
+            {
+                isCreated = true;
+                await RefreshEvents();
+                await Close();
+            }
+            if (!isCreatedResponse)
+            {
+                isCreated = false;
+            }
+        }
+    }
+    
+    public void Open()
+    {
+        ModalDisplay = "block;";    
+        ModalClass = "Show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    public async Task Close()
+    {
+        isCreated = null;
+        ModalDisplay = "none";
+        ModalClass = "";
+        ShowBackdrop = false;
+        StateHasChanged();
+        eventName = "";
+        eventDescription = "";
+        
+    }
+}   
+    

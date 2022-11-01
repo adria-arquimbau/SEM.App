@@ -1,17 +1,205 @@
-﻿@inherits LayoutComponentBase
+﻿@using SEM.App.Utilities
+@using SEM.App.Data
+@inherits LayoutComponentBase
+@inject ILocalStorage LocalStorage
+@inject AuthService AuthService
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+<CascadingValue Value="this">
+<CascadingValue Value="userName">
+<CascadingValue Value="Token">
+<PageTitle>SportEventManager</PageTitle>
+	
+	<div class="page">
+		<NavMenu />
+		<main>
+			<div class="login-logout-buttons">
+				@if (loggedIn)
+				{
+					<a class="btn btn-sm btn-primary text-white" title="Account" href="account"><span class="oi oi-key"></span></a>
+					<button class="btn btn-sm btn-danger" title="Logout" @onclick="Logout"><span class="oi oi-account-logout"></span></button>
+				}
+				@if (!loggedIn)
+				{
+					<button class="btn btn-sm btn-success" title="Login" @onclick="OpenLogin"><span class="oi oi-account-login"></span></button>
+				}
+			</div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+			<article class="content px-4">
+				@Body
+			</article>
+		</main>
+	</div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+
+<div class="modal-backdrop fade @(show ? "show" : "") @(display ? "d-block" : "d-none")"></div>
+<div class="modal fade @(show ? "show" : "")  @(display ? "d-block" : "d-none")" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Login Form</h5>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label for="loginEmail" class="form-label">Email</label>
+					<input type="email" class="form-control" id="loginEmail" placeholder="name@example.com" autocomplete="on" required @bind-value="user" />
+				</div>
+				<div class="mb-3">
+					<label for="loginPassword" class="form-label">Password</label>
+					<input type="password" class="form-control" id="loginPassword" required @bind-value="password" />
+				</div>
+			</div>
+			<div class="modal-footer">
+				@if (!requestingLogin)
+				{
+					<button type="button" class="btn btn-success" @onclick="Login">Login</button>
+				}
+				@if (requestingLogin)
+				{
+					<button class="btn btn-primary" type="button" disabled>
+						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+						<span class="sr-only">Login...</span>
+					</button>
+				}
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Close</button>
+			</div>
+			@if (loginErrorMessage != null)
+			{
+				<div class="modal-footer">
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						<strong>@loginErrorMessage</strong> Verify that your credentials are correct.
+                      
+					</div>
+				</div>
+			}
+		</div>
+	</div>
 </div>
+
+@code {
+
+	private bool show, display, loggedIn;
+	private string? user;
+	private string? userName;
+	private string? Token;
+	private string? password;
+	private bool requestingLogin;	
+	private bool isAdmin;
+	private bool isOrganizer;
+	private string? loginErrorMessage;
+
+	public string? GetUserName()	
+	{
+		return loggedIn ? user : null;
+	}
+		
+	public bool IsLoggedIn()
+	{
+		return loggedIn;
+	}
+	
+	public bool IsAdminOrOrganizer()
+	{
+		return isAdmin || isOrganizer;
+	}
+
+	public string GetRole()
+	{
+		var roles = "User";
+		
+		if (isOrganizer)
+		{
+			roles += " / Organizer";
+		}
+		if (isAdmin)
+		{
+			roles += " / Admin";
+		}
+
+		return roles;
+	}
+
+	public async Task OpenLogin()
+	{
+		display = true;
+		await Task.Delay(100);
+		show = true;
+	}
+
+	public async Task Logout()
+	{
+		user = null;
+		loggedIn = false;
+		isAdmin = false;
+		isOrganizer = false;
+		await LocalStorage.RemoveAsync("user");
+		await LocalStorage.RemoveAsync("token");
+		await LocalStorage.RemoveAsync("role");
+	}
+
+	private async Task Close()
+	{
+		
+		loginErrorMessage = null;
+		show = false;
+		await Task.Delay(500);
+		display = false;
+	}
+
+	private async Task Login()
+	{
+		if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+		{
+			requestingLogin = true;
+			var loginResponse = await AuthService.LogIn(user, password);
+			if (!string.IsNullOrEmpty(loginResponse.Token))
+			{
+				await Close();
+				loggedIn = true;
+				user = loginResponse.UserName;
+				user = loginResponse.UserName;
+				SetIsAdminOrOrganizer(loginResponse.Role);
+				await LocalStorage.SaveStringAsync("token", loginResponse.Token);
+				await LocalStorage.SaveStringAsync("user", loginResponse.UserName);
+				await LocalStorage.SaveStringAsync("role", loginResponse.Role);
+			}
+			if (string.IsNullOrEmpty(loginResponse.Token))
+			{
+				loginErrorMessage = loginResponse.Message;
+			}
+			requestingLogin = false;
+		}
+	}	
+
+	private void SetIsAdminOrOrganizer(string role)
+	{
+		if (role.Contains("ADMIN"))
+		{
+			isAdmin = true;
+		}
+		if (role.Contains("ORGANIZER"))
+		{
+			isOrganizer = true;
+		}
+	}	
+	
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			user = await LocalStorage.GetStringAsync("user");
+			userName = await LocalStorage.GetStringAsync("user");
+			Token = await LocalStorage.GetStringAsync("token");
+			loggedIn = !string.IsNullOrEmpty(user);
+			if (!loggedIn)
+			{
+				return;
+			}
+			var role = await LocalStorage.GetStringAsync("role");
+			SetIsAdminOrOrganizer(role);
+			loggedIn = !string.IsNullOrEmpty(user);
+		}
+	}
+}

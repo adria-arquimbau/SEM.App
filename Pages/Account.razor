@@ -1,0 +1,142 @@
+@page "/account"
+
+@using System.Net
+@using SEM.App.Data
+@using SEM.App.Utilities
+@inject ILocalStorage LocalStorage
+@inject AuthService AuthService
+
+<PageTitle>Account</PageTitle>
+
+@if (!string.IsNullOrEmpty(mainLayout.GetUserName()))
+{
+    <h1 class="my-4">Your Account</h1>
+
+    <p>Nick name: @mainLayout.GetUserName()</p>
+    <p>Role: @mainLayout.GetRole()</p>
+
+    <button type="button" class="btn btn-danger" @onclick="mainLayout.Logout">Logout</button>
+}
+else
+{
+    <h4 class="my-4">Please Login or Register</h4>
+	
+    <button type="button" class="btn btn-success" @onclick="mainLayout.OpenLogin">Login</button>
+	<button type="button" class="btn btn-primary" @onclick="OpenRegister">Register</button>
+	@if (successRegisterMessage != null)
+	{
+		<div>
+			---
+			<div class="alert alert-success" role="alert">
+				@successRegisterMessage
+			</div>
+		</div>
+	}
+}
+
+<div class="modal-backdrop fade @(show ? "show" : "") @(display ? "d-block" : "d-none")"></div>
+<div class="modal fade @(show ? "show" : "")  @(display ? "d-block" : "d-none")" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Register Form</h5>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label for="loginEmail" class="form-label">Email</label>
+					<input type="email" class="form-control" id="registerEmail" placeholder="name@example.com" autocomplete="on" required @bind-value="email" />
+				</div>
+				<div class="mb-3">
+					<label for="loginPassword" class="form-label">Password (6 characters / one digit / one lower and upper case)</label>
+					<input type="password" class="form-control" id="registerPassword" required @bind-value="password" />
+				</div>
+				<div class="mb-3">
+					<label for="loginPassword" class="form-label">User Name</label>
+					<input type="password" class="form-control" id="loginPassword" required @bind-value="userName" />
+				</div>
+			</div>
+			<div class="modal-footer">
+				@if (!requestingRegister)
+				{
+					<button type="button" class="btn btn-primary" @onclick="Register">Register</button>
+				}
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseRegister">Close</button>
+			</div>
+			@if (failedRegisterMessage != null)
+            {
+	            <div class="modal-footer">
+		            <div class="alert alert-danger" role="alert">
+			            @failedRegisterMessage
+		            </div>
+	            </div>
+            }
+		</div>
+	</div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public MainLayout mainLayout { get; set; }
+
+    public string Token { get; set; }
+    private bool show, display;
+	private string? email;
+	private string? password;
+	private string? userName;
+	private bool requestingRegister;
+	private string? successRegisterMessage;
+	private string? failedRegisterMessage;
+
+    public async Task OpenRegister()
+    {
+	    successRegisterMessage = null;
+	    failedRegisterMessage = null;
+        display = true;	
+        await Task.Delay(100);
+        show = true;    
+    }
+	
+	private async Task Register()
+	{
+		if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(userName))
+		{
+			failedRegisterMessage = null;
+			requestingRegister = true;
+			var registerResponse = await AuthService.Register(email, password, userName);
+			if (registerResponse.StatusCode == HttpStatusCode.OK)
+			{
+				registerResponse.Message += " - Please, check your email and confirm your account";
+				successRegisterMessage = registerResponse.Message;
+				await CloseRegister();
+			}
+			if (registerResponse.StatusCode != HttpStatusCode.OK)
+			{
+				if (registerResponse.Message == null)
+				{
+					failedRegisterMessage = "There was a problem during your registration";
+				}
+				if (registerResponse.Message != null)
+				{
+					failedRegisterMessage = registerResponse.Message;
+				}
+				requestingRegister = false;
+			}
+			
+		}
+	}		
+    
+    private async Task CloseRegister()
+    {
+	    requestingRegister = false;
+        show = false;
+        await Task.Delay(500);
+        display = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        Token = await LocalStorage.GetStringAsync("token");
+	    await base.OnInitializedAsync();
+    }
+}
