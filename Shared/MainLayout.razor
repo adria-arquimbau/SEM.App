@@ -181,23 +181,20 @@
 		{
 			isOrganizer = true;
 		}
-	}	
-	
-	protected override async Task OnAfterRenderAsync(bool firstRender)
+	}
+
+	protected override async Task OnInitializedAsync()
 	{
-		if (firstRender)
+		user = await LocalStorage.GetStringAsync("user");
+		userName = await LocalStorage.GetStringAsync("user");
+		Token = await LocalStorage.GetStringAsync("token");
+		loggedIn = !string.IsNullOrEmpty(user);
+		if (!loggedIn)
 		{
-			user = await LocalStorage.GetStringAsync("user");
-			userName = await LocalStorage.GetStringAsync("user");
-			Token = await LocalStorage.GetStringAsync("token");
-			loggedIn = !string.IsNullOrEmpty(user);
-			if (!loggedIn)
-			{
-				return;
-			}
-			var role = await LocalStorage.GetStringAsync("role");
-			SetIsAdminOrOrganizer(role);
-			loggedIn = !string.IsNullOrEmpty(user);
+			return;
 		}
+		var role = await LocalStorage.GetStringAsync("role");
+		SetIsAdminOrOrganizer(role);
+		loggedIn = !string.IsNullOrEmpty(user);
 	}
 }
