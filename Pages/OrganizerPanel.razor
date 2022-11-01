@@ -106,6 +106,7 @@
 
     public async Task RefreshEvents()
     {
+        Token = await LocalStorage.GetStringAsync("token");
         myEvents = await EventService.GetMyEventsAsOrganizer(Token);
     }
     
