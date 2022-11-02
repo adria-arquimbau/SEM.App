@@ -1,11 +1,13 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using SEM.App.Utilities;
 
 namespace SEM.App.Data;
 
 public class UsersService
 {
     private readonly HttpClient _httpClient;
+    private readonly ILocalStorage _localStorage;
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     public UsersService(HttpClient httpClient)
@@ -13,7 +15,7 @@ public class UsersService
         _httpClient = httpClient;
     }
     
-    public async Task<List<UserDto>> GetUsers(string token)
+    public async Task<List<UserDto>> GetUsers(string token) 
     {
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "User");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -24,7 +26,7 @@ public class UsersService
     
     public async Task<bool> ConfirmEmail(string token, Guid userId)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"User/confirm-email/{userId}");
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl +  $"User/confirm-email/{userId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
 

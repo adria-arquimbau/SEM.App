@@ -27,6 +27,11 @@
                 <p>Confirmed email: @user.EmailConfirmed</p>
                 <p>Registration date: @user.RegistrationDate</p>
                 <p>Last login time: @user.LastLoginTime</p>
+                
+                @if (!user.EmailConfirmed)
+                {
+                    <button class="btn btn-info" @onclick="() => ConfirmEmail(user.Id)">Confirm Email</button>
+                }
             </div>
         }
     }
@@ -39,8 +44,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await GetUsers();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task ConfirmEmail(Guid userId)
+    {
+        var token = await LocalStorage.GetStringAsync("token");
+        var success = await UsersService.ConfirmEmail(token, userId);
+        await GetUsers();
+    }
+    
+    private async Task GetUsers()
+    {   
         var token = await LocalStorage.GetStringAsync("token");
         users = await UsersService.GetUsers(token);
-        await base.OnInitializedAsync();
     }
 }
