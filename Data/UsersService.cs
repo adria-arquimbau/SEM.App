@@ -21,6 +21,15 @@ public class UsersService
         
         return await response.Content.ReadFromJsonAsync<List<UserDto>>();
     }
+    
+    public async Task<bool> ConfirmEmail(string token, Guid userId)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"User/confirm-email/{userId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.SendAsync(request);
+
+        return response.IsSuccessStatusCode;
+    }
 }
         
 public class UserDto
