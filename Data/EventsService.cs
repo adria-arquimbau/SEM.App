@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -38,6 +39,27 @@ public class EventsService
         return response.IsSuccessStatusCode;
     }
     
+    public async Task<string?> RegisterToAnEvent(string token, Guid eventId)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Event/{eventId}/register");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.SendAsync(request);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var responseMessage = await response.Content.ReadFromJsonAsync<RegisterToAnEventResponse>();
+            return responseMessage.Message;
+        }
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var responseMessage = await response.Content.ReadFromJsonAsync<RegisterToAnEventResponse>();
+            return responseMessage.Message;
+        }
+        
+        return null;
+    }
+    
     public async Task<SportEvent> GetEvent(Guid id)
     {
         var response = await _httpClient.GetAsync(semApiUrl + $"Event/{id}");
@@ -62,9 +84,14 @@ public class EventsService
         return response.IsSuccessStatusCode;
     }
 }
-    
-public class SportEvent 
+
+public class RegisterToAnEventResponse
 {
+    public string Message { get; set; }
+}
+
+public class SportEvent 
+{   
     public Guid Id { get; set; }
     public string Name { get; set; }    
     public string Description { get; set; }
