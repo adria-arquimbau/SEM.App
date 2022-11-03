@@ -1,0 +1,75 @@
+﻿@page "/Event/{EventId}"
+
+@using SEM.App.Data
+@using SEM.App.Utilities
+
+@inject EventsService EventsService
+@inject ILocalStorage LocalStorage
+@inject NavigationManager Navigation
+
+<PageTitle>Event @SportEvent?.Name</PageTitle>
+
+@if (SportEvent == null)
+{
+    <div class="spinner-border" role="status"></div>
+    <p>Loading... Please wait</p>
+}
+else
+{
+    <div>
+        <h1>@SportEvent?.Name</h1>
+        <p>@SportEvent?.Description</p>
+        <p>Registered: @IAmRegistered</p>
+        <li>
+            Created: @SportEvent?.CreationDate by @SportEvent?.CreatorNickName
+        </li>
+        @if (IAmLoggedIn && !IAmRegistered)
+        {
+            <button type="button" class="btn btn-danger" @onclick="SignUp">Sign up</button>
+        }
+        @if (!IAmLoggedIn)
+        {
+            <NavLink class="nav-link" href="account">
+                <button type="button" class="btn btn-danger">Log In to Sign Up</button>
+            </NavLink>
+        }
+        <button class="btn btn-info" @onclick="BackToEvents">Go Back to events</button>
+    </div>
+}
+
+@code { 
+    [CascadingParameter]
+    public MainLayout mainLayout { get; set; }
+    [Parameter]
+    public string EventId { get; set; } 
+    
+    private SportEvent SportEvent { get; set; }
+    private string Token { get; set; }
+    private bool IAmRegistered { get; set; }    
+    private bool IAmLoggedIn { get; set; }    
+
+    protected override async Task OnInitializedAsync()
+    {   
+        Token = await LocalStorage.GetStringAsync("token");
+        if (Token != null)
+        {
+            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
+            IAmRegistered = iAmRegisteredResponse.Registered;
+        }
+        IAmLoggedIn = mainLayout.IsLoggedIn();  
+        SportEvent = await EventsService.GetEvent(Guid.Parse(EventId));
+        await base.OnInitializedAsync();
+    }
+
+    private void BackToEvents()
+    {
+        Navigation.NavigateTo($"/Events");
+    }
+
+    private async Task SignUp()
+    {
+        await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId));
+        var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
+        IAmRegistered = iAmRegisteredResponse.Registered;
+    }
+}   

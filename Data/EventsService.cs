@@ -21,6 +21,12 @@ public class EventsService
         return await response.Content.ReadFromJsonAsync<List<SportEvent>>();
     }
     
+    public async Task<SportEvent> GetEvent(Guid eventId)
+    {
+        var response = await _httpClient.GetAsync(semApiUrl + $"Event/{eventId}");
+        return await response.Content.ReadFromJsonAsync<SportEvent>();
+    }   
+    
     public async Task<bool> CreateEvent(string name, string description, string token)
     {
         var jsonInString = JsonSerializer.Serialize(new
@@ -60,12 +66,15 @@ public class EventsService
         return null;
     }
     
-    public async Task<SportEvent> GetEvent(Guid id)
+    public async Task<IAmRegisteredResponse> IAmRegistered(Guid eventId, string token)  
     {
-        var response = await _httpClient.GetAsync(semApiUrl + $"Event/{id}");
-        return await response.Content.ReadFromJsonAsync<SportEvent>();
-    }
-
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/{eventId}/user-registered");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.SendAsync(request);
+        
+        return await response.Content.ReadFromJsonAsync<IAmRegisteredResponse>();
+    }   
+    
     public async Task<List<SportEvent>> GetMyEventsAsOrganizer(string token)
     {   
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Event/organizer");
@@ -85,11 +94,16 @@ public class EventsService
     }
 }
 
+public class IAmRegisteredResponse
+{
+    public bool Registered { get; set; }
+}
+
 public class RegisterToAnEventResponse
 {
     public string Message { get; set; }
 }
-
+    
 public class SportEvent 
 {   
     public Guid Id { get; set; }

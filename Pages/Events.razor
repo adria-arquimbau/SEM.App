@@ -1,10 +1,10 @@
 ﻿@page "/events"
-@using SEM.App.Components
 @using SEM.App.Data
+@using SEM.App.Utilities
 
 @inject EventsService EventsService
-
-<EventModal @ref="EventModal"></EventModal>
+@inject ILocalStorage LocalStorage
+@inject NavigationManager Navigation
 
 <PageTitle>Events</PageTitle>
  
@@ -24,7 +24,9 @@
                 <h2>Title: @sportEvent.Name</h2>
                 <p>Description: @sportEvent.Description</p>
                 <p>Created: @sportEvent.CreationDate By: @sportEvent.CreatorNickName</p>
-                <button class="btn btn-info" @onclick="() => EventModal.Open(sportEvent, mainLayout.IsLoggedIn())">More Information</button>
+               <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
+                   Go to event
+               </button>
             </div>
         }
     }
@@ -35,10 +37,16 @@
     public MainLayout mainLayout { get; set; }
     
     private List<SportEvent> sportEvents;
-    private EventModal EventModal { get; set; }
+    private string Token { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        Token = await LocalStorage.GetStringAsync("token");
         sportEvents = await EventsService.GetEvents();
+    }
+
+    private void GoToEvent(Guid eventId)
+    {
+        Navigation.NavigateTo($"/Event/{eventId}");
     }
 }
