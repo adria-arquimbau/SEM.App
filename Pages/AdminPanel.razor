@@ -1,4 +1,6 @@
 @page "/admin-panel"
+@attribute [Authorize(Roles = "admin")]
+
 @using SEM.App.Data
 @using SEM.App.Utilities
 

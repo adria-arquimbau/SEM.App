@@ -1,8 +1,12 @@
 ﻿@using SEM.App.Utilities
 @using SEM.App.Data
+@using SEM.App.Authentication
 @inherits LayoutComponentBase
 @inject ILocalStorage LocalStorage
 @inject AuthService AuthService
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navigationManager
 
 <CascadingValue Value="this">
 <CascadingValue Value="userName">
@@ -11,6 +15,15 @@
 	<div class="page">
 		<NavMenu />
 		<main>
+			 <AuthorizeView>
+                <Authorized>
+                    <a @onclick="Logout" href="javascript:void(0)">Logout</a>
+                </Authorized>
+                <NotAuthorized>
+	                <a href="/login">Login</a>
+	                </NotAuthorized>
+             </AuthorizeView>
+			
 			<article>
 				@Body
 			</article>
@@ -119,7 +132,7 @@
 		show = true;
 	}
 
-	public async Task Logout()
+	public async Task LogoutOld()
 	{
 		user = null;
 		loggedIn = false;
@@ -191,4 +204,12 @@
 		SetIsAdminOrOrganizer(role);
 		loggedIn = !string.IsNullOrEmpty(user);
 	}
+
+	private async Task Logout()
+	{
+		var customAuthStateProvider = (CustomAuthenticationStateProvider) authenticationStateProvider;
+		await customAuthStateProvider.UpdateAuthenticationState(null);
+		navigationManager.NavigateTo("/", true);
+	}
+
 }
