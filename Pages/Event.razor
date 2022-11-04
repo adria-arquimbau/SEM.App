@@ -117,7 +117,6 @@ else
             var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
             IAmRegistered = iAmRegisteredResponse.Registered;
         }
-        IAmLoggedIn = mainLayout.IsLoggedIn();  
         SportEvent = await EventsService.GetEvent(Guid.Parse(EventId));
         await base.OnInitializedAsync();
     }

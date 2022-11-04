@@ -1,7 +1,5 @@
 ﻿@page "/"
 
-@inject IJSRuntime js
-
 <PageTitle>Index</PageTitle>
 
 <AuthorizeView>
@@ -13,14 +11,3 @@
     </NotAuthorized>
 </AuthorizeView>
 
-@code{
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationState { get; set; }
-
-    private async Task DisplayGreetingAlert()
-    {
-        var authState = await authenticationState;
-        var message = $"Hello {authState.User.Identity.Name}";
-        await js.InvokeVoidAsync("alert", message);
-    }
-}

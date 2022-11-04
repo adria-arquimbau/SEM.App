@@ -1,9 +1,10 @@
 ﻿@page "/login"
+
 @using System.Net
 @using Microsoft.AspNetCore.Components
 @using SEM.App.Authentication
+
 @inject HttpClient httpClient
-@inject IJSRuntime js
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 
@@ -43,7 +44,7 @@
         }
         else if (loginResponse.StatusCode == HttpStatusCode.Unauthorized)
         {
-            await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            //ALERT
             return;
         }
     }
