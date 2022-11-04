@@ -1,11 +1,11 @@
 @page "/admin-panel"
-@attribute [Authorize(Roles = "SEM3:SPORT_EVENTS_MANAGEMENT_ADMIN, SEM3:SPORT_EVENTS_MANAGEMENT_ADMIN, SEM2:SPORT_EVENTS_MANAGEMENT_ORGANIZER")]
+@attribute [Authorize(Roles = "SEM3:SPORT_EVENTS_MANAGEMENT_ADMIN")]
 
 @using SEM.App.Data
-@using SEM.App.Utilities
+@using SEM.App.Authentication
 
 @inject UsersService UsersService
-@inject ILocalStorage LocalStorage
+@inject AuthenticationStateProvider authenticationStateProvider
 
 <PageTitle>Admin Panel</PageTitle>
 
@@ -42,7 +42,7 @@
 
 @code
 {
-    private List<UserDto> users;
+    private List<UserDto>? users;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,14 +52,16 @@
 
     private async Task ConfirmEmail(Guid userId)
     {
-        var token = await LocalStorage.GetStringAsync("token");
-        var success = await UsersService.ConfirmEmail(token, userId);
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        await UsersService.ConfirmEmail(token, userId);
         await GetUsers();
     }
     
     private async Task GetUsers()
     {   
-        var token = await LocalStorage.GetStringAsync("token");
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
         users = await UsersService.GetUsers(token);
     }
 }
