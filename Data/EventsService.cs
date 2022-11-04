@@ -55,11 +55,13 @@ public class EventsService
         if (response.IsSuccessStatusCode)
         {
             var responseMessage = await response.Content.ReadFromJsonAsync<RegisterToAnEventResponse>();
+            responseMessage.SuccessRegistration = true;
             return responseMessage;
         }
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             var responseMessage = await response.Content.ReadFromJsonAsync<RegisterToAnEventResponse>();
+            responseMessage.SuccessRegistration = false;
             return responseMessage;
         }
         
@@ -115,7 +117,7 @@ public class IAmRegisteredResponse
 
 public class RegisterToAnEventResponse
 {
-    public string Message { get; set; }
+    public string? Message { get; set; }
     public bool SuccessRegistration { get; set; }
 }
     

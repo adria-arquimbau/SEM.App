@@ -80,7 +80,7 @@ else
             @if (FailedRegistration)
             {
                 <div class="event-field alert alert-danger">
-                    @FailedRegistrationMessage, please set it in the "Account" section.
+                    @FailedRegistrationMessage
                 </div>
             }
             <div class="event-field">
@@ -107,7 +107,7 @@ else
 
     private const string TrueCheck = "✅";
     private const string FalseCheck = "❌";
-    private string? FailedRegistrationMessage = null;
+    private string? FailedRegistrationMessage;
 
     protected override async Task OnInitializedAsync()
     {   
