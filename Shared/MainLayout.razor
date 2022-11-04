@@ -11,18 +11,6 @@
 	<div class="page">
 		<NavMenu />
 		<main>
-			<div class="login-logout-buttons">
-				@if (loggedIn)
-				{
-					<a class="btn btn-sm btn-primary text-white" title="Account" href="account"><span class="oi oi-key"></span></a>
-					<button class="btn btn-sm btn-danger" title="Logout" @onclick="Logout"><span class="oi oi-account-logout"></span></button>
-				}
-				@if (!loggedIn)
-				{
-					<button class="btn btn-sm btn-success" title="Login" @onclick="OpenLogin"><span class="oi oi-account-login"></span></button>
-				}
-			</div>
-
 			<article>
 				@Body
 			</article>
