@@ -14,24 +14,6 @@ public class AuthService
     {
         _httpClient = httpClient;
     }
-    
-    public async Task<LoginResponse> LogIn(string email, string password)
-    {
-        var jsonInString = JsonSerializer.Serialize(new
-        {
-            email,
-            password
-        });   
-        
-        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Auth/Login")
-        {
-            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
-        };
-        
-        var response = await _httpClient.SendAsync(request);
-        
-        return (await response.Content.ReadFromJsonAsync<LoginResponse>())!;
-    }
 
     public async Task<RegisterResponse> Register(string email, string password, object userName)
     {
@@ -78,12 +60,4 @@ public class RegisterResponseError
 public class DetailRegisterErrors
 {
     public string? ErrorMessage { get; set; }
-}
-
-public class LoginResponse      
-{
-    public string Token { get; set; }
-    public string UserName { get; set; }
-    public string Role { get; set; }    
-    public string? Message { get; set; }
-}               
+}          

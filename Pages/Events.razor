@@ -1,9 +1,8 @@
 ﻿@page "/events"
+
 @using SEM.App.Data
-@using SEM.App.Utilities
 
 @inject EventsService EventsService
-@inject ILocalStorage LocalStorage
 @inject NavigationManager Navigation
 
 <PageTitle>Events</PageTitle>
@@ -28,7 +27,7 @@
                         <h2><b>Title: </b> @sportEvent.Name</h2>
                     </div>
                     <div class="event-field">
-                        <b>Creation date: </b> @sportEvent?.CreationDate
+                        <b>Creation date: </b> @sportEvent.CreationDate
                     </div>
                     <div class="event-field">
                         <b>Created by: </b>  @sportEvent.CreatorNickName
@@ -45,15 +44,10 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    public MainLayout mainLayout { get; set; }
-    
-    private List<SportEvent> sportEvents;
-    private string Token { get; set; }
+    private List<SportEvent>? sportEvents;
 
     protected override async Task OnInitializedAsync()
     {
-        Token = await LocalStorage.GetStringAsync("token");
         sportEvents = await EventsService.GetEvents();
     }
 

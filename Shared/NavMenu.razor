@@ -1,4 +1,4 @@
-﻿
+﻿@using SEM.App.Authentication
 <div class="sidebar">
     
     <div class="top-row ps-3 navbar navbar-dark">
@@ -22,44 +22,45 @@
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Events
                 </NavLink>
             </div>
-            @if (mainLayout.IsAdminOrOrganizer())
-            {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="organizer-panel">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Organizer Panel
-                    </NavLink>
-                </div>
-            }
-            @if (mainLayout.IsAdmin())
-            {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="admin-panel">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Admin Panel
-                    </NavLink>
-                </div>
-            }
-             <div class="nav-item px-3">
-                <NavLink class="nav-link" href="account">
-                    <span class="oi oi-key" aria-hidden="true"></span> Account
-                    @if (userName != null)
-                    {
-                        <div class="nav-item px-3">
-                            (@mainLayout.GetUserName())
-                        </div>
-                    }
-                </NavLink>
-             </div>
+            <AuthorizeView Roles="@RoleConstants.OrganizerAndAdmin">
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="organizer-panel">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Organizer Panel
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Roles="@RoleConstants.Admin">
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="admin-panel">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Admin Panel
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Roles="@RoleConstants.All">
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="account">
+                            <span class="oi oi-key" aria-hidden="true"></span> Account
+                            <div class="nav-item px-3">
+                                (@context.User.Identity.Name)
+                            </div>
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
         </nav>
     </div>
 </div>
 
 @code {
-    [CascadingParameter]
-    public MainLayout mainLayout { get; set; }
     
     [CascadingParameter]
-    public string userName { get; set; }
-        
+    public MainLayout mainLayout { get; set; }
+
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;

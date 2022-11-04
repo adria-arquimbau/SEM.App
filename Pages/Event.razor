@@ -1,10 +1,10 @@
 ﻿@page "/Event/{EventId}"
 
 @using SEM.App.Data
-@using SEM.App.Utilities
+@using SEM.App.Authentication
 
 @inject EventsService EventsService
-@inject ILocalStorage LocalStorage
+@inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 
 <PageTitle>Event @SportEvent?.Name</PageTitle>
@@ -42,65 +42,59 @@ else
                 <b>Created by: </b> @SportEvent?.CreatorNickName
             </div>
             <div class="event-field">
-                @if (IAmLoggedIn && !IAmRegistered)
-                {
-                    @if (!RequestingSignUp)
+                <AuthorizeView>
+                    @if (!IAmRegistered)
                     {
-                        <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
+                        @if (!RequestingSignUp)
+                        {
+                            <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">Signing up...</span>
+                            </button>
+                        }
                     }
-                    else
+                    @if (IAmRegistered)
                     {
-                        <button class="btn btn-success" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span class="sr-only">Signing up...</span>
-                        </button>
+                        @if (!RequestingUnRegister)
+                        {
+                            <button type="button" class="btn btn-danger" @onclick="UnRegister">UnRegister</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-danger" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">UnRegistering...</span>
+                            </button>
+                        }
                     }
-                }
-                @if (IAmLoggedIn && IAmRegistered)
-                {
-                    @if (!RequestingUnRegister)
-                    {
-                        <button type="button" class="btn btn-danger" @onclick="UnRegister">UnRegister</button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-danger" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span class="sr-only">UnRegistering...</span>
-                        </button>
-                    }
-                }
-                @if (!IAmLoggedIn)
-                {
-                    <NavLink href="account">
-                        <button type="button" class="btn btn-danger">Log In to Sign Up</button>
-                    </NavLink>
-                }
+                </AuthorizeView>
             </div>
+            
             @if (FailedRegistration)
             {
                 <div class="event-field alert alert-danger">
                     @FailedRegistrationMessage
                 </div>
             }
+            
             <div class="event-field">
                 <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
             </div>
-            </div>
+        </div>
     </div>
 }
 
 @code { 
-    [CascadingParameter]
-    public MainLayout? mainLayout { get; set; }
     [Parameter] 
-    public string EventId { get; set; } 
+    public string? EventId { get; set; }    
     
-    private SportEvent SportEvent { get; set; }
-    private string Token { get; set; }
+    private SportEvent? SportEvent { get; set; }
     
-    private bool IAmRegistered { get; set; }    
-    private bool IAmLoggedIn { get; set; }
+    private bool IAmRegistered { get; set; }
     private bool RequestingSignUp { get; set; }
     private bool RequestingUnRegister { get; set; }
     private bool FailedRegistration { get; set; }
@@ -109,16 +103,19 @@ else
     private const string FalseCheck = "❌";
     private string? FailedRegistrationMessage;
 
+    private string Token = string.Empty;
+
     protected override async Task OnInitializedAsync()
-    {   
-        Token = await LocalStorage.GetStringAsync("token");
-        if (Token != null)
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+
+        if (!string.IsNullOrWhiteSpace(Token))
         {
-            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
-            IAmRegistered = iAmRegisteredResponse.Registered;
+            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
+            IAmRegistered = iAmRegisteredResponse.Registered; 
         }
-        IAmLoggedIn = mainLayout.IsLoggedIn();  
-        SportEvent = await EventsService.GetEvent(Guid.Parse(EventId));
+        SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
         await base.OnInitializedAsync();
     }
 
@@ -130,10 +127,11 @@ else
     private async Task SignUp()
     {
         RequestingSignUp = true;
-        var response = await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId));
+
+        var response = await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId!));
         if (response.SuccessRegistration)
         {
-            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
+            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
             IAmRegistered = iAmRegisteredResponse.Registered;
             RequestingSignUp = false;
         }
@@ -148,7 +146,8 @@ else
     private async Task UnRegister()
     {
         RequestingUnRegister = true;
-        var response = await EventsService.UnRegisterToAnEvent(Token,Guid.Parse(EventId));
+
+        var response = await EventsService.UnRegisterToAnEvent(Token,Guid.Parse(EventId!));
         if (response == "Unregistered")
         {
             IAmRegistered = false;

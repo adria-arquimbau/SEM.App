@@ -1,36 +1,37 @@
 @page "/organizer-panel"
-@using SEM.App.Utilities
-@using SEM.App.Components
-@using SEM.App.Data
+@attribute [Authorize(Roles = "SEM3:SPORT_EVENTS_MANAGEMENT_ADMIN, SEM2:SPORT_EVENTS_MANAGEMENT_ORGANIZER")]
 
+@using SEM.App.Data
+@using SEM.App.Authentication
+
+@inject AuthenticationStateProvider authenticationStateProvider
 @inject EventsService EventService
-@inject ILocalStorage LocalStorage
 
 <PageTitle>Organizer Panel</PageTitle>
 
 <h1>Organizer Panel</h1>
 
-<button class="btn btn-primary" @onclick="() => Open()">Create Event</button>
+<button class="btn btn-primary" @onclick="Open">Create Event</button>
 
 <h2>My events:</h2> 
 
- @if (myEvents == null)
-    {
-        <div class="spinner-border" role="status"></div>
-        <p>Loading your events... Please wait</p>
-    }
- else
+@if (myEvents == null)
+{
+    <div class="spinner-border" role="status"></div>
+    <p>Loading your events... Please wait</p>
+}
+else
+{
+ @foreach (var myEvent in myEvents)
  {
-     @foreach (var myEvent in myEvents)
-     {
-         <div class="event-container">
-             <h2>Title: @myEvent.Name</h2>
-             <p>Description: @myEvent.Description</p>
-             <p>Created: @myEvent.CreationDate By: @myEvent.CreatorNickName</p>
-             <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
-         </div>
-     }
+     <div class="event-container">
+         <h2>Title: @myEvent.Name</h2>
+         <p>Description: @myEvent.Description</p>
+         <p>Created: @myEvent.CreationDate By: @myEvent.CreatorNickName</p>
+         <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
+     </div>
  }
+}
 
 @* Modal Create Event *@
 
@@ -83,14 +84,7 @@
 
 @code
 {
-    [CascadingParameter]
-    public MainLayout mainLayout { get; set; }
-    
-    [CascadingParameter]
-    public string Token { get; set; }
-    
-    private CreateEventModal CreateEventModal { get; set; }
-    private List<SportEvent> myEvents;
+    private List<SportEvent>? myEvents;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,22 +93,24 @@
 
     private async Task Delete(Guid id)
     {
-        await EventService.DeleteEvent(id, Token);
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        await EventService.DeleteEvent(id, token);
         await RefreshEvents();
     }
 
-    public async Task RefreshEvents()
+    private async Task RefreshEvents()
     {
-        Token = await LocalStorage.GetStringAsync("token");
-        myEvents = await EventService.GetMyEventsAsOrganizer(Token);
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        myEvents = await EventService.GetMyEventsAsOrganizer(token);
     }
     
     // Modal Create Event
-    public Guid Guid = Guid.NewGuid();
-    public string ModalDisplay = "none;";
-    public string ModalClass = "";
-    public bool ShowBackdrop = false;   
-    private bool? isCreated = null;
+    private string ModalDisplay = "none;";
+    private string ModalClass = "";
+    private bool ShowBackdrop;   
+    private bool? isCreated;
 
     private string eventName = "";      
     private string eventDescription = "";
@@ -123,14 +119,15 @@
     {
         if (!string.IsNullOrEmpty(eventName) && !string.IsNullOrEmpty(eventDescription))
         {
-            var token = await LocalStorage.GetStringAsync("token");
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+            var token = await customAuthStateProvider.GetToken();
             var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, token);
 
             if (isCreatedResponse)
             {
                 isCreated = true;
                 await RefreshEvents();
-                await Close();
+                Close();
             }
             if (!isCreatedResponse)
             {
@@ -138,8 +135,8 @@
             }
         }
     }
-    
-    public void Open()
+
+    private void Open()
     {
         ModalDisplay = "block;";    
         ModalClass = "Show";
@@ -147,7 +144,7 @@
         StateHasChanged();
     }
 
-    public async Task Close()
+    private void Close()
     {
         isCreated = null;
         ModalDisplay = "none";
@@ -156,7 +153,6 @@
         StateHasChanged();
         eventName = "";
         eventDescription = "";
-        
     }
 }   
     
