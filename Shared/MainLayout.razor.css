@@ -1,8 +1,7 @@
-/*.page {*/
-/*    position: relative;*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*}*/
+.page {
+   background-color: #eaeaea;
+    height:100vh;
+}
 
 /*main {*/
 /*    flex: 1;*/

@@ -16,37 +16,70 @@
 }
 else
 {
-    <div>
+    <div class="event">
         <h1>@SportEvent?.Name</h1>
-        <p>@SportEvent?.Description</p>
-        <p>Registered: @IAmRegistered</p>
-        <li>
-            Created: @SportEvent?.CreationDate by @SportEvent?.CreatorNickName
-        </li>
-        @if (IAmLoggedIn && !IAmRegistered)
-        {
-            <button type="button" class="btn btn-danger" @onclick="SignUp">Sign up</button>
-        }
-        @if (!IAmLoggedIn)
-        {
-            <NavLink class="nav-link" href="account">
-                <button type="button" class="btn btn-danger">Log In to Sign Up</button>
-            </NavLink>
-        }
-        <button class="btn btn-info" @onclick="BackToEvents">Go Back to events</button>
+        <div class="event-content">
+            <div class="event-field">
+                <b>Description: </b>
+                @SportEvent?.Description
+            </div>
+            <div class="event-field">
+                 <b>Registered: </b> @if (IAmRegistered)
+                                     {
+                                        @TrueCheck 
+                                     }
+                                     else
+                                     {
+                                         @FalseCheck
+                                     }
+            </div>
+            <div class="event-field">
+                <b>Created: </b> @SportEvent?.CreationDate by @SportEvent?.CreatorNickName
+            </div>
+            <div class="event-field">
+                @if (IAmLoggedIn && !IAmRegistered)
+                {
+                    @if (!RequestingSignUp)
+                    {
+                        <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">Signing up...</span>
+                        </button>
+                    }
+                }
+                @if (!IAmLoggedIn)
+                {
+                    <NavLink class="nav-link" href="account">
+                        <button type="button" class="btn btn-danger">Log In to Sign Up</button>
+                    </NavLink>
+                }
+            </div>
+            <div class="event-field">
+                <button class="btn btn-info" @onclick="BackToEvents">Go Back to events</button>
+            </div>
+        </div>
     </div>
 }
 
 @code { 
     [CascadingParameter]
-    public MainLayout mainLayout { get; set; }
-    [Parameter]
+    public MainLayout? mainLayout { get; set; }
+    [Parameter] 
     public string EventId { get; set; } 
     
     private SportEvent SportEvent { get; set; }
     private string Token { get; set; }
+    
     private bool IAmRegistered { get; set; }    
-    private bool IAmLoggedIn { get; set; }    
+    private bool IAmLoggedIn { get; set; }
+    private bool RequestingSignUp { get; set; }
+
+    private string TrueCheck = "✅";
+    private string FalseCheck = "❌";
 
     protected override async Task OnInitializedAsync()
     {   
@@ -68,8 +101,10 @@ else
 
     private async Task SignUp()
     {
+        RequestingSignUp = true;
         await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId));
         var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
         IAmRegistered = iAmRegisteredResponse.Registered;
+        RequestingSignUp = false;
     }
 }   
