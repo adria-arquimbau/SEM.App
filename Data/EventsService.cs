@@ -45,7 +45,7 @@ public class EventsService
         return response.IsSuccessStatusCode;
     }
     
-    public async Task<string?> RegisterToAnEvent(string token, Guid eventId)
+    public async Task<RegisterToAnEventResponse> RegisterToAnEvent(string token, Guid eventId)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Event/{eventId}/register");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -55,16 +55,20 @@ public class EventsService
         if (response.IsSuccessStatusCode)
         {
             var responseMessage = await response.Content.ReadFromJsonAsync<RegisterToAnEventResponse>();
-            return responseMessage.Message;
+            return responseMessage;
         }
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             var responseMessage = await response.Content.ReadFromJsonAsync<RegisterToAnEventResponse>();
-            return responseMessage.Message;
+            return responseMessage;
         }
         
-        return null;
-    }
+        return new RegisterToAnEventResponse
+        {
+            Message = "Something went wrong, try it later please.",
+            SuccessRegistration = false
+        };
+    }   
     
     public async Task<string> UnRegisterToAnEvent(string token, Guid eventId)
     {
@@ -112,6 +116,7 @@ public class IAmRegisteredResponse
 public class RegisterToAnEventResponse
 {
     public string Message { get; set; }
+    public bool SuccessRegistration { get; set; }
 }
     
 public class SportEvent 

@@ -11,8 +11,10 @@
 
 @if (SportEvent == null)
 {
-    <div class="spinner-border loading-spinner" role="status"></div>
-    <p>Loading... Please wait</p>
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading... Please wait</p>
+    </div>
 }
 else
 {
@@ -26,7 +28,7 @@ else
             <div class="event-field">
                  <b>Registered: </b> @if (IAmRegistered)
                                      {
-                                        @TrueCheck 
+                                         @TrueCheck
                                      }
                                      else
                                      {
@@ -75,10 +77,16 @@ else
                     </NavLink>
                 }
             </div>
+            @if (FailedRegistration)
+            {
+                <div class="event-field alert alert-danger">
+                    @FailedRegistrationMessage, please set it in the "Account" section.
+                </div>
+            }
             <div class="event-field">
-                <button class="btn btn-info" @onclick="BackToEvents">Go Back to events</button>
+                <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
             </div>
-        </div>
+            </div>
     </div>
 }
 
@@ -95,9 +103,11 @@ else
     private bool IAmLoggedIn { get; set; }
     private bool RequestingSignUp { get; set; }
     private bool RequestingUnRegister { get; set; }
-    
-    private string TrueCheck = "✅";
-    private string FalseCheck = "❌";
+    private bool FailedRegistration { get; set; }
+
+    private const string TrueCheck = "✅";
+    private const string FalseCheck = "❌";
+    private string? FailedRegistrationMessage = null;
 
     protected override async Task OnInitializedAsync()
     {   
@@ -120,10 +130,19 @@ else
     private async Task SignUp()
     {
         RequestingSignUp = true;
-        await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId));
-        var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
-        IAmRegistered = iAmRegisteredResponse.Registered;
-        RequestingSignUp = false;
+        var response = await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId));
+        if (response.SuccessRegistration)
+        {
+            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId), Token);
+            IAmRegistered = iAmRegisteredResponse.Registered;
+            RequestingSignUp = false;
+        }
+        if (!response.SuccessRegistration)
+        {
+            FailedRegistration = true;
+            FailedRegistrationMessage = response.Message;
+            RequestingSignUp = false;
+        }
     }
     
     private async Task UnRegister()
