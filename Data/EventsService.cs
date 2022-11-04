@@ -66,6 +66,16 @@ public class EventsService
         return null;
     }
     
+    public async Task<string> UnRegisterToAnEvent(string token, Guid eventId)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Event/{eventId}/unregister");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.SendAsync(request);
+        
+        return response.IsSuccessStatusCode ? "Unregistered" : "Something went wrong, try it later";
+    }
+    
     public async Task<IAmRegisteredResponse> IAmRegistered(Guid eventId, string token)  
     {
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/{eventId}/user-registered");
