@@ -204,12 +204,12 @@
 		SetIsAdminOrOrganizer(role);
 		loggedIn = !string.IsNullOrEmpty(user);
 	}
-
+		
 	private async Task Logout()
 	{
 		var customAuthStateProvider = (CustomAuthenticationStateProvider) authenticationStateProvider;
 		await customAuthStateProvider.UpdateAuthenticationState(null);
-		navigationManager.NavigateTo("/", true);
+		navigationManager.NavigateTo("/", true);	
 	}
 
 }
