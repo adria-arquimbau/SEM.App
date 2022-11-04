@@ -1,4 +1,6 @@
 @page "/organizer-panel"
+@attribute [Authorize(Policy = "SEM3:SPORT_EVENTS_MANAGEMENT_ADMIN, SEM2:SPORT_EVENTS_MANAGEMENT_ORGANIZER")]
+
 @using SEM.App.Utilities
 @using SEM.App.Components
 @using SEM.App.Data

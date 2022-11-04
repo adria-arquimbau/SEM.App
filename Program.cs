@@ -6,7 +6,6 @@ using SEM.App;
 using SEM.App.Authentication;
 using SEM.App.Data;
 using SEM.App.Utilities;
-using SportEventsManagement.Api.Policies;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

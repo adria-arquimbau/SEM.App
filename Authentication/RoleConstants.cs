@@ -1,4 +1,4 @@
-﻿namespace SportEventsManagement.Api.Policies
+﻿namespace SEM.App.Authentication
 {
     public static class RoleConstants
     {
