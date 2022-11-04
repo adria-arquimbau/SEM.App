@@ -11,7 +11,7 @@
 
 @if (SportEvent == null)
 {
-    <div class="spinner-border" role="status"></div>
+    <div class="spinner-border loading-spinner" role="status"></div>
     <p>Loading... Please wait</p>
 }
 else
@@ -34,7 +34,10 @@ else
                                      }
             </div>
             <div class="event-field">
-                <b>Created: </b> @SportEvent?.CreationDate by @SportEvent?.CreatorNickName
+                <b>Creation date: </b> @SportEvent?.CreationDate
+            </div>
+            <div class="event-field">
+                <b>Created by: </b> @SportEvent?.CreatorNickName
             </div>
             <div class="event-field">
                 @if (IAmLoggedIn && !IAmRegistered)

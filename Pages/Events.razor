@@ -13,20 +13,30 @@
 
     @if (sportEvents == null)
     {
-        <div class="spinner-border" role="status"></div>
+        <div class="spinner-border loading-spinner" role="status"></div>
         <p>Loading... Please wait</p>
     }
     else
     {
         @foreach (var sportEvent in sportEvents)
         {
-            <div class="event-content">
-                <h2>Title: @sportEvent.Name</h2>
-                <p>Description: @sportEvent.Description</p>
-                <p>Created: @sportEvent.CreationDate By: @sportEvent.CreatorNickName</p>
-               <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
-                   Go to event
-               </button>
+            <div class="event">
+                <div class="event-content">
+                    <div class="event-field">
+                        <h2><b>Title: </b> @sportEvent.Name</h2>
+                    </div>
+                    <div class="event-field">
+                        <b>Creation date: </b> @sportEvent?.CreationDate
+                    </div>
+                    <div class="event-field">
+                        <b>Created by: </b>  @sportEvent.CreatorNickName
+                    </div>
+                    <div class="event-field">
+                        <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
+                            Go to event
+                        </button>
+                    </div>
+                </div>
             </div>
         }
     }
