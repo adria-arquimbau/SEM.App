@@ -4,10 +4,14 @@
 
 <AuthorizeView>
     <Authorized>
-        <h1>Hello, @context.User.Identity.Name!</h1>
+        <div class="welcome-user-message">
+            <h1>Hello, @context.User.Identity.Name!</h1>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <h1>Hello, Guest!</h1>
+        <div class="welcome-user-message">
+            <h1>Hello, Guest!</h1>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 

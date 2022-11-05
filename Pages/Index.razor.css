@@ -1,0 +1,8 @@
+﻿.welcome-user-message{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: center;
+    padding-top: 50px;
+}
