@@ -3,45 +3,50 @@
 @inject HttpClient httpClient
 @inject NavigationManager navManager
 
-<div class="row">
-    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
-        <div class="mb-3 text-center">
-            <h3>Register</h3>
-        </div>
-        <div class="mb-3">
-            <label>User name</label>
-            <input @bind="registerRequest.UserName" type="text" class="form-control" placeholder="UserName" />
-        </div>
-        <div class="mb-3">
-            <label>Email</label>
-            <input @bind="registerRequest.Email" class="form-control" placeholder="Email" />
-        </div>
-        <div class="mb-3">
-            <label>Password</label>
-            <input @bind="registerRequest.Password" type="password" class="form-control" placeholder="Password" />
-        </div>
-        <div class="mb-3">
-            <label>Password</label>
-            <input @bind="repeatPassword" type="password" class="form-control" placeholder="RepeatPassword" />
-        </div>
-        @if (!RequestingRegister)
-        {
-            <div class="mb-3 d-grid gap-2">
-                <button @onclick="Registration" class="btn btn-primary">Register</button>
+<div class="register-page">
+    <div class="register">
+        <div class="register-content">
+            <div class="register-field text-center">
+                <h3>REGISTER</h3>
             </div>
-        }
-        else
-        {
-            <button class="btn btn-success" type="button" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span class="sr-only">Registering..</span>
-            </button>
-        }
-        @if (errorMessage != null)
-        {
-            @errorMessage
-        }
-        
+            <div class="register-field">
+                <label>User name</label>
+                <input @bind="registerRequest.UserName" type="text" class="form-control" placeholder="UserName"/>
+            </div>
+            <div class="register-field">
+                <label>Email</label>
+                <input @bind="registerRequest.Email" class="form-control" placeholder="Email"/>
+            </div>
+            <div class="register-field">
+                <label>Password</label>
+                <input @bind="registerRequest.Password" type="password" class="form-control" placeholder="Password"/>
+            </div>
+            <div class="register-field">
+                <label>Password</label>
+                <input @bind="repeatPassword" type="password" class="form-control" placeholder="RepeatPassword"/>
+            </div>
+            <div class="register-field">
+            @if (!RequestingRegister)
+            {
+                <button @onclick="Registration" class="btn btn-primary">Register</button>
+            }
+            else
+            {
+                <button class="btn btn-success" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Registering..</span>
+                </button>
+            }
+            </div>
+            <div class="register-field">
+            @if (FailedRegisterMessage != null)
+            {
+                <div class="event-field alert alert-danger">
+                    @FailedRegisterMessage
+                </div>
+            }
+            </div>
+        </div>
     </div>
 </div>
 
@@ -50,7 +55,7 @@
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     private string repeatPassword = string.Empty;
-    private string? errorMessage;
+    private string? FailedRegisterMessage;
     
     private bool RequestingRegister;    
     
@@ -66,7 +71,7 @@
         else
         {   
             RequestingRegister = false;
-            errorMessage = "Something went wrong, try it again later";
+            FailedRegisterMessage = "Something went wrong, try it again later";
             //ALERT
         }
         RequestingRegister = false;
