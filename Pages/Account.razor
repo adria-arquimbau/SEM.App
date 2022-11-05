@@ -9,6 +9,15 @@
 <PageTitle>Account</PageTitle>
 
 <AuthorizeView>
+@if (User == null)
+{
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading your user... Please wait</p>
+    </div>
+}
+else
+{
 	<div class="my-account">
 		<div class="my-account-content">
 			<h1>Your Account</h1>
@@ -52,8 +61,7 @@
 			</div>
 		</div>
 	</div>
-
-
+}
 </AuthorizeView>
 
 @code {

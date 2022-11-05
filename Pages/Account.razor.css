@@ -13,15 +13,14 @@
     padding: 10px;
 }
 
-.box {
-    float: left;
-    height: 20px;
-    width: 20px;
-    margin-bottom: 15px;
-    border: 1px solid black;
-    clear: both;
+.loading-spinner{
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
-.red {
-    background-color: red;
+.loading-page{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
