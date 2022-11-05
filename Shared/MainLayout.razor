@@ -11,15 +11,16 @@
 		<NavMenu />
 		<main>
 			 <AuthorizeView>
-                <Authorized>
-                    <a @onclick="Logout" href="javascript:void(0)">Logout</a>
-                </Authorized>
+				 <Authorized>
+					 <div class="login-register-container">
+						<a class="logout-button" @onclick="Logout" href="javascript:void(0)">Logout</a>
+					 </div>
+				 </Authorized>
 				 <NotAuthorized>
 					 <div class="login-register-container">
 						 <a class="login-button" href="/login">Login</a>
 						 <a class="register-button" href="/register">Register</a>
 					 </div>
-					 
 				 </NotAuthorized>
              </AuthorizeView>
 			
