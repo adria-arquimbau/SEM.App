@@ -42,11 +42,11 @@ else
                 <h5 class="modal-title">Create Event</h5>
             </div>
             <div class="modal-body">
-             	<div class="mb-3">
-             		<label for="eventName" class="form-label">Event Name</label>
-             		<input type="text" class="form-control" id="eventName" required @bind-value="eventName" />
-             	</div>
-             	<div class="mb-3">
+                <div class="mb-3">
+                    <label for="eventName" class="form-label">Event Name</label>
+                    <input type="text" class="form-control" id="eventName" required @bind-value="eventName" />
+                </div>
+                <div class="mb-3">
                     <label for="eventDescription" class="form-label">Event Description</label>
                     <input type="text" class="form-control" id="eventDescription" required @bind-value="eventDescription" />
                 </div>
@@ -87,6 +87,7 @@ else
         </div>  
     </div>
 </div>
+
 @if (ShowBackdrop)
 {
     <div class="modal-backdrop fade show"></div>

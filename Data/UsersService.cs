@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace SEM.App.Data;
 
@@ -38,10 +40,33 @@ public class UsersService
         var response = await _httpClient.SendAsync(request);
         
         return await response.Content.ReadFromJsonAsync<UserDto>();
-    }   
+    }
+
+    public async Task<bool> SetInformation(string name, string secondName, string phone, string address, string city, string country, string postalCode, string token)
+    {
+        var jsonInString = JsonSerializer.Serialize(new
+        {   
+            name,   
+            secondName,
+            phone,
+            address,
+            city,
+            country,
+            postalCode
+        });   
+        
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + "User")
+        {
+            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
 }
         
-public class UserDto    
+public class UserDto        
 {   
     public Guid Id { get; set; }
     public string Name { get; set; }
