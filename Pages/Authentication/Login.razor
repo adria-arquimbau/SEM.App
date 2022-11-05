@@ -21,9 +21,18 @@
             <label>Password</label>
             <input @bind="loginRequest.Password" type="password" class="form-control" placeholder="Password" />
         </div>
-        <div class="mb-3 d-grid gap-2">
+        @if (!requestingLogIn)
+        {
             <button @onclick="Authenticate" class="btn btn-primary">Login</button>
-        </div>
+        }
+        else
+        {
+            <button class="btn btn-success" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="sr-only">Signing up...</span>
+            </button>
+        }
+        
     </div>
 </div>
 
@@ -31,8 +40,11 @@
     private LoginRequest loginRequest = new();
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
+    private bool requestingLogIn;
+
     private async Task Authenticate()
     {
+        requestingLogIn = true;
         var loginResponse = await httpClient.PostAsJsonAsync<LoginRequest>(semApiUrl + "Auth/Login", loginRequest);
 
         if (loginResponse.IsSuccessStatusCode)
@@ -47,6 +59,7 @@
             //ALERT
             return;
         }
+        requestingLogIn = false;
     }
 
     public class LoginRequest
