@@ -136,6 +136,7 @@ else
         {
             var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
             IAmRegistered = iAmRegisteredResponse.Registered;
+            SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
             RequestingSignUp = false;
         }
         if (!response.SuccessRegistration)
@@ -153,7 +154,9 @@ else
         var response = await EventsService.UnRegisterToAnEvent(Token,Guid.Parse(EventId!));
         if (response == "Unregistered")
         {
-            IAmRegistered = false;
+            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
+            IAmRegistered = iAmRegisteredResponse.Registered;
+            SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
         }
         RequestingUnRegister = false;
     }   
