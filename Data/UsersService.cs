@@ -1,13 +1,11 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using SEM.App.Utilities;
 
 namespace SEM.App.Data;
 
 public class UsersService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILocalStorage _localStorage;
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     public UsersService(HttpClient httpClient)
