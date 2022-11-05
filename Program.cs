@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using SEM.App;
 using SEM.App.Authentication;
 using SEM.App.Data;
-using SEM.App.Utilities;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -15,7 +14,6 @@ builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<EventsService>();
 builder.Services.AddSingleton<UsersService>();
-builder.Services.AddScoped<ILocalStorage, LocalStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 builder.Services.AddBlazoredSessionStorage();
