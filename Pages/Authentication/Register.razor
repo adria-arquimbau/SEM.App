@@ -1,7 +1,5 @@
 ﻿@page "/Register"
 
-@using SEM.App.Authentication
-
 @inject HttpClient httpClient
 @inject NavigationManager navManager
 
@@ -26,9 +24,24 @@
             <label>Password</label>
             <input @bind="repeatPassword" type="password" class="form-control" placeholder="RepeatPassword" />
         </div>
-        <div class="mb-3 d-grid gap-2">
-            <button @onclick="Registration" class="btn btn-primary">Register</button>
-        </div>
+        @if (!RequestingRegister)
+        {
+            <div class="mb-3 d-grid gap-2">
+                <button @onclick="Registration" class="btn btn-primary">Register</button>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-success" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span class="sr-only">Registering..</span>
+            </button>
+        }
+        @if (errorMessage != null)
+        {
+            @errorMessage
+        }
+        
     </div>
 </div>
 
@@ -37,9 +50,13 @@
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     private string repeatPassword = string.Empty;
+    private string? errorMessage;
+    
+    private bool RequestingRegister;    
     
     private async Task Registration()
     {
+        RequestingRegister = true;
         var loginResponse = await httpClient.PostAsJsonAsync<RegisterRequest>(semApiUrl + "Auth/Register", registerRequest);
 
         if (loginResponse.IsSuccessStatusCode)
@@ -48,9 +65,11 @@
         }
         else
         {   
+            RequestingRegister = false;
+            errorMessage = "Something went wrong, try it again later";
             //ALERT
-            return;
         }
+        RequestingRegister = false;
     }
 
     public class RegisterRequest    
