@@ -19,8 +19,8 @@
 else
 {
     <div class="event">
-        <h1>@SportEvent?.Name</h1>
         <div class="event-content">
+            <h1>@SportEvent?.Name</h1>
             <div class="event-field">
                 <b>Description: </b>
                 @SportEvent?.Description
@@ -29,14 +29,15 @@ else
                 <b>Registrations: </b> @SportEvent?.RegistrationsQuantity
             </div>
             <div class="event-field">
-                 <b>Registered: </b> @if (IAmRegistered)
-                                     {
-                                         @TrueCheck
-                                     }
-                                     else
-                                     {
-                                         @FalseCheck
-                                     }
+                <b>Registered: </b>
+                @if (IAmRegistered)
+                {
+                    @TrueCheck
+                }
+                else
+                {
+                    @FalseCheck
+                }
             </div>
             <div class="event-field">
                 <b>Creation date: </b> @SportEvent?.CreationDate
@@ -76,14 +77,14 @@ else
                     }
                 </AuthorizeView>
             </div>
-            
+
             @if (FailedRegistration)
             {
                 <div class="event-field alert alert-danger">
                     @FailedRegistrationMessage
                 </div>
             }
-            
+
             <div class="event-field">
                 <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
             </div>

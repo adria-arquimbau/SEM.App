@@ -14,26 +14,51 @@
 
     @if (users == null)
     {
-        <div class="spinner-border" role="status"></div>
-        <p>Loading active users in the application... Please wait</p>
+        <div class="loading-page">
+            <div class="spinner-border loading-spinner" role="status"></div>
+            <p>Loading active users in the application... Please wait</p>
+        </div>
     } 
     else
     {
         <h2>Users</h2>
         @foreach (var user in users)
         {
-            <div class="user-container">
-                <p>User Name: @user.UserName</p>
-                <p>Name: @user.Name</p>
-                <p>Email: @user.Email</p>
-                <p>Confirmed email: @user.EmailConfirmed</p>
-                <p>Registration date: @user.RegistrationDate</p>
-                <p>Last login time: @user.LastLoginTime</p>
-                
-                @if (!user.EmailConfirmed)
-                {
-                    <button class="btn btn-info" @onclick="() => ConfirmEmail(user.Id)">Confirm Email</button>
-                }
+            <div class="user">
+                <div class="user-content">
+                    <div class="user-field">
+                        <b>User Name: </b> @user.UserName                     
+                    </div>
+                    <div class="user-field">
+                        <b>Name: </b> @user.Name                                            
+                    </div>
+                    <div class="user-field">
+                        <b>Email: </b> @user.Email                                            
+                    </div>
+                    <div class="user-field">
+                        <b>Confirmed email: </b>
+                        @if (user.EmailConfirmed)
+                        {
+                            @TrueCheck
+                        }
+                        else
+                        {
+                            @FalseCheck
+                        }
+                    </div>
+                    <div class="user-field">
+                        <b>Registration date: </b> @user.RegistrationDate                                            
+                    </div>
+                    <div class="user-field">
+                        <b>Last login time: </b> @user.LastLoginTime                                            
+                    </div>
+                    <div class="user-field">
+                        @if (!user.EmailConfirmed)
+                        {
+                            <button class="btn btn-info" @onclick="() => ConfirmEmail(user.Id)">Confirm Email</button>
+                        }
+                    </div>
+                </div>
             </div>
         }
     }
@@ -43,6 +68,9 @@
 @code
 {
     private List<UserDto>? users;
+    
+    private const string TrueCheck = "✅";
+    private const string FalseCheck = "❌";
 
     protected override async Task OnInitializedAsync()
     {
