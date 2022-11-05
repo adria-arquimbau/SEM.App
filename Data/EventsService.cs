@@ -128,4 +128,5 @@ public class SportEvent
     public string Description { get; set; }
     public string CreatorNickName { get; set; }
     public DateTime CreationDate { get; set; }
+    public int RegistrationsQuantity { get; set; }
 }               
