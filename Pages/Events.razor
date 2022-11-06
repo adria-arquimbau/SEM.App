@@ -12,22 +12,22 @@
 <div class="events-page">
     <AuthorizeView>
         <h2>Registered events</h2> 
-        @if (registeredEvents == null)
+        @if (myRegisteredEvents == null)
         {
             <div class="loading-page">
                 <div class="spinner-border loading-spinner" role="status"></div>
                 <p>Loading... Please wait</p>
             </div>
         }
-        else if (registeredEvents.Count == 0)
+        else if (myRegisteredEvents.Count == 0)
         {
             <div class="alert alert-primary" role="alert">
                 You are not registered to any event.
             </div>
         }
-        else if (registeredEvents.Count > 0)
+        else if (myRegisteredEvents.Count > 0)
         {
-            @foreach (var sportEvent in registeredEvents)
+            @foreach (var sportEvent in myRegisteredEvents)
             {
                 <div class="event">
                     <div class="event-content">
@@ -94,7 +94,7 @@
 
 @code {
     private List<SportEvent>? sportEvents;
-    private List<SportEvent>? registeredEvents; 
+    private List<SportEvent>? myRegisteredEvents; 
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,7 +102,11 @@
         var token = await customAuthStateProvider.GetToken();
         
         sportEvents = await EventsService.GetEvents();
-        registeredEvents = await EventsService.GetRegisteredEvents(token);
+
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            myRegisteredEvents = await EventsService.GetMyRegisteredEvents(token);
+        }
     }
 
     private void GoToEvent(Guid eventId)

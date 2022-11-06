@@ -20,7 +20,16 @@ public class EventsService
        return await _httpClient.GetFromJsonAsync<List<SportEvent>>(semApiUrl + "Event");
     }
     
-    public async Task<List<SportEvent>> GetRegisteredEvents(string token)
+    public async Task<List<RegistrationDto>> GetRegistrationsByEventId(Guid eventId, string token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/registrations");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
+        var response = await _httpClient.SendAsync(request);
+        return await response.Content.ReadFromJsonAsync<List<RegistrationDto>>();        
+    }   
+    
+    public async Task<List<SportEvent>> GetMyRegisteredEvents(string token)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/Registered");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -137,4 +146,18 @@ public class SportEvent
     public string CreatorNickName { get; set; }
     public DateTime CreationDate { get; set; }
     public int RegistrationsQuantity { get; set; }
-}               
+}     
+
+public class RegistrationDto
+{
+    public string UserName { get; set; }
+    public RegistrationRole Role { get; set; }
+}
+
+public enum RegistrationRole
+{   
+    Staff,
+    Rider,
+    Marshal,    
+    RiderMarshal
+}            
