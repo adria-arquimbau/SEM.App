@@ -40,15 +40,26 @@ else
                 }
             </div>
             <div class="event-field">
-                <b>Registered users: </b>
-                 @foreach (var registration in Registrations)
-                 {
-                     <div>
-                         @registration.UserName  @registration.Role
-                     </div>
-                    
-                 }
-                 
+                <RadzenAccordion>
+                    <Items>
+                        <RadzenAccordionItem Text="Registered users" Icon="list">
+                            @if (!RequestingRegistrations)
+                            {
+                                @foreach (var registration in Registrations)
+                                {
+                                    <div>
+                                        @registration.UserName @registration.Role
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">Loading registrations...</span>
+                            }
+                        </RadzenAccordionItem>
+                    </Items>
+                </RadzenAccordion>
             </div>
             <div class="event-field">
                 <b>Creation date: </b> @SportEvent?.CreationDate
@@ -113,11 +124,12 @@ else
     private bool IAmRegistered { get; set; }
     private bool RequestingSignUp { get; set; }
     private bool RequestingUnRegister { get; set; }
+    private bool RequestingRegistrations { get; set; }
     private bool FailedRegistration { get; set; }
     
     private const string TrueCheck = "✅";
     private const string FalseCheck = "❌";
-    private string? FailedRegistrationMessage;
+    private string? FailedRegistrationMessage;  
 
     private string Token = string.Empty;
 
@@ -131,8 +143,7 @@ else
             var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
             IAmRegistered = iAmRegisteredResponse.Registered;
 
-            var registrations = await EventsService.GetRegistrationsByEventId(Guid.Parse(EventId!), Token);
-            Registrations = registrations;
+            await GetRegistrations();
         }
         SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
         await base.OnInitializedAsync();
@@ -153,8 +164,7 @@ else
             var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
             IAmRegistered = iAmRegisteredResponse.Registered;
             SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
-            var registrations = await EventsService.GetRegistrationsByEventId(Guid.Parse(EventId!), Token);
-            Registrations = registrations;
+            await GetRegistrations();
             RequestingSignUp = false;
         }
         if (!response.SuccessRegistration)
@@ -175,9 +185,16 @@ else
             var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
             IAmRegistered = iAmRegisteredResponse.Registered;
             SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
-            var registrations = await EventsService.GetRegistrationsByEventId(Guid.Parse(EventId!), Token);
-            Registrations = registrations;
+            await GetRegistrations();
         }
         RequestingUnRegister = false;
-    }   
+    }
+
+    private async Task GetRegistrations()
+    {
+        RequestingRegistrations = true;
+        var registrations = await EventsService.GetRegistrationsByEventId(Guid.Parse(EventId!), Token);
+        Registrations = registrations;
+        RequestingRegistrations = false;
+    }
 }   
