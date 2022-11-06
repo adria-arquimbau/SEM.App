@@ -43,7 +43,7 @@ else
             <div class="event-field">
                 <RadzenAccordion>
                     <Items>
-                        <RadzenAccordionItem Text="Registered users" Icon="list">
+                        <RadzenAccordionItem CssClass="registered-users-accordion" Text="Registered users" Icon="list">
                             @if (!RequestingRegistrations)
                             {
                                 @foreach (var registration in Registrations)
