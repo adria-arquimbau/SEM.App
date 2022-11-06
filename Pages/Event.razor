@@ -46,28 +46,28 @@ else
             <b>Created by: </b> @SportEvent?.CreatorNickName
         </div>
         <AuthorizeView>
-                    <div class="event-field">
-                        <RadzenAccordion>
-                            <Items>
-                                <RadzenAccordionItem CssClass="registered-users-accordion" Text="Registered users" Icon="list">
-                                    @if (!RequestingRegistrations)
-                                    {
-                                        @foreach (var registration in Registrations)
-                                        {
-                                            <div>
-                                                @registration.UserName @registration.Role
-                                            </div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        <span class="sr-only">Loading registrations...</span>
-                                    }
-                                </RadzenAccordionItem>
-                            </Items>
-                        </RadzenAccordion>
-                    </div>
+            <div class="event-field">
+                <RadzenAccordion>
+                    <Items>
+                        <RadzenAccordionItem CssClass="registered-users-accordion" Text="Registered users" Icon="list">
+                            @if (!RequestingRegistrations)
+                            {
+                                @foreach (var registration in Registrations)
+                                {
+                                    <div>
+                                        @registration.UserName @registration.Role
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">Loading registrations...</span>
+                            }
+                        </RadzenAccordionItem>
+                    </Items>
+                </RadzenAccordion>
+            </div>
                 </AuthorizeView>
         <div class="event-field">
             <AuthorizeView>
