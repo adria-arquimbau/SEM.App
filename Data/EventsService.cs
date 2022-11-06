@@ -22,7 +22,7 @@ public class EventsService
     
     public async Task<List<RegistrationDto>> GetRegistrationsByEventId(Guid eventId, string token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/registrations");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/{eventId}/registrations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             
         var response = await _httpClient.SendAsync(request);
