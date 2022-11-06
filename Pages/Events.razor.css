@@ -24,3 +24,7 @@
     flex-direction: column;
     align-items: center;
 }
+
+.alert-primary{
+    margin: 10px;
+}

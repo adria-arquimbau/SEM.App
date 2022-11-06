@@ -28,17 +28,18 @@ else
             <div class="event-field">
                 <b>Registrations: </b> @SportEvent?.RegistrationsQuantity
             </div>
-            <div class="event-field">
-                <b>Registered: </b>
-                @if (IAmRegistered)
-                {
-                    @TrueCheck
-                }
-                else
-                {
-                    @FalseCheck
-                }
-            </div>
+        <div class="event-field">
+            <b>Registered: </b>
+            @if (IAmRegistered)
+            {
+                @TrueCheck
+            }
+            else
+            {
+                @FalseCheck
+            }
+        </div>
+        <AuthorizeView>
             <div class="event-field">
                 <RadzenAccordion>
                     <Items>
@@ -61,51 +62,52 @@ else
                     </Items>
                 </RadzenAccordion>
             </div>
-            <div class="event-field">
-                <b>Creation date: </b> @SportEvent?.CreationDate
-            </div>
-            <div class="event-field">
-                <b>Created by: </b> @SportEvent?.CreatorNickName
-            </div>
-            <div class="event-field">
-                <AuthorizeView>
-                    @if (!IAmRegistered)
+        </AuthorizeView>
+        <div class="event-field">
+            <b>Creation date: </b> @SportEvent?.CreationDate
+        </div>
+        <div class="event-field">
+            <b>Created by: </b> @SportEvent?.CreatorNickName
+        </div>
+        <div class="event-field">
+            <AuthorizeView>
+                @if (!IAmRegistered)
+                {
+                    @if (!RequestingSignUp)
                     {
-                        @if (!RequestingSignUp)
-                        {
-                            <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-success" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                <span class="sr-only">Signing up...</span>
-                            </button>
-                        }
+                        <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
                     }
-                    @if (IAmRegistered)
+                    else
                     {
-                        @if (!RequestingUnRegister)
-                        {
-                            <button type="button" class="btn btn-danger" @onclick="UnRegister">UnRegister</button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-danger" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                <span class="sr-only">UnRegistering...</span>
-                            </button>
-                        }
+                        <button class="btn btn-success" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">Signing up...</span>
+                        </button>
                     }
-                </AuthorizeView>
-            </div>
+                }
+                @if (IAmRegistered)
+                {
+                    @if (!RequestingUnRegister)
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="UnRegister">UnRegister</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">UnRegistering...</span>
+                        </button>
+                    }
+                }
+            </AuthorizeView>
+        </div>
 
-            @if (FailedRegistration)
-            {
-                <div class="event-field alert alert-danger">
-                    @FailedRegistrationMessage
-                </div>
-            }
+        @if (FailedRegistration)
+        {
+            <div class="event-field alert alert-danger">
+                @FailedRegistrationMessage
+            </div>
+        }
 
             <div class="event-field">
                 <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
