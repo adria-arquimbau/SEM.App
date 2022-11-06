@@ -13,39 +13,45 @@
     <h2>Registered events</h2> 
     
     @if (registeredEvents == null)
+    {
+        <div class="loading-page">
+            <div class="spinner-border loading-spinner" role="status"></div>
+            <p>Loading... Please wait</p>
+        </div>
+    }
+    else if (registeredEvents.Count == 0)
+    {
+        <div class="alert alert-primary" role="alert">
+            You are not registered to any event.
+        </div>
+    }
+    else if(registeredEvents.Count > 0)
+    {
+        @foreach (var sportEvent in registeredEvents)
         {
-            <div class="loading-page">
-                <div class="spinner-border loading-spinner" role="status"></div>
-                <p>Loading... Please wait</p>
-            </div>
-        }
-        else
-        {
-            @foreach (var sportEvent in registeredEvents)
-            {
-                <div class="event">
-                    <div class="event-content">
-                        <div class="event-field">
-                            <h3><b>Title: </b> @sportEvent.Name</h3>
-                        </div>
-                        <div class="event-field">
-                            <b>Registrations: </b> @sportEvent.RegistrationsQuantity
-                        </div>
-                        <div class="event-field">
-                            <b>Creation date: </b> @sportEvent.CreationDate
-                        </div>
-                        <div class="event-field">
-                            <b>Created by: </b> @sportEvent.CreatorNickName
-                        </div>
-                        <div class="event-field">
-                            <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
-                                Go to event
-                            </button>
-                        </div>
+            <div class="event">
+                <div class="event-content">
+                    <div class="event-field">
+                        <h3><b>Title: </b> @sportEvent.Name</h3>
+                    </div>
+                    <div class="event-field">
+                        <b>Registrations: </b> @sportEvent.RegistrationsQuantity
+                    </div>
+                    <div class="event-field">
+                        <b>Creation date: </b> @sportEvent.CreationDate
+                    </div>
+                    <div class="event-field">
+                        <b>Created by: </b> @sportEvent.CreatorNickName
+                    </div>
+                    <div class="event-field">
+                        <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
+                            Go to event
+                        </button>
                     </div>
                 </div>
-            }
+            </div>
         }
+    }
     
     <h2>Events</h2>
     
