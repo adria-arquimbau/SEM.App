@@ -182,6 +182,7 @@ else
 
 	private void CheckAndSetHaveAllTheInformation()
 	{
+		HaveAllTheInformation = false;
 		if (!string.IsNullOrWhiteSpace(User.Name) && !string.IsNullOrWhiteSpace(User.SecondName) &&
 		    !string.IsNullOrWhiteSpace(User.Address) && !string.IsNullOrWhiteSpace(User.City) &&
 		    !string.IsNullOrWhiteSpace(User.Country) && !string.IsNullOrWhiteSpace(User.PostalCode) &&
