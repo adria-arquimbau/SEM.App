@@ -9,6 +9,7 @@
 
 <PageTitle>Organizer Panel</PageTitle>
 
+<div class="organizer-panel-page">
 <h1>Organizer Panel</h1>
 
 <button class="btn btn-primary" @onclick="Open">Create Event</button>
@@ -17,21 +18,36 @@
 
 @if (myEvents == null)
 {
-    <div class="spinner-border" role="status"></div>
-    <p>Loading your events... Please wait</p>
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading... Please wait</p>
+    </div>
 }
 else
 {
- @foreach (var myEvent in myEvents)
- {
-     <div class="event-container">
-         <h2>Title: @myEvent.Name</h2>
-         <p>Description: @myEvent.Description</p>
-         <p>Created: @myEvent.CreationDate By: @myEvent.CreatorNickName</p>
-         <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
-     </div>
- }
-}
+     @foreach (var myEvent in myEvents)
+     {
+         <div class="event">
+             <div class="event-content">
+                 <div class="event-field">
+                     <div class="event-field">
+                         <h2><b>Title: </b> @myEvent.Name</h2>
+                     </div>
+                     <div class="event-field">
+                         <b>Registrations: </b> @myEvent.RegistrationsQuantity
+                     </div>
+                     <div class="event-field">
+                         <b>Creation date: </b> @myEvent.CreationDate
+                     </div>
+                     <div class="event-field">
+                         <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     }
+} 
+</div>
 
 @* Modal Create Event *@
 
