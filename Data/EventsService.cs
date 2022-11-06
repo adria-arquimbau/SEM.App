@@ -17,10 +17,18 @@ public class EventsService
     }
     public async Task<List<SportEvent>> GetEvents()
     {
-        var response = await _httpClient.GetAsync(semApiUrl + "Event");
-        return await response.Content.ReadFromJsonAsync<List<SportEvent>>();
+       return await _httpClient.GetFromJsonAsync<List<SportEvent>>(semApiUrl + "Event");
     }
     
+    public async Task<List<SportEvent>> GetRegisteredEvents(string token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/Registered");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        var response = await _httpClient.SendAsync(request);
+        return await response.Content.ReadFromJsonAsync<List<SportEvent>>();        
+    }
+        
     public async Task<SportEvent> GetEvent(Guid eventId)
     {
         var response = await _httpClient.GetAsync(semApiUrl + $"Event/{eventId}");
