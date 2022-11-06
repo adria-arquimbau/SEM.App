@@ -22,7 +22,7 @@
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Events
                 </NavLink>
             </div>
-            <AuthorizeView Roles="@RoleConstants.OrganizerAndAdmin">
+            <AuthorizeView Policy="admin-organizer">
                 <Authorized>
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="organizer-panel">
@@ -31,7 +31,7 @@
                     </div>
                 </Authorized>
             </AuthorizeView>
-            <AuthorizeView Roles="@RoleConstants.Admin">
+            <AuthorizeView Policy="admin">
                 <Authorized>
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="admin-panel">
@@ -40,7 +40,7 @@
                     </div>
                 </Authorized>
             </AuthorizeView>
-            <AuthorizeView Roles="@RoleConstants.All">
+            <AuthorizeView Policy="admin-organizer-user">
                 <Authorized>
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="account">

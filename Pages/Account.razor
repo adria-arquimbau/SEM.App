@@ -1,7 +1,7 @@
 @page "/account"
 @using SEM.App.Data
 @using SEM.App.Authentication
-@attribute [Authorize(Roles = "SEM3:SPORT_EVENTS_MANAGEMENT_ADMIN, SEM2:SPORT_EVENTS_MANAGEMENT_ORGANIZER, SEM1:SPORT_EVENTS_MANAGEMENT_USER")]
+@attribute [Authorize(Policy = "admin-organizer-user")]
 
 @inject UsersService UsersService
 @inject AuthenticationStateProvider authenticationStateProvider

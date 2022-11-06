@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -19,18 +20,10 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStat
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddAuthorizationCore(options =>
 {
-    options.AddPolicy("Admin", policy =>
-    {
-        policy.RequireClaim("Role", RoleConstants.Admin);
-    });
-    options.AddPolicy("User", policy =>
-    {
-        policy.RequireClaim("Role", RoleConstants.User);
-    });
-    options.AddPolicy("Organizer", policy =>
-    {
-        policy.RequireClaim("Role", RoleConstants.Organizer);
-    });
+    options.AddPolicy("admin-organizer", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer));
+    options.AddPolicy("admin-organizer-user", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer, RoleConstants.User));
+    options.AddPolicy("admin", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin));
+    
 });
 
 await builder.Build().RunAsync();
