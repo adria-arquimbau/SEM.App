@@ -34,7 +34,7 @@ else
                          <h2><b>Title: </b> @myEvent.Name</h2>
                      </div>
                      <div class="event-field">
-                         <b>Registrations: </b> @myEvent.RegistrationsQuantity
+                         <b>Registrations: </b> @myEvent.RegistrationsQuantity / @myEvent.MaxRegistrations
                      </div>
                      <div class="event-field">
                          <b>Creation date: </b> @myEvent.CreationDate
@@ -69,6 +69,10 @@ else
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
                     <input type="text" class="form-control" id="location" required @bind-value="location" />
+                </div>
+                <div class="mb-3">
+                    <label for="maxRegistrations" class="form-label">Max number of registrations</label>
+                    <input type="text" class="form-control" id="maxRegistrations" required @bind-value="maxRegistrations" />
                 </div>
             </div>
             <div class="modal-footer">
@@ -148,6 +152,7 @@ else
     private string eventName = "";      
     private string eventDescription = "";
     private string location = "";
+    private int maxRegistrations = 100;
     
     private async Task CreateEvent()
     {
@@ -156,7 +161,7 @@ else
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
             var token = await customAuthStateProvider.GetToken();
-            var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, location, token);
+            var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, location, maxRegistrations, token);
 
             if (isCreatedResponse)
             {
