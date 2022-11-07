@@ -44,12 +44,13 @@ public class EventsService
         return await response.Content.ReadFromJsonAsync<SportEvent>();
     }   
     
-    public async Task<bool> CreateEvent(string name, string description, string token)
+    public async Task<bool> CreateEvent(string name, string description, string location, string token)
     {
         var jsonInString = JsonSerializer.Serialize(new
-        {   
+        {       
             name,
-            description
+            description,
+            location
         });   
         
         var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Event")

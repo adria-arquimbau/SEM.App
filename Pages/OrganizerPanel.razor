@@ -66,6 +66,10 @@ else
                     <label for="eventDescription" class="form-label">Event Description</label>
                     <input type="text" class="form-control" id="eventDescription" required @bind-value="eventDescription" />
                 </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" required @bind-value="location" />
+                </div>
             </div>
             <div class="modal-footer">
                 @if (!RequestingCreation)
@@ -143,7 +147,8 @@ else
     
     private string eventName = "";      
     private string eventDescription = "";
-
+    private string location = "";
+    
     private async Task CreateEvent()
     {
         RequestingCreation = true;
@@ -151,7 +156,7 @@ else
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
             var token = await customAuthStateProvider.GetToken();
-            var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, token);
+            var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, location, token);
 
             if (isCreatedResponse)
             {
