@@ -52,13 +52,15 @@ else
                         <RadzenAccordionItem Text="Registered users" Icon="list">
                             @if (!RequestingRegistrations)
                             {
+                                var count = 1;
                                 @foreach (var registration in Registrations)
                                 {
                                     <div class="registered-user">
-                                        <div class="registered-user-name">1. @registration.UserName</div>
+                                        <div class="registered-user-name">@count. @registration.UserName</div>
                                         <div style="width: 10px;"></div>
                                         <div class="registered-user-role">@registration.Role</div>
                                     </div>
+                                    count++;
                                 }
                             }
                             else
