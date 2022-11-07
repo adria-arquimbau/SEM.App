@@ -49,13 +49,15 @@ else
             <div class="event-field">
                 <RadzenAccordion>
                     <Items>
-                        <RadzenAccordionItem CssClass="registered-users-accordion" Text="Registered users" Icon="list">
+                        <RadzenAccordionItem Text="Registered users" Icon="list">
                             @if (!RequestingRegistrations)
                             {
                                 @foreach (var registration in Registrations)
                                 {
-                                    <div>
-                                        @registration.UserName @registration.Role
+                                    <div class="registered-user">
+                                        <div class="registered-user-name">1. @registration.UserName</div>
+                                        <div style="width: 10px;"></div>
+                                        <div class="registered-user-role">@registration.Role</div>
                                     </div>
                                 }
                             }
