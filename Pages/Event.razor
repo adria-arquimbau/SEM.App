@@ -79,7 +79,7 @@ else
                 </AuthorizeView>
             <div class="event-field">
                 <AuthorizeView>
-                    @if (!IAmRegistered)
+                    @if (!IAmRegistered && !IAmPreRegistered)
                     {
                         @if (!RequestingSignUp)
                         {
