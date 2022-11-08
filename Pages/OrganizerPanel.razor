@@ -6,6 +6,7 @@
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject EventsService EventService
+@inject NavigationManager Navigation
 
 <PageTitle>Organizer Panel</PageTitle>
 
@@ -38,6 +39,9 @@ else
                      </div>
                      <div class="event-field">
                          <b>Creation date: </b> @myEvent.CreationDate
+                     </div>
+                     <div class="event-field">
+                         <button class="btn btn-primary" @onclick="() => Manage(myEvent.Id)">Manage</button>
                      </div>
                      <div class="event-field">
                          <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
@@ -132,6 +136,11 @@ else
         var token = await customAuthStateProvider.GetToken();
         await EventService.DeleteEvent(id, token);
         await RefreshEvents();
+    }
+    
+    private void Manage(Guid eventId)   
+    {
+        Navigation.NavigateTo($"/manage-event/{eventId}");
     }
 
     private async Task RefreshEvents()

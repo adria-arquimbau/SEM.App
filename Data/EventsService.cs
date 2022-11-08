@@ -118,7 +118,16 @@ public class EventsService
         var response = await _httpClient.SendAsync(request);
         
         return await response.Content.ReadFromJsonAsync<List<SportEventOrganizer>>();
-    }   
+    }
+    
+    public async Task<SportEventOrganizer> GetMyEventAsOrganizer(Guid eventId, string token)
+    {   
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Event/{eventId}/organizer");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _httpClient.SendAsync(request);
+        
+        return await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
+    }       
     
     public async Task<bool> DeleteEvent(Guid id, string token)   
     {   

@@ -1,0 +1,30 @@
+﻿@page "/manage-event/{EventId}"
+@attribute [Authorize(Policy = "admin-organizer")]
+
+@using SEM.App.Data
+@using SEM.App.Authentication
+
+@inject EventsService EventsService
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager Navigation
+
+<h3>Manage Event @EventId</h3>
+
+@code {
+    [Parameter] 
+    public string? EventId { get; set; }   
+    
+    private string Token = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        if (!string.IsNullOrWhiteSpace(Token))
+        {
+           //trucar per portar event as organizer amb tot
+        }
+        
+        await base.OnInitializedAsync();
+    }
+}
