@@ -22,7 +22,7 @@
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-           //trucar per portar event as organizer amb tot
+            var eventDto = await EventsService.GetMyEventAsOrganizer(Guid.Parse(EventId!), Token);
         }
         
         await base.OnInitializedAsync();
