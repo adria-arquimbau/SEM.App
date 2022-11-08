@@ -131,14 +131,14 @@ public class EventsService
 
 public class IAmRegisteredResponse
 {
-    public bool Registered { get; set; }
+    public RegistrationState RegistrationState { get; set; }
 }
 
 public class RegisterToAnEventResponse
 {
     public string? Message { get; set; }
     public bool SuccessRegistration { get; set; }
-}
+}   
     
 public class SportEvent 
 {   
@@ -164,4 +164,11 @@ public enum RegistrationRole
     Rider,
     Marshal,    
     RiderMarshal
-}            
+}     
+
+public enum RegistrationState
+{
+    PreRegistered,
+    Accepted,
+    Cancelled
+}             

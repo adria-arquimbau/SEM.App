@@ -77,39 +77,46 @@ else
                 </RadzenAccordion>
             </div>
                 </AuthorizeView>
-        <div class="event-field">
-            <AuthorizeView>
-                @if (!IAmRegistered)
-                {
-                    @if (!RequestingSignUp)
+            <div class="event-field">
+                <AuthorizeView>
+                    @if (!IAmRegistered)
                     {
-                        <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
+                        @if (!RequestingSignUp)
+                        {
+                            <button type="button" class="btn btn-success" @onclick="SignUp">Sign up</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">Signing up...</span>
+                            </button>
+                        }
                     }
-                    else
+                    @if (IAmRegistered)
                     {
-                        <button class="btn btn-success" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span class="sr-only">Signing up...</span>
-                        </button>
+                        @if (!RequestingUnRegister)
+                        {
+                            <button type="button" class="btn btn-danger" @onclick="UnRegister">UnRegister</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-danger" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">UnRegistering...</span>
+                            </button>
+                        }
                     }
-                }
-                @if (IAmRegistered)
-                {
-                    @if (!RequestingUnRegister)
+                </AuthorizeView>
+            </div>
+            <div class="event-field">
+                @if(IAmPreRegistered)
                     {
-                        <button type="button" class="btn btn-danger" @onclick="UnRegister">UnRegister</button>
+                        <div class="alert alert-warning" role="alert">
+                            You're pre-registered. Now an organizer have to confirm your register.
+                        </div>
                     }
-                    else
-                    {
-                        <button class="btn btn-danger" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span class="sr-only">UnRegistering...</span>
-                        </button>
-                    }
-                }
-            </AuthorizeView>
-        </div>
-
+            </div>
         @if (FailedRegistration)
         {
             <div class="event-field alert alert-danger">
@@ -136,6 +143,7 @@ else
     private bool RequestingUnRegister { get; set; }
     private bool RequestingRegistrations { get; set; }
     private bool FailedRegistration { get; set; }
+    private bool IAmPreRegistered { get; set; }
     
     private const string TrueCheck = "✅";
     private const string FalseCheck = "❌";
@@ -150,9 +158,7 @@ else
 
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
-            IAmRegistered = iAmRegisteredResponse.Registered;
-
+            await SetRegisteredState();
             await GetRegistrations();
         }
         SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
@@ -171,9 +177,8 @@ else
         var response = await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId!));
         if (response.SuccessRegistration)
         {
-            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
-            IAmRegistered = iAmRegisteredResponse.Registered;
             SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
+            IAmPreRegistered = true;
             await GetRegistrations();
             RequestingSignUp = false;
         }
@@ -192,12 +197,28 @@ else
         var response = await EventsService.UnRegisterToAnEvent(Token,Guid.Parse(EventId!));
         if (response == "Unregistered")
         {
-            var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
-            IAmRegistered = iAmRegisteredResponse.Registered;
+            await SetRegisteredState();
+
             SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
             await GetRegistrations();
         }
         RequestingUnRegister = false;
+    }
+
+    private async Task SetRegisteredState()
+    {
+        var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
+        if (iAmRegisteredResponse.RegistrationState == RegistrationState.Accepted)
+        {
+            IAmRegistered = true;
+            IAmPreRegistered = false;
+        }
+
+        if (iAmRegisteredResponse.RegistrationState == RegistrationState.PreRegistered)
+        {
+            IAmRegistered = false;
+            IAmPreRegistered = true;
+        }
     }
 
     private async Task GetRegistrations()
