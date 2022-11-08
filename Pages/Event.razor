@@ -155,7 +155,6 @@ else
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         Token = await customAuthStateProvider.GetToken();
-
         if (!string.IsNullOrWhiteSpace(Token))
         {
             await SetRegisteredState();
