@@ -18,12 +18,12 @@ public class EventsService
     }
     public async Task<List<SportEvent>> GetEvents()
     {
-       return await _httpClient.GetFromJsonAsync<List<SportEvent>>(semApiUrl + "Event");
+       return await _httpClient.GetFromJsonAsync<List<SportEvent>>(semApiUrl + "Events");
     }
     
     public async Task<List<RegistrationDto>> GetRegistrationsByEventId(Guid eventId, string token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/{eventId}/registrations");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{eventId}/registrations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             
         var response = await _httpClient.SendAsync(request);
@@ -32,7 +32,7 @@ public class EventsService
     
     public async Task<List<SportEvent>> GetMyRegisteredEvents(string token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/Registered");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/Registered");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         var response = await _httpClient.SendAsync(request);
@@ -41,7 +41,7 @@ public class EventsService
         
     public async Task<SportEvent> GetEvent(Guid eventId)
     {
-        var response = await _httpClient.GetAsync(semApiUrl + $"Event/{eventId}");
+        var response = await _httpClient.GetAsync(semApiUrl + $"Events/{eventId}");
         return await response.Content.ReadFromJsonAsync<SportEvent>();
     }   
     
@@ -55,7 +55,7 @@ public class EventsService
             maxRegistrations
         });   
         
-        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Event")
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Events")
         {
             Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
         };
@@ -67,7 +67,7 @@ public class EventsService
     
     public async Task<RegisterToAnEventResponse> RegisterToAnEvent(string token, Guid eventId)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Event/{eventId}/register");
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Events/{eventId}/register");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         var response = await _httpClient.SendAsync(request);
@@ -94,7 +94,7 @@ public class EventsService
     
     public async Task<string> UnRegisterToAnEvent(string token, Guid eventId)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Event/{eventId}/unregister");
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Events/{eventId}/unregister");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         var response = await _httpClient.SendAsync(request);
@@ -104,7 +104,7 @@ public class EventsService
     
     public async Task<IAmRegisteredResponse> IAmRegistered(Guid eventId, string token)  
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Event/{eventId}/user-registered");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{eventId}/user-registered");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
         
@@ -113,7 +113,7 @@ public class EventsService
     
     public async Task<List<SportEventOrganizer>> GetMyEventsAsOrganizer(string token)
     {   
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Event/organizer");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Events/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
         
@@ -122,7 +122,7 @@ public class EventsService
     
     public async Task<SportEventOrganizer> GetMyEventAsOrganizer(Guid eventId, string token)
     {   
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Event/{eventId}/organizer");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{eventId}/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
         
@@ -131,7 +131,7 @@ public class EventsService
     
     public async Task<bool> DeleteEvent(Guid id, string token)   
     {   
-        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Event/{id}/delete");
+        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Events/{id}/delete");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
 
