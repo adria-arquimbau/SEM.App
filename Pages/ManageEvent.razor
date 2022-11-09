@@ -140,7 +140,17 @@ else
                 <button class="btn btn-primary" @onclick="GoToEvent">Go to event</button>
             </div>
             <div class="event-field">
-                <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete event (irreversible changes)</button>
+                @if (!Deleatingrequest)
+                {
+                    <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete event (irreversible changes)</button>
+                }
+                else
+                {
+                    <button class="btn btn-danger" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Deleting...</span>
+                    </button>
+                }
             </div>
             <div class="event-field">
                 <button class="btn btn-primary" @onclick="() => Navigation.NavigateTo(organizerPanelUrl)">Back</button>
@@ -160,7 +170,8 @@ else
     private string AcceptedState = "✅ Accepted";
 
     private bool RequestingChangeRegistrationState;
-    private bool ErrorMessage;
+    private bool Deleatingrequest;
+    private bool ErrorMessage;  
     
     private string Token = string.Empty;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
@@ -198,12 +209,13 @@ else
         RequestingChangeRegistrationState = false;
     }
     
-    private async Task Delete(Guid id)  
+    private async Task Delete(Guid id)
     {
+        Deleatingrequest = true;
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         await EventsService.DeleteEvent(id, token);
-        
+        Navigation.NavigateTo($"/organizer-panel");
     }
 
     private void GoToEvent()
