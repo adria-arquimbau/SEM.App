@@ -43,9 +43,6 @@ else
                      <div class="event-field">
                          <button class="btn btn-primary" @onclick="() => Manage(myEvent.Id)">Manage</button>
                      </div>
-                     <div class="event-field">
-                         <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
-                     </div>
                  </div>
              </div>
          </div>
@@ -130,14 +127,6 @@ else
         await RefreshEvents();  
     }
 
-    private async Task Delete(Guid id)
-    {
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        var token = await customAuthStateProvider.GetToken();
-        await EventService.DeleteEvent(id, token);
-        await RefreshEvents();
-    }
-    
     private void Manage(Guid eventId)   
     {
         Navigation.NavigateTo($"/manage-event/{eventId}");

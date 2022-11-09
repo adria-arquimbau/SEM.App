@@ -8,11 +8,50 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 
-<h3>Manage Event @EventId</h3>
+<h3>Manage Event</h3>
+
+@if (myEvent == null)
+{
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading... Please wait</p>
+    </div>
+}
+else
+{
+    <div class="event">
+        <div class="event-content">
+            <h1>@myEvent.Name</h1>
+            <div class="event-field">
+                <b>Description: </b>
+                @myEvent.Description
+            </div>
+            <div class="event-field">
+                <b>Location: </b>
+                @myEvent.Location
+            </div>
+            <div class="event-field">
+                <b>Registrations: </b> @myEvent.RegistrationsQuantity / @myEvent.MaxRegistrations
+            </div>
+            <div class="event-field">
+                <b>Creation date: </b> @myEvent.CreationDate
+            </div>
+            <div class="event-field">
+                <b>Created by: </b> @myEvent.CreatorNickName
+            </div>
+            <div class="event-field">
+                <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter] 
-    public string? EventId { get; set; }   
+    public string? EventId { get; set; }
+
+    private SportEventOrganizer? myEvent;
+    
     
     private string Token = string.Empty;
     
@@ -22,9 +61,17 @@
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            var eventDto = await EventsService.GetMyEventAsOrganizer(Guid.Parse(EventId!), Token);
+            myEvent = await EventsService.GetMyEventAsOrganizer(Guid.Parse(EventId!), Token);
         }
         
         await base.OnInitializedAsync();
+    }
+    
+    private async Task Delete(Guid id)
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        await EventsService.DeleteEvent(id, token);
+        Navigation.NavigateTo($"/organizer-panel");
     }
 }
