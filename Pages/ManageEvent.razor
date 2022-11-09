@@ -43,37 +43,42 @@ else
             </div>
             <div class="event-field">
                 <b>Registrations </b> 
-                <table>
-                    <tr>
-                        <th>Id</th>
-                        <th>User Name</th>
-                        <th>Role</th>
-                        <th>State</th>
-                    </tr>
+                <table class="table">
+                    <thead>
+                        <th scope="col">Row</th>
+                        <th scope="col">Id</th>
+                        <th scope="col">User Name</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Actions</th>
+                    </thead>
                     @foreach (var registration in myEvent.Registrations)
                     {
-                        <tr>
-                            <td>@registration.Id</td>
-                            <td>@registration.UserName</td>
-                            <td>@registration.Role</td>
-                            <td>@registration.State</td>
-                            @if (registration.State == RegistrationState.PreRegistered)
-                            {
-                                @if (!RequestingChangeRegistrationState)
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>@registration.Id</td>
+                                <td>@registration.UserName</td>
+                                <td>@registration.Role</td>
+                                <td>@registration.State</td>
+                                @if (registration.State == RegistrationState.PreRegistered)
                                 {
-                                    <td><button class="btn btn-success" @onclick="() => AcceptRegistration(registration.Id)">Accept</button></td>
+                                    @if (!RequestingChangeRegistrationState)
+                                    {
+                                        <td><button class="btn btn-success" @onclick="() => AcceptRegistration(registration.Id)">Accept</button></td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <button class="btn btn-success" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="sr-only">Accepting...</span>
+                                            </button>
+                                        </td>
+                                    }
                                 }
-                                else
-                                {
-                                    <td>
-                                        <button class="btn btn-success" type="button" disabled>
-                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                            <span class="sr-only">Accepting...</span>
-                                        </button>
-                                    </td>
-                                }
-                            }
-                        </tr>
+                            </tr>
+                        </tbody>
                     }
                 </table>    
             </div>
