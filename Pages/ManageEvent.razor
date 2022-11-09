@@ -153,7 +153,7 @@ else
                 }
             </div>
             <div class="event-field">
-                <button class="btn btn-primary" @onclick="() => Navigation.NavigateTo(organizerPanelUrl)">Back</button>
+                <button class="btn btn-primary" @onclick="GoBack">Back</button>
             </div>
         </div>
     </div>
@@ -175,7 +175,6 @@ else
     
     private string Token = string.Empty;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
-        private const string organizerPanelUrl = "/organizer-panel";
 
     protected override async Task OnInitializedAsync()
     {
@@ -183,7 +182,7 @@ else
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            myEvent = await EventsService.GetMyEventAsOrganizer(Guid.Parse(EventId!), Token);
+            myEvent = await GetMyEventAsOrganizer();
         }
         
         await base.OnInitializedAsync();
@@ -205,7 +204,7 @@ else
             ErrorMessage = true;
         }
         
-        myEvent = await EventsService.GetMyEventAsOrganizer(Guid.Parse(EventId!), Token);
+        myEvent = await GetMyEventAsOrganizer();
         RequestingChangeRegistrationState = false;
     }
     
@@ -215,6 +214,11 @@ else
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         await EventsService.DeleteEvent(id, token);
+        GoBack();
+    }
+
+    private void GoBack()
+    {
         Navigation.NavigateTo($"/organizer-panel");
     }
 
@@ -222,4 +226,16 @@ else
     {
         Navigation.NavigateTo($"/Event/{EventId}");
     }
+    
+    public async Task<SportEventOrganizer> GetMyEventAsOrganizer()
+    {   
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{Guid.Parse(EventId!)}/organizer");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            GoBack();
+        }
+        return await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
+    }      
 }
