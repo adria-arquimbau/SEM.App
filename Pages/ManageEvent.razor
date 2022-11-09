@@ -40,13 +40,33 @@ else
                 <b>Created by: </b> @myEvent.CreatorNickName
             </div>
             <div class="event-field">
+                <b>Registrations </b> 
+                <table>
+                    <tr>
+                        <th>Id</th>
+                        <th>User Name</th>
+                        <th>Role</th>
+                        <th>State</th>
+                    </tr>
+                    @foreach (var registration in myEvent.Registrations)
+                    {
+                        <tr>
+                            <td>@registration.Id</td>
+                            <td>@registration.UserName</td>
+                            <td>@registration.Role</td>
+                            <td>@registration.State</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="event-field">
                 <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
             </div>
         </div>
     </div>
 }
 
-@code {
+@code { 
     [Parameter] 
     public string? EventId { get; set; }
 

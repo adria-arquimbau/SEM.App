@@ -21,15 +21,15 @@ public class EventsService
        return await _httpClient.GetFromJsonAsync<List<SportEvent>>(semApiUrl + "Events");
     }
     
-    public async Task<List<RegistrationDto>> GetRegistrationsByEventId(Guid eventId, string token)
+    public async Task<List<RegistrationDto>> GetAcceptedRegistrationsByEventId(Guid eventId, string token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{eventId}/registrations");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{eventId}/accepted-registrations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             
         var response = await _httpClient.SendAsync(request);
         return await response.Content.ReadFromJsonAsync<List<RegistrationDto>>();        
-    }   
-    
+    }
+
     public async Task<List<SportEvent>> GetMyRegisteredEvents(string token)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/Registered");
@@ -108,7 +108,8 @@ public class EventsService
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
         
-        return await response.Content.ReadFromJsonAsync<IAmRegisteredResponse>();
+        var content = await response.Content.ReadFromJsonAsync<IAmRegisteredResponse>();
+        return content;
     }   
     
     public async Task<List<SportEventOrganizer>> GetMyEventsAsOrganizer(string token)
@@ -198,5 +199,6 @@ public enum RegistrationState
 {
     PreRegistered,
     Accepted,
+    NonRegistered,
     Cancelled
 }             

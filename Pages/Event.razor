@@ -223,7 +223,7 @@ else
     private async Task GetRegistrations()
     {
         RequestingRegistrations = true;
-        var registrations = await EventsService.GetRegistrationsByEventId(Guid.Parse(EventId!), Token);
+        var registrations = await EventsService.GetAcceptedRegistrationsByEventId(Guid.Parse(EventId!), Token);
         Registrations = registrations;
         RequestingRegistrations = false;
     }
