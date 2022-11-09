@@ -42,11 +42,10 @@ else
                 <b>Created by: </b> @myEvent.CreatorNickName
             </div>
             <div class="event-field">
-                <b>Registrations </b> 
-                <table class="table">
+                <b>Registrations: </b> 
+                <table class="table table-striped">
                     <thead>
                         <th scope="col">Row</th>
-                        <th scope="col">Id</th>
                         <th scope="col">User Name</th>
                         <th scope="col">Role</th>
                         <th scope="col">State</th>
@@ -57,10 +56,20 @@ else
                         <tbody>
                             <tr>
                                 <th scope="row">1</th>
-                                <td>@registration.Id</td>
                                 <td>@registration.UserName</td>
                                 <td>@registration.Role</td>
-                                <td>@registration.State</td>
+                                @if (registration.State == RegistrationState.PreRegistered)
+                                {
+                                    <td>@PreRegisteredState</td>
+                                }
+                                @if (registration.State == RegistrationState.Cancelled)
+                                {
+                                    <td>@CancelledState</td>
+                                } 
+                                @if (registration.State == RegistrationState.Accepted)
+                                {
+                                    <td>@AcceptedState</td>
+                                }
                                 @if (registration.State is RegistrationState.PreRegistered or RegistrationState.Cancelled)
                                 {
                                     @if (!RequestingChangeRegistrationState)
@@ -118,6 +127,10 @@ else
     public string? EventId { get; set; }
 
     private SportEventOrganizer? myEvent;
+
+    private string PreRegisteredState = "🔔 Pre-registered";
+    private string CancelledState = "⛔ Cancelled";
+    private string AcceptedState = "✔ Accepted";
 
     private bool RequestingChangeRegistrationState;
     private bool ErrorMessage;
