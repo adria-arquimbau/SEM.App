@@ -55,9 +55,13 @@ else
                             <td>@registration.UserName</td>
                             <td>@registration.Role</td>
                             <td>@registration.State</td>
+                            @if (registration.State == RegistrationState.PreRegistered)
+                            {
+                                <td><button class="btn btn-success" @onclick="() => AcceptRegistration(registration.Id)">Accept</button></td>
+                            }
                         </tr>
                     }
-                </table>
+                </table>    
             </div>
             <div class="event-field">
                 <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
@@ -87,7 +91,14 @@ else
         await base.OnInitializedAsync();
     }
     
-    private async Task Delete(Guid id)
+    private async Task AcceptRegistration(Guid registrationId)
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        
+    }
+    
+    private async Task Delete(Guid id)  
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
