@@ -1,4 +1,6 @@
 ﻿@page "/Register"
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
 
 @inject HttpClient httpClient
 @inject NavigationManager navManager
@@ -22,29 +24,29 @@
                 <input @bind="registerRequest.Password" type="password" class="form-control" placeholder="Password"/>
             </div>
             <div class="register-field">
-                <label>Password</label>
+                <label>Repeat password</label>
                 <input @bind="repeatPassword" type="password" class="form-control" placeholder="RepeatPassword"/>
             </div>
             <div class="register-field">
-            @if (!RequestingRegister)
-            {
-                <button @onclick="Registration" class="btn btn-primary">Register</button>
-            }
-            else
-            {
-                <button class="btn btn-success" type="button" disabled>
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span class="sr-only">Registering..</span>
-                </button>
-            }
+                @if (!RequestingRegister)
+                {
+                    <button @onclick="Registration" class="btn btn-primary">Register</button>
+                }
+                else
+                {
+                    <button class="btn btn-success" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Registering..</span>
+                    </button>
+                }
             </div>
             <div class="register-field">
-            @if (FailedRegisterMessage != null)
-            {
-                <div class="event-field alert alert-danger">
-                    @FailedRegisterMessage
-                </div>
-            }
+                @if (FailedRegisterMessage != null)
+                {
+                    <div class="event-field alert alert-danger">
+                        @FailedRegisterMessage
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -57,10 +59,11 @@
     private string repeatPassword = string.Empty;
     private string? FailedRegisterMessage;
     
-    private bool RequestingRegister;    
-    
+    private bool RequestingRegister;
+
     private async Task Registration()
     {
+        if (!RegisterValidations()) return;
         RequestingRegister = true;
         var loginResponse = await httpClient.PostAsJsonAsync<RegisterRequest>(semApiUrl + "Auth/Register", registerRequest);
 
@@ -77,10 +80,28 @@
         RequestingRegister = false;
     }
 
+    private bool RegisterValidations()
+    {
+        if (string.IsNullOrWhiteSpace(registerRequest.Email) || string.IsNullOrWhiteSpace(registerRequest.UserName) 
+            || string.IsNullOrWhiteSpace(registerRequest.Password) || string.IsNullOrWhiteSpace(repeatPassword))
+        {
+            FailedRegisterMessage = "You must fill all the fields";
+            return false;
+        }
+        
+        if (repeatPassword != registerRequest.Password)
+        {
+            FailedRegisterMessage = "Not equal passwords";
+            return false;
+        }
+
+        return true;
+    }
+
     public class RegisterRequest    
     {
         public string Email { get; set; }
-        public string Password { get; set; }    
+        public string Password { get; set; }
         public string UserName { get; set; }
     }
 }
