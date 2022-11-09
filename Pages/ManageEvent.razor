@@ -61,11 +61,11 @@ else
                                 <td>@registration.UserName</td>
                                 <td>@registration.Role</td>
                                 <td>@registration.State</td>
-                                @if (registration.State == RegistrationState.PreRegistered)
+                                @if (registration.State is RegistrationState.PreRegistered or RegistrationState.Cancelled)
                                 {
                                     @if (!RequestingChangeRegistrationState)
                                     {
-                                        <td><button class="btn btn-success" @onclick="() => AcceptRegistration(registration.Id)">Accept</button></td>
+                                        <td><button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button></td>
                                     }
                                     else
                                     {
@@ -77,6 +77,22 @@ else
                                         </td>
                                     }
                                 }
+                                @if (registration.State == RegistrationState.Accepted)
+                                    {
+                                        @if (!RequestingChangeRegistrationState)
+                                        {
+                                            <td><button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button></td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                <button class="btn btn-danger" type="button" disabled>
+                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                    <span class="sr-only">Cancelling...</span>
+                                                </button>
+                                            </td>
+                                        }
+                                    }
                             </tr>
                         </tbody>
                     }
@@ -122,13 +138,13 @@ else
     }
         
         
-    private async Task AcceptRegistration(Guid registrationId)
+    private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
     {
         RequestingChangeRegistrationState = true;
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         
-        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/registration/{registrationId}/Accepted");
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/registration/{registrationId}/{state}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
 
