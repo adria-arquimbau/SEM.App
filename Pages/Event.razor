@@ -127,9 +127,12 @@ else
         }
 
         <AuthorizeView Policy="admin-organizer">
-            <div class="event-field">
-                <button class="btn btn-primary" @onclick="ManageEvent">Manage event</button>
-            </div>
+            @if (ICanManageThisEvent)
+            {
+                <div class="event-field">
+                    <button class="btn btn-primary" @onclick="ManageEvent">Manage event</button>
+                </div>
+            }
         </AuthorizeView>
         <div class="event-field">
             <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
@@ -149,14 +152,16 @@ else
     private bool RequestingSignUp { get; set; }
     private bool RequestingRegistrations { get; set; }
     private bool FailedRegistration { get; set; }
+    private bool ICanManageThisEvent { get; set; }
         
     private const string AcceptedState = "✅";
     private const string NonRegisteredState = "❌";
     private const string PreRegisteredState = "🔔";
     private const string CancelledState = "⛔";
     private string? FailedRegistrationMessage;  
-
+    
     private string Token = string.Empty;
+    private string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -168,6 +173,9 @@ else
             await GetRegistrations();
         }
         SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
+        
+        await AskIfICanManageThisEvent();
+
         await base.OnInitializedAsync();
     }
 
@@ -213,5 +221,17 @@ else
     private void ManageEvent()
     {
         Navigation.NavigateTo($"/manage-event/{EventId}");
+    }
+    
+    private async Task AskIfICanManageThisEvent()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{EventId}/organizer");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            ICanManageThisEvent = true;
+        }
     }
 }   
