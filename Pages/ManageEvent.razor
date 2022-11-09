@@ -58,50 +58,71 @@ else
                                 <th scope="row">1</th>
                                 <td>@registration.UserName</td>
                                 <td>@registration.Role</td>
-                                @if (registration.State == RegistrationState.PreRegistered)
+                                @switch (registration.State)
                                 {
-                                    <td>@PreRegisteredState</td>
+                                    case RegistrationState.PreRegistered:<td>@PreRegisteredState</td>
+                                        break;
+                                    case RegistrationState.Cancelled:<td>@CancelledState</td>
+                                        break;
+                                    case RegistrationState.Accepted:<td>@AcceptedState</td>
+                                        break;
                                 }
-                                @if (registration.State == RegistrationState.Cancelled)
-                                {
-                                    <td>@CancelledState</td>
-                                } 
-                                @if (registration.State == RegistrationState.Accepted)
-                                {
-                                    <td>@AcceptedState</td>
-                                }
-                                @if (registration.State is RegistrationState.PreRegistered or RegistrationState.Cancelled)
+                                @if (registration.State is RegistrationState.Cancelled)
                                 {
                                     @if (!RequestingChangeRegistrationState)
                                     {
-                                        <td><button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button></td>
+                                        <td>
+                                            <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
+                                            <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            
+                                            <button class="btn btn-success" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="sr-only">Changing state...</span>
+                                            </button>
+                                        </td>
+                                    }
+                                }
+                                @if (registration.State is RegistrationState.PreRegistered)
+                                {
+                                    @if (!RequestingChangeRegistrationState)
+                                    {
+                                        <td>
+                                            <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
+                                            <button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                                        </td>
                                     }
                                     else
                                     {
                                         <td>
                                             <button class="btn btn-success" type="button" disabled>
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Accepting...</span>
+                                                <span class="sr-only">Changing state...</span>
                                             </button>
                                         </td>
                                     }
                                 }
                                 @if (registration.State == RegistrationState.Accepted)
+                                {
+                                    @if (!RequestingChangeRegistrationState)
                                     {
-                                        @if (!RequestingChangeRegistrationState)
-                                        {
-                                            <td><button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button></td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                <button class="btn btn-danger" type="button" disabled>
-                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                    <span class="sr-only">Cancelling...</span>
-                                                </button>
-                                            </td>
-                                        }
+                                        <td><button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                                        <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button></td>
                                     }
+                                    else
+                                    {
+                                        <td>
+                                            <button class="btn btn-danger" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="sr-only">Cancelling...</span>
+                                            </button>
+                                        </td>
+                                    }
+                                }
                             </tr>
                         </tbody>
                     }
