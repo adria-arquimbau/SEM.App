@@ -2,10 +2,12 @@
 
 @using SEM.App.Data
 @using SEM.App.Authentication
+@using System.Net.Http.Headers
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
+@inject HttpClient HttpClient
 
 <PageTitle>Event @SportEvent?.Name</PageTitle>
     
@@ -150,6 +152,7 @@ else
     private string? FailedRegistrationMessage;  
 
     private string Token = string.Empty;
+        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -193,8 +196,11 @@ else
     {
         RequestingUnRegister = true;
 
-        var response = await EventsService.UnRegisterToAnEvent(Token,Guid.Parse(EventId!));
-        if (response == "Unregistered")
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Events/{EventId}/unregister");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        
+        var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
         {
             await SetRegisteredState();
 
@@ -217,6 +223,12 @@ else
         {
             IAmRegistered = false;
             IAmPreRegistered = true;
+        }
+        
+        if (iAmRegisteredResponse.RegistrationState == RegistrationState.NonRegistered)
+        {
+            IAmRegistered = false;
+            IAmPreRegistered = false;
         }
     }
 

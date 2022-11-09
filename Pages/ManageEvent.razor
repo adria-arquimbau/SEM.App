@@ -3,10 +3,12 @@
 
 @using SEM.App.Data
 @using SEM.App.Authentication
+@using System.Net.Http.Headers
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
+@inject HttpClient HttpClient
 
 <h3>Manage Event</h3>
 
@@ -57,16 +59,36 @@ else
                             <td>@registration.State</td>
                             @if (registration.State == RegistrationState.PreRegistered)
                             {
-                                <td><button class="btn btn-success" @onclick="() => AcceptRegistration(registration.Id)">Accept</button></td>
+                                @if (!RequestingChangeRegistrationState)
+                                {
+                                    <td><button class="btn btn-success" @onclick="() => AcceptRegistration(registration.Id)">Accept</button></td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <button class="btn btn-success" type="button" disabled>
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            <span class="sr-only">Accepting...</span>
+                                        </button>
+                                    </td>
+                                }
                             }
                         </tr>
                     }
                 </table>    
             </div>
             <div class="event-field">
+                @if (ErrorMessage)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        Something went wrong. Try it again later.
+                    </div>
+                }
+            </div>
+            <div class="event-field">
                 <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
             </div>
-        </div>
+            </div>
     </div>
 }
 
@@ -75,9 +97,12 @@ else
     public string? EventId { get; set; }
 
     private SportEventOrganizer? myEvent;
-    
+
+    private bool RequestingChangeRegistrationState;
+    private bool ErrorMessage;
     
     private string Token = string.Empty;
+        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
     
     protected override async Task OnInitializedAsync()
     {
@@ -90,12 +115,25 @@ else
         
         await base.OnInitializedAsync();
     }
-    
+        
+        
     private async Task AcceptRegistration(Guid registrationId)
     {
+        RequestingChangeRegistrationState = true;
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/registration/{registrationId}/Accepted");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await HttpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = true;
+        }
+        
+        myEvent = await EventsService.GetMyEventAsOrganizer(Guid.Parse(EventId!), Token);
+        RequestingChangeRegistrationState = false;
     }
     
     private async Task Delete(Guid id)  
