@@ -80,7 +80,7 @@ else
                                     {
                                         <td>
                                             
-                                            <button class="btn btn-success" type="button" disabled>
+                                            <button class="btn btn-primary" type="button" disabled>
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 <span class="sr-only">Changing state...</span>
                                             </button>
@@ -99,7 +99,7 @@ else
                                     else
                                     {
                                         <td>
-                                            <button class="btn btn-success" type="button" disabled>
+                                            <button class="btn btn-primary" type="button" disabled>
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 <span class="sr-only">Changing state...</span>
                                             </button>
@@ -116,9 +116,9 @@ else
                                     else
                                     {
                                         <td>
-                                            <button class="btn btn-danger" type="button" disabled>
+                                            <button class="btn btn-primary" type="button" disabled>
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Cancelling...</span>
+                                                <span class="sr-only">Changing state...</span>
                                             </button>
                                         </td>
                                     }
@@ -137,9 +137,12 @@ else
                 }
             </div>
             <div class="event-field">
-                <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete</button>
+                <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete event (irreversible changes)</button>
             </div>
+            <div class="event-field">
+                <button class="btn btn-primary" @onclick="() => Navigation.NavigateTo(organizerPanelUrl) ">Back</button>
             </div>
+        </div>
     </div>
 }
 
@@ -158,6 +161,7 @@ else
     
     private string Token = string.Empty;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+        private const string organizerPanelUrl = "/organizer-panel";
     
     protected override async Task OnInitializedAsync()
     {
