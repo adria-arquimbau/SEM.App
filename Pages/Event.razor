@@ -35,14 +35,22 @@ else
                 <b>Registrations: </b> @SportEvent?.RegistrationsQuantity / @SportEvent?.MaxRegistrations
             </div>
         <div class="event-field">
-            <b>Registered: </b>
-            @if (IAmRegistered)
+            <b>Registration state: </b>
+            @if (RegistrationState is RegistrationState.Accepted)
             {
-                @TrueCheck
+                @AcceptedState
             }
-            else
+            @if (RegistrationState is RegistrationState.PreRegistered)
             {
-                @FalseCheck
+                @PreRegisteredState
+            }
+            @if (RegistrationState is RegistrationState.NonRegistered)
+            {
+                @NonRegisteredState
+            }
+            @if (RegistrationState is RegistrationState.Cancelled)
+            {
+                @CancelledState
             }
         </div>
             <div class="event-field">
@@ -81,7 +89,7 @@ else
                 </AuthorizeView>
             <div class="event-field">
                 <AuthorizeView>
-                    @if (!IAmRegistered && !IAmPreRegistered)
+                    @if (RegistrationState == RegistrationState.NonRegistered)
                     {
                         @if (!RequestingSignUp)
                         {
@@ -98,12 +106,18 @@ else
                 </AuthorizeView>
             </div>
             <div class="event-field">
-                @if(IAmPreRegistered)
-                    {
-                        <div class="alert alert-warning" role="alert">
-                            You're pre-registered. Now an organizer have to confirm your register.
-                        </div>
-                    }
+                @if(RegistrationState == RegistrationState.PreRegistered)
+                {
+                    <div class="alert alert-warning" role="alert">
+                        You're pre-registered. Now an organizer have to confirm your registration.
+                    </div>
+                }
+                @if(RegistrationState == RegistrationState.Cancelled)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        You're registration was cancelled. Talk with the organizer.
+                    </div>
+                }
             </div>
         @if (FailedRegistration)
         {
@@ -126,19 +140,18 @@ else
     private SportEvent? SportEvent { get; set; }
     private List<RegistrationDto>? Registrations { get; set; }
 
-    private bool IAmRegistered { get; set; }
+    private RegistrationState RegistrationState { get; set; }
     private bool RequestingSignUp { get; set; }
-    private bool RequestingUnRegister { get; set; }
     private bool RequestingRegistrations { get; set; }
     private bool FailedRegistration { get; set; }
-    private bool IAmPreRegistered { get; set; }
-    
-    private const string TrueCheck = "✅";
-    private const string FalseCheck = "❌";
+        
+    private const string AcceptedState = "✅";
+    private const string NonRegisteredState = "❌";
+    private const string PreRegisteredState = "🔔";
+    private const string CancelledState = "⛔";
     private string? FailedRegistrationMessage;  
 
     private string Token = string.Empty;
-        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -166,7 +179,7 @@ else
         if (response.SuccessRegistration)
         {
             SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
-            IAmPreRegistered = true;
+            await SetRegisteredState();
             await GetRegistrations();
             RequestingSignUp = false;
         }
@@ -181,23 +194,7 @@ else
     private async Task SetRegisteredState()
     {
         var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
-        if (iAmRegisteredResponse.RegistrationState == RegistrationState.Accepted)
-        {
-            IAmRegistered = true;
-            IAmPreRegistered = false;
-        }
-
-        if (iAmRegisteredResponse.RegistrationState == RegistrationState.PreRegistered)
-        {
-            IAmRegistered = false;
-            IAmPreRegistered = true;
-        }
-        
-        if (iAmRegisteredResponse.RegistrationState == RegistrationState.NonRegistered)
-        {
-            IAmRegistered = false;
-            IAmPreRegistered = false;
-        }
+        RegistrationState = iAmRegisteredResponse.RegistrationState;
     }
 
     private async Task GetRegistrations()
