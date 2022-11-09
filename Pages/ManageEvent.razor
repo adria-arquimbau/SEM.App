@@ -137,10 +137,13 @@ else
                 }
             </div>
             <div class="event-field">
+                <button class="btn btn-primary" @onclick="GoToEvent">Go to event</button>
+            </div>
+            <div class="event-field">
                 <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete event (irreversible changes)</button>
             </div>
             <div class="event-field">
-                <button class="btn btn-primary" @onclick="() => Navigation.NavigateTo(organizerPanelUrl) ">Back</button>
+                <button class="btn btn-primary" @onclick="() => Navigation.NavigateTo(organizerPanelUrl)">Back</button>
             </div>
         </div>
     </div>
@@ -162,7 +165,7 @@ else
     private string Token = string.Empty;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
         private const string organizerPanelUrl = "/organizer-panel";
-    
+
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
@@ -200,6 +203,11 @@ else
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         await EventsService.DeleteEvent(id, token);
-        Navigation.NavigateTo($"/organizer-panel");
+        
+    }
+
+    private void GoToEvent()
+    {
+        Navigation.NavigateTo($"/Event/{EventId}");
     }
 }
