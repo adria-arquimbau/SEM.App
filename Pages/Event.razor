@@ -126,9 +126,14 @@ else
             </div>
         }
 
+        <AuthorizeView Policy="admin-organizer">
             <div class="event-field">
-                <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
+                <button class="btn btn-primary" @onclick="ManageEvent">Manage event</button>
             </div>
+        </AuthorizeView>
+        <div class="event-field">
+            <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
+        </div>
         </div>
     </div>
 }
@@ -203,5 +208,10 @@ else
         var registrations = await EventsService.GetAcceptedRegistrationsByEventId(Guid.Parse(EventId!), Token);
         Registrations = registrations;
         RequestingRegistrations = false;
+    }
+    
+    private void ManageEvent()
+    {
+        Navigation.NavigateTo($"/manage-event/{EventId}");
     }
 }   
