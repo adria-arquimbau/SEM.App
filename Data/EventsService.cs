@@ -177,8 +177,8 @@ public enum RegistrationRole
 
 public enum RegistrationState
 {
+    NonRegistered,
     PreRegistered,
     Accepted,
-    NonRegistered,
     Cancelled
 }             
