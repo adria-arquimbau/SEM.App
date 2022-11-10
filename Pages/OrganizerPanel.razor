@@ -3,10 +3,14 @@
 
 @using SEM.App.Data
 @using SEM.App.Authentication
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject EventsService EventService
 @inject NavigationManager Navigation
+@inject HttpClient HttpClient
 
 <PageTitle>Organizer Panel</PageTitle>
 
@@ -36,6 +40,12 @@ else
                      </div>
                      <div class="event-field">
                          <b>Registrations: </b> @myEvent.TotalRegistrationsQuantity / @myEvent.MaxRegistrations
+                     </div>
+                     <div class="event-field">
+                         <b>Start: </b> @myEvent.StartDate
+                     </div>
+                     <div class="event-field">
+                         <b>Finish: </b> @myEvent.FinishDate
                      </div>
                      <div class="event-field">
                          <b>Creation date: </b> @myEvent.CreationDate
@@ -70,6 +80,18 @@ else
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
                     <input type="text" class="form-control" id="location" required @bind-value="location" />
+                </div>
+                <div class="mb-3">
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Start Date/Time</RadzenText>
+                        <RadzenDatePicker @bind-Value="@startDateTime" ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
+                    </RadzenCard>
+                </div>
+                <div class="mb-3">
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Finish Date/Time</RadzenText>
+                        <RadzenDatePicker @bind-Value="@finishDateTime" ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
+                    </RadzenCard>
                 </div>
                 <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max number of registrations</label>
@@ -121,6 +143,8 @@ else
 @code
 {
     private List<SportEventOrganizer>? myEvents;
+    
+        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,6 +175,8 @@ else
     private string eventDescription = "";
     private string location = "";
     private int maxRegistrations = 100;
+    private DateTime startDateTime = DateTime.Now;
+    private DateTime finishDateTime = DateTime.Now;
     
     private async Task CreateEvent()
     {
@@ -159,15 +185,30 @@ else
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
             var token = await customAuthStateProvider.GetToken();
-            var isCreatedResponse = await EventService.CreateEvent(eventName, eventDescription, location, maxRegistrations, token);
+            var jsonInString = JsonSerializer.Serialize(new
+            {       
+                Name = eventName,
+                Description = eventDescription,
+                Location = location,
+                MaxRegistrations = maxRegistrations,
+                StartDate = startDateTime,
+                FinishDate = finishDateTime
+            });   
+        
+            var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Events")
+            {
+                Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await HttpClient.SendAsync(request);
 
-            if (isCreatedResponse)
+            if (response.IsSuccessStatusCode)
             {
                 isCreated = true;
                 await RefreshEvents();
                 Close();
             }
-            if (!isCreatedResponse)
+            if (!response.IsSuccessStatusCode)
             {
                 isCreated = false;
             }

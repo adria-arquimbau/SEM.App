@@ -38,6 +38,12 @@ else
                 @myEvent.Location
             </div>
             <div class="event-field">
+                <b>Start: </b> @myEvent.StartDate
+            </div>
+            <div class="event-field">
+                <b>Finish: </b> @myEvent.FinishDate
+            </div>
+            <div class="event-field">
                 <b>Max registrations: </b> @myEvent.MaxRegistrations
             </div>
             <div class="event-field">
@@ -193,6 +199,8 @@ else
     public string? EventId { get; set; }
 
     private SportEventOrganizer? myEvent;
+        
+    DateTime? newStartDateTime = DateTime.Now;
 
     private string PreRegisteredState = "🔔 Pre-registered";
     private string CancelledState = "⛔ Cancelled";
@@ -295,7 +303,9 @@ else
             myEvent.Name,
             myEvent.Description,
             myEvent.Location,
-            myEvent.MaxRegistrations
+            myEvent.MaxRegistrations,
+            myEvent.StartDate,
+            myEvent.FinishDate
         });   
         
         var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/{EventId}")
@@ -351,6 +361,18 @@ else
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
                     <input type="text" class="form-control" id="location" required @bind="@myEvent.Location" />
+                </div>
+                <div class="mb-3">
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Start Date/Time</RadzenText>
+                        <RadzenDatePicker @bind-Value=@myEvent.StartDate ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
+                    </RadzenCard>
+                </div>
+                <div class="mb-3">
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Finish Date/Time</RadzenText>
+                        <RadzenDatePicker @bind-Value=@myEvent.FinishDate ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
+                    </RadzenCard>
                 </div>
                 <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max Registrations</label>

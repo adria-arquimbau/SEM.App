@@ -22,20 +22,26 @@ else
 {
     <div class="event">
         <div class="event-content">
-            <h1>@SportEvent?.Name</h1> 
+            <h1>@SportEvent.Name</h1> 
             <div class="event-field">
                
             </div>
             <div class="event-field">
                 <b>Description: </b>
-                @SportEvent?.Description
+                @SportEvent.Description
             </div>
             <div class="event-field">
                 <b>Location: </b>
-                @SportEvent?.Location
+                @SportEvent.Location
             </div>
             <div class="event-field">
-                <b>Registrations: </b> @SportEvent?.RegistrationsQuantity / @SportEvent?.MaxRegistrations
+                <b>Start: </b> @SportEvent.StartDate
+            </div>
+            <div class="event-field">
+                <b>Finish: </b> @SportEvent.FinishDate
+            </div>
+            <div class="event-field">
+                <b>Registrations: </b> @SportEvent.RegistrationsQuantity / @SportEvent.MaxRegistrations
             </div>
         <div class="event-field">
             <b>Registration state: </b>

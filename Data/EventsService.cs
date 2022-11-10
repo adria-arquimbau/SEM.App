@@ -45,14 +45,16 @@ public class EventsService
         return await response.Content.ReadFromJsonAsync<SportEvent>();
     }   
     
-    public async Task<bool> CreateEvent(string name, string description, string location, int maxRegistrations, string token)
+    public async Task<bool> CreateEvent(string name, string description, string location, int maxRegistrations, DateTime startDateTime, DateTime finishDateTime, string token)
     {
         var jsonInString = JsonSerializer.Serialize(new
         {       
             name,
             description,
             location,
-            maxRegistrations
+            maxRegistrations,
+            startDateTime,
+            finishDateTime
         });   
         
         var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Events")
@@ -139,6 +141,8 @@ public class SportEvent
     public string Description { get; set; } 
     public string CreatorNickName { get; set; }
     public DateTime CreationDate { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime FinishDate { get; set; }
     public int RegistrationsQuantity { get; set; }
     public string Location { get; set; }
     public int MaxRegistrations { get; set; }
@@ -151,6 +155,8 @@ public class SportEventOrganizer
     public string Description { get; set; }
     public string CreatorNickName { get; set; }
     public DateTime CreationDate { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime FinishDate { get; set; }
     public int TotalRegistrationsQuantity { get; set; }  
     public int AcceptedQuantity { get; set; }  
     public int PreRegisteredQuantity { get; set; }  
