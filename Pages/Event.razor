@@ -123,6 +123,20 @@ else
         {
             <div class="alert alert-warning" role="alert">
                 @FailedRegistrationMessage
+            @if (FailedRegistrationMessage.Contains("not the minimum information"))
+            {
+                @if (!RequestingGoToMyAccount)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="GoToMyAccount">Set information in my account</button>
+                }
+                else
+                {
+                    <button class="btn btn-success" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Signing up...</span>
+                    </button>
+                }
+            }
             </div>
         }
 
@@ -153,6 +167,7 @@ else
     private bool RequestingRegistrations { get; set; }
     private bool FailedRegistration { get; set; }
     private bool ICanManageThisEvent { get; set; }
+    private bool RequestingGoToMyAccount { get; set; }
         
     private const string AcceptedState = "✅";
     private const string NonRegisteredState = "❌";
@@ -221,6 +236,13 @@ else
     private void ManageEvent()
     {
         Navigation.NavigateTo($"/manage-event/{EventId}");
+    }
+        
+    private void GoToMyAccount()
+    {
+        RequestingGoToMyAccount = true;
+        Navigation.NavigateTo($"/account");
+        RequestingGoToMyAccount = false;
     }
     
     private async Task AskIfICanManageThisEvent()
