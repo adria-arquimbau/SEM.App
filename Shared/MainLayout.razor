@@ -3,7 +3,7 @@
 @inherits LayoutComponentBase
 
 @inject AuthenticationStateProvider authenticationStateProvider
-@inject NavigationManager navigationManager
+@inject HttpClient HttpClient
 
 <PageTitle>Sport Event Manager</PageTitle>
 	
@@ -31,6 +31,12 @@
 	</div>
 
 @code {
+	protected override async Task OnInitializedAsync()
+	{
+		await HttpClient.GetAsync("https://sport-management-api.azurewebsites.net/hc");
+		await base.OnInitializedAsync();
+	}
+
 	private async Task Logout()
 	{
 		var customAuthStateProvider = (CustomAuthenticationStateProvider) authenticationStateProvider;
