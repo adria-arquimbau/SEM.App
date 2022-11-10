@@ -33,7 +33,19 @@ else
                 @myEvent.Location
             </div>
             <div class="event-field">
-                <b>Registrations: </b> @myEvent.RegistrationsQuantity / @myEvent.MaxRegistrations
+                <b>Max registrations: </b> @myEvent.MaxRegistrations
+            </div>
+            <div class="event-field">
+                <b>Total registrations: </b> @myEvent.TotalRegistrationsQuantity
+            </div>
+            <div class="event-field">
+                <b>Accepted registrations: </b> @myEvent.AcceptedQuantity / @myEvent.MaxRegistrations
+            </div>
+            <div class="event-field">
+                <b>Pre-registered registrations: </b> @myEvent.PreRegisteredQuantity
+            </div>
+            <div class="event-field">
+                <b>Cancelled registrations: </b> @myEvent.CancelledQuantity
             </div>
             <div class="event-field">
                 <b>Creation date: </b> @myEvent.CreationDate

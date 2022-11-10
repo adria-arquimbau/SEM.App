@@ -151,7 +151,10 @@ public class SportEventOrganizer
     public string Description { get; set; }
     public string CreatorNickName { get; set; }
     public DateTime CreationDate { get; set; }
-    public int RegistrationsQuantity { get; set; }  
+    public int TotalRegistrationsQuantity { get; set; }  
+    public int AcceptedQuantity { get; set; }  
+    public int PreRegisteredQuantity { get; set; }  
+    public int CancelledQuantity { get; set; }  
     public string Location { get; set; }
     public int MaxRegistrations { get; set; }
     public List<RegistrationDto> Registrations { get; set; }
