@@ -4,6 +4,8 @@
 @using SEM.App.Data
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
+@using System.Text
+@using System.Text.Json
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -24,6 +26,9 @@ else
     <div class="event">
         <div class="event-content">
             <h1>@myEvent.Name</h1>
+            <div class="my-account-field">
+                <button class="btn btn-primary" @onclick="Open">Update Information</button>
+            </div>
             <div class="event-field">
                 <b>Description: </b>
                 @myEvent.Description
@@ -164,7 +169,7 @@ else
                 <button class="btn btn-primary" @onclick="GoToEvent">Go to event</button>
             </div>
             <div class="event-field">
-                @if (!Deleatingrequest)
+                @if (!DeleateRequest)
                 {
                     <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete event (irreversible changes)</button>
                 }
@@ -195,11 +200,17 @@ else
 
     private bool RequestingChangeRegistrationState;
     private bool RequestingDeleteRegistration;
-    private bool Deleatingrequest;
+    private bool RequestingUpdateInformation;
+    private bool DeleateRequest;
     private bool ErrorMessage;  
     
     private string Token = string.Empty;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    
+    private string ModalClass = "";
+    private string ModalDisplay = "none;";
+    private bool? isSet;
+    private bool ShowBackdrop;    
 
     protected override async Task OnInitializedAsync()
     {
@@ -234,7 +245,7 @@ else
     
     private async Task Delete(Guid id)
     {
-        Deleatingrequest = true;
+        DeleateRequest = true;
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         await EventsService.DeleteEvent(id, token);
@@ -267,7 +278,7 @@ else
     
     private async Task GetMyEventAsOrganizer()
     {   
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{Guid.Parse(EventId!)}/organizer");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{EventId!}/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
@@ -275,5 +286,95 @@ else
             GoBack();
         }
         myEvent = await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
-    }      
+    }
+    
+    private async Task UpdateInformation()
+    {
+        RequestingUpdateInformation = true;
+        var jsonInString = JsonSerializer.Serialize(new
+        {       
+            myEvent.Name,
+            myEvent.Description,
+            myEvent.Location,
+            myEvent.MaxRegistrations
+        });   
+        
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Easvents/{EventId}")
+        {
+            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = true;
+        }
+        await GetMyEventAsOrganizer();
+        RequestingUpdateInformation = false;
+        Close();
+    }
+    
+    private void Open()
+    {
+        ModalDisplay = "block;";    
+        ModalClass = "Show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        isSet = null;
+        ModalDisplay = "none";
+        ModalClass = "";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
+}
+
+@* Modal Update Information *@
+<div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Event Information</h5>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" required @bind="@myEvent.Name" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text" class="form-control" id="description" required @bind="@myEvent.Description" />
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" required @bind="@myEvent.Location" />
+                </div>
+                <div class="mb-3">
+                    <label for="maxRegistrations" class="form-label">Max Registrations</label>
+                    <input type="text" class="form-control" id="maxRegistrations" required @bind="@myEvent.MaxRegistrations" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                @if (!RequestingUpdateInformation)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="UpdateInformation">Update</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Setting...</span>
+                    </button>
+                }
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Close</button>
+            </div>
+        </div>  
+    </div>
+</div>
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
 }
