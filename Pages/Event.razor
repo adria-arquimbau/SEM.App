@@ -122,7 +122,7 @@ else
         @if (FailedRegistration)
         {
             <div class="alert alert-warning" role="alert">
-                @FailedRegistrationMessage
+                @FailedRegistrationMessage   @TwoEmptySpaces
             @if (FailedRegistrationMessage.Contains("not the minimum information"))
             {
                 @if (!RequestingGoToMyAccount)
@@ -173,6 +173,7 @@ else
     private const string NonRegisteredState = "❌";
     private const string PreRegisteredState = "🔔";
     private const string CancelledState = "⛔";
+    private const string TwoEmptySpaces = " ";
     private string? FailedRegistrationMessage;  
     
     private string Token = string.Empty;
