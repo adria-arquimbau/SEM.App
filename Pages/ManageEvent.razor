@@ -49,6 +49,7 @@ else
                         <th scope="col">Role</th>
                         <th scope="col">State</th>
                         <th scope="col">Actions</th>
+                        <th scope="col">Remove</th>
                     </thead>
                     @foreach (var registration in myEvent.Registrations)
                     {
@@ -121,6 +122,19 @@ else
                                         </td>
                                     }
                                 }
+                                @if (!RequestingDeleteRegistration)
+                                {
+                                    <td><button class="btn btn-danger" @onclick="() => DeleteRegistration(registration.Id)">Delete</button></td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <button class="btn btn-danger" type="button" disabled>
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            <span class="sr-only">Deleating...</span>
+                                        </button>
+                                    </td>
+                                }
                             </tr>
                         </tbody>
                     }
@@ -168,6 +182,7 @@ else
     private string AcceptedState = "✅ Accepted";
 
     private bool RequestingChangeRegistrationState;
+    private bool RequestingDeleteRegistration;
     private bool Deleatingrequest;
     private bool ErrorMessage;  
     
@@ -180,13 +195,12 @@ else
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            myEvent = await GetMyEventAsOrganizer();
+            await GetMyEventAsOrganizer();
         }
         
         await base.OnInitializedAsync();
     }
-        
-        
+    
     private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
     {
         RequestingChangeRegistrationState = true;
@@ -202,7 +216,7 @@ else
             ErrorMessage = true;
         }
         
-        myEvent = await GetMyEventAsOrganizer();
+        await GetMyEventAsOrganizer();
         RequestingChangeRegistrationState = false;
     }
     
@@ -224,8 +238,22 @@ else
     {
         Navigation.NavigateTo($"/Event/{EventId}");
     }
+
+    private async Task DeleteRegistration(Guid registrationId)
+    {
+        RequestingDeleteRegistration = true;
+        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Events/registration/{registrationId}/delete");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = true;
+        }
+        await GetMyEventAsOrganizer();
+        RequestingDeleteRegistration = false;
+    }
     
-    public async Task<SportEventOrganizer> GetMyEventAsOrganizer()
+    private async Task GetMyEventAsOrganizer()
     {   
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{Guid.Parse(EventId!)}/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
@@ -234,6 +262,6 @@ else
         {
             GoBack();
         }
-        return await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
+        myEvent = await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
     }      
 }
