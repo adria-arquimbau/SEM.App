@@ -21,37 +21,40 @@ else
 		<div class="my-account-content">
 			<h1>Your Account</h1>
 			<div class="my-account-field">
-				<b>User Name: </b> @User?.UserName
+				<b>User Name: </b> @User.UserName
 			</div>
 			<div class="my-account-field">
-				<b>Roles: </b> @User?.Roles
+				<b>Roles: </b> @foreach (var role in User.Roles)
+				               {
+					               @role
+				               }
 			</div>
 			<div class="my-account-field">
-				<b>Name: </b> @User?.Name
+				<b>Name: </b> @User.Name
 			</div>
 			<div class="my-account-field">
-				<b>Second Name: </b> @User?.SecondName
+				<b>Second Name: </b> @User.SecondName
 			</div>
 			<div class="my-account-field">
-				<b>Email: </b> @User?.Email
+				<b>Email: </b> @User.Email
 			</div>
 			<div class="my-account-field">
-				<b>Address: </b> @User?.Address
+				<b>Address: </b> @User.Address
 			</div>
 			<div class="my-account-field">
-				<b>City: </b> @User?.City
+				<b>City: </b> @User.City
 			</div>
 			<div class="my-account-field">
-				<b>PostalCode: </b> @User?.PostalCode
+				<b>PostalCode: </b> @User.PostalCode
 			</div>
 			<div class="my-account-field">
-				<b>Country: </b> @User?.Country
+				<b>Country: </b> @User.Country
 			</div>
 			<div class="my-account-field">
-				<b>Phone: </b> @User?.Phone
+				<b>Phone: </b> @User.Phone
 			</div>
 			<div class="my-account-field">
-				<b>Registration Date: </b> @User?.RegistrationDate
+				<b>Registration Date: </b> @User.RegistrationDate
 			</div>
 			<div class="my-account-field">
 				<button class="btn btn-primary" @onclick="Open">Set User Information</button>
