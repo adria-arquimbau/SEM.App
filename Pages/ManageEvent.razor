@@ -219,7 +219,7 @@ else
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         
-        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/registration/{registrationId}/{state}");
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Registrations/{registrationId}/{state}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
 
