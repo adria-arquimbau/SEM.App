@@ -254,7 +254,7 @@ else
     private async Task DeleteRegistration(Guid registrationId)
     {
         RequestingDeleteRegistration = true;
-        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Events/registration/{registrationId}/delete");
+        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Registrations/{registrationId}/delete");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
