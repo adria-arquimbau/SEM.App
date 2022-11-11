@@ -1,0 +1,48 @@
+﻿@using System.Net.Http.Headers
+@using SEM.App.Authentication
+@using SEM.App.Data
+
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider authenticationStateProvider
+
+<h3>AllNews</h3>
+
+@if (News == null)
+{
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading... Please wait</p>
+    </div>
+}
+else
+{
+    @foreach (var news in News)
+    {
+        @news.Description
+    }
+}
+
+@code {
+
+    private List<GetNewsDto>? News;
+        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"News");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await HttpClient.SendAsync(request);
+        News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
+        
+        await base.OnInitializedAsync();
+    }
+    
+    public class GetNewsDto
+    {
+        public Guid Id { get; set; }
+        public string Description { get; set; }
+        public Guid EventId { get; set; }
+    }
+}

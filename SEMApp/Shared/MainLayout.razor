@@ -1,4 +1,5 @@
 ﻿@using SEM.App.Authentication
+@using SEM.App.Components
 
 @inherits LayoutComponentBase
 
@@ -23,10 +24,11 @@
 					 </div>
 				 </NotAuthorized>
              </AuthorizeView>
-			
+				
 			<article>
 				@Body
 			</article>
+			<AllNews></AllNews>
 		</main>
 	</div>
 
