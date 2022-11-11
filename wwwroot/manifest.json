@@ -1,6 +1,6 @@
 {
-  "name": "MyNewProject",
-  "short_name": "MyNewProject",
+  "name": "Sport Event Management",
+  "short_name": "SEM",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
