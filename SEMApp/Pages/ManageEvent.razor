@@ -199,8 +199,6 @@ else
     public string? EventId { get; set; }
 
     private SportEventOrganizer? myEvent;
-        
-    DateTime? newStartDateTime = DateTime.Now;
 
     private string PreRegisteredState = "🔔 Pre-registered";
     private string CancelledState = "⛔ Cancelled";
@@ -363,16 +361,12 @@ else
                     <input type="text" class="form-control" id="location" required @bind="@myEvent.Location" />
                 </div>
                 <div class="mb-3">
-                    <RadzenCard>
-                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Start Date/Time</RadzenText>
-                        <RadzenDatePicker @bind-Value=@myEvent.StartDate ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
-                    </RadzenCard>
+                    <label for="location" class="form-label">Start Date/Time</label>
+                    <input type="datetime-local" @bind-value="@myEvent.StartDate" />
                 </div>
                 <div class="mb-3">
-                    <RadzenCard>
-                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Finish Date/Time</RadzenText>
-                        <RadzenDatePicker @bind-Value=@myEvent.FinishDate ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
-                    </RadzenCard>
+                    <label for="location" class="form-label">Finish Date/Time</label>
+                    <input type="datetime-local" @bind-value="@myEvent.FinishDate" />
                 </div>
                 <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max Registrations</label>

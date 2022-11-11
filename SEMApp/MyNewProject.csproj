@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.0" PrivateAssets="all" />
+    <PackageReference Include="Radzen.Blazor" Version="4.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Account.razor" />
+    <_ContentIncludedByDefault Remove="Pages\AdminPanel.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Authentication\Login.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Authentication\Register.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Event.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Events.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Index.razor" />
+    <_ContentIncludedByDefault Remove="Pages\ManageEvent.razor" />
+    <_ContentIncludedByDefault Remove="Pages\OrganizerPanel.razor" />
+  </ItemGroup>
+
+</Project>
