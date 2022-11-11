@@ -44,12 +44,6 @@
                             <b>Start: </b> @sportEvent.StartDate
                         </div>
                         <div class="event-field">
-                            <b>Finish: </b> @sportEvent.FinishDate
-                        </div>
-                        <div class="event-field">
-                            <b>Created by: </b> @sportEvent.CreatorNickName
-                        </div>
-                        <div class="event-field">
                             <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
                                 Go to event
                             </button>
@@ -85,16 +79,7 @@
                         <b>Location: </b> @sportEvent?.Location
                     </div>
                     <div class="event-field">
-                        <b>Creation date: </b> @sportEvent.CreationDate
-                    </div>
-                    <div class="event-field">
                         <b>Start: </b> @sportEvent.StartDate
-                    </div>
-                    <div class="event-field">
-                        <b>Finish: </b> @sportEvent.FinishDate
-                    </div>
-                    <div class="event-field">
-                        <b>Created by: </b> @sportEvent.CreatorNickName
                     </div>
                     <div class="event-field">
                         <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">

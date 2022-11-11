@@ -72,16 +72,25 @@ else
                         <RadzenAccordionItem Text="Registered users" Icon="list">
                             @if (!RequestingRegistrations)
                             {
-                                var count = 1;
-                                @foreach (var registration in Registrations)
-                                {
-                                    <div class="registered-user">
-                                        <div class="registered-user-name">@count. @registration.UserName</div>
-                                        <div style="width: 10px;"></div>
-                                        <div class="registered-user-role">@registration.Role</div>
-                                    </div>
-                                    count++;
-                                }
+                                <table class="table table-striped">
+                                    <thead>
+                                    <th scope="col">Num</th>
+                                    <th scope="col">User Name</th>
+                                    <th scope="col">Role</th>
+                                    </thead>
+                                    
+                                    @for (var index = 0; index < Registrations.Count; index++)
+                                    {
+                                        var registration = Registrations[index];
+                                        <tbody>
+                                            <tr>
+                                                <td>@index</td>
+                                                <td>@registration.UserName</td>
+                                                <td>@registration.Role</td>
+                                            </tr>
+                                        </tbody>
+                                    }
+                                </table>
                             }
                             else
                             {
