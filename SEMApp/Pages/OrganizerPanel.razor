@@ -82,16 +82,12 @@ else
                     <input type="text" class="form-control" id="location" required @bind-value="location" />
                 </div>
                 <div class="mb-3">
-                    <RadzenCard>
-                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Start Date/Time</RadzenText>
-                        <RadzenDatePicker @bind-Value="@startDateTime" ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
-                    </RadzenCard>
+                    <label for="location" class="form-label">Start Date/Time</label>
+                    <input type="datetime-local" @bind-value="startDateTime" />
                 </div>
                 <div class="mb-3">
-                    <RadzenCard>
-                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Finish Date/Time</RadzenText>
-                        <RadzenDatePicker @bind-Value="@finishDateTime" ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" />
-                    </RadzenCard>
+                    <label for="location" class="form-label">Finish Date/Time</label>
+                    <input type="datetime-local" @bind-value="finishDateTime" />
                 </div>
                 <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max number of registrations</label>
@@ -145,6 +141,7 @@ else
     private List<SportEventOrganizer>? myEvents;
     
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+        private DateOnly date = DateOnly.MinValue;
 
     protected override async Task OnInitializedAsync()
     {
@@ -175,8 +172,8 @@ else
     private string eventDescription = "";
     private string location = "";
     private int maxRegistrations = 100;
-    private DateTime startDateTime = DateTime.Now;
-    private DateTime finishDateTime = DateTime.Now;
+    private DateTime? startDateTime;
+    private DateTime? finishDateTime;
     
     private async Task CreateEvent()
     {
