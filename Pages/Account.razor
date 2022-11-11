@@ -1,6 +1,10 @@
 @page "/account"
+
 @using SEM.App.Data
 @using SEM.App.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
 @attribute [Authorize(Policy = "admin-organizer-user")]
 
 @inject UsersService UsersService
