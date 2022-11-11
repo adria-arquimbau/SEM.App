@@ -368,18 +368,6 @@ else
                     <label for="location" class="form-label">Finish Date/Time</label>
                     <input type="datetime-local" @bind-value="@myEvent.FinishDate" />
                 </div>
-                @* <div class="mb-3"> *@
-                @*     <RadzenCard> *@
-                @*         <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Start Date/Time</RadzenText> *@
-                @*         <RadzenDatePicker @bind-Value=@myEvent.StartDate ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" /> *@
-                @*     </RadzenCard> *@
-                @* </div> *@
-                @* <div class="mb-3"> *@
-                @*     <RadzenCard> *@
-                @*         <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Finish Date/Time</RadzenText> *@
-                @*         <RadzenDatePicker @bind-Value=@myEvent.FinishDate ShowTime="true" HoursStep="1.5" MinutesStep="5" DateFormat="dd/MM/yyyy HH:mm" Class="w-100" /> *@
-                @*     </RadzenCard> *@
-                @* </div> *@
                 <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max Registrations</label>
                     <input type="number" class="form-control" id="maxRegistrations" required @bind="@myEvent.MaxRegistrations" />
