@@ -5,7 +5,7 @@
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
 
-<h3>AllNews</h3>
+<h3>Last news</h3>
 
 @if (News == null)
 {
@@ -18,7 +18,17 @@ else
 {
     @foreach (var news in News)
     {
-        @news.Description
+        <div class="news">
+            <div class="news-content">
+                <h1>@news.Title</h1> 
+                <div class="news-field">
+                    @news.Description
+                </div>
+                <div class="news-field">
+                    @news.CreationDate.ToLongDateString()
+                </div>
+            </div>
+        </div>
     }
 }
 
@@ -44,5 +54,7 @@ else
         public Guid Id { get; set; }
         public string Description { get; set; }
         public Guid EventId { get; set; }
+        public string Title { get; set; }
+        public DateTime CreationDate { get; set; }
     }
 }
