@@ -38,6 +38,39 @@ else
                 @myEvent.Location
             </div>
             <div class="event-field">
+                <b>Published: </b>  @if (myEvent.IsPublic)
+                                    {
+                                        @IsPublic 
+                                        @if (!RequestingIsPublicStateChange)
+                                        {
+                                            <button class="btn btn-danger" @onclick="() => ChangeIsPublicState(true)">Un-Publish</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-danger" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="sr-only">Un-Publishing...</span>
+                                            </button>
+                                        }  
+                                    }
+                                    @if (!myEvent.IsPublic)
+                                    {
+                                        @IsPrivate
+                                        @if (!RequestingIsPublicStateChange)
+                                        {
+                                            <button class="btn btn-success" @onclick="() => ChangeIsPublicState(true)">Publish</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-success" type="button" disabled>
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                <span class="sr-only">Publishing...</span>
+                                            </button>
+                                        }   
+                                    }
+                                    
+            </div>
+            <div class="event-field">
                 <b>Start: </b> @myEvent.StartDate
             </div>
             <div class="event-field">
@@ -203,10 +236,13 @@ else
     private string PreRegisteredState = "🔔 Pre-registered";
     private string CancelledState = "⛔ Cancelled";
     private string AcceptedState = "✅ Accepted";
+    private const string IsPublic = "✅";
+    private const string IsPrivate = "❌";
 
     private bool RequestingChangeRegistrationState;
     private bool RequestingDeleteRegistration;
     private bool RequestingUpdateInformation;
+    private bool RequestingIsPublicStateChange;
     private bool DeleateRequest;
     private bool ErrorMessage;  
     
@@ -265,6 +301,20 @@ else
     private void GoToEvent()
     {
         Navigation.NavigateTo($"/Event/{EventId}");
+    }
+    
+    private async Task ChangeIsPublicState(bool isPublic)
+    {
+        RequestingIsPublicStateChange = true;
+        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl +  $"Events/{EventId}/is-public/{isPublic}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = true;
+        }
+        await GetMyEventAsOrganizer();
+        RequestingIsPublicStateChange = false;
     }
 
     private async Task DeleteRegistration(Guid registrationId)
