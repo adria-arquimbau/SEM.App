@@ -1,6 +1,8 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@using SEM.App.Components
+
+<PageTitle>Home</PageTitle>
 
 <AuthorizeView>
     <Authorized>
@@ -14,3 +16,5 @@
         </div>
     </NotAuthorized>
 </AuthorizeView>
+
+<AllNews></AllNews>
