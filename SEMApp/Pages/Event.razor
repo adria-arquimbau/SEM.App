@@ -81,9 +81,10 @@ else
                                     @for (var index = 0; index < Registrations.Count; index++)
                                     {
                                         var registration = Registrations[index];
+                                        var registrationNumber = index + 1;
                                         <tbody>
                                             <tr>
-                                                <td>@index</td>
+                                                <td>@registrationNumber</td>
                                                 <td>@registration.UserName</td>
                                                 <td>@registration.Role</td>
                                             </tr>
