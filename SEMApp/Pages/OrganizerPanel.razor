@@ -51,6 +51,16 @@ else
                          <b>Creation date: </b> @myEvent.CreationDate
                      </div>
                      <div class="event-field">
+                         <b>Published: </b> @if (myEvent.IsPublic)
+                                            {
+                                                @IsPublic 
+                                            }
+                                            @if (!myEvent.IsPublic)
+                                            {
+                                                @IsPrivate
+                                            }
+                     </div>
+                     <div class="event-field">
                          <button class="btn btn-primary" @onclick="() => Manage(myEvent.Id)">Manage</button>
                      </div>
                  </div>
@@ -140,8 +150,9 @@ else
 {
     private List<SportEventOrganizer>? myEvents;
     
-        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
-        private DateOnly date = DateOnly.MinValue;
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private const string IsPublic = "✅";
+    private const string IsPrivate = "❌";
 
     protected override async Task OnInitializedAsync()
     {

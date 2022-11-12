@@ -162,7 +162,8 @@ public class SportEventOrganizer
     public int PreRegisteredQuantity { get; set; }  
     public int CancelledQuantity { get; set; }  
     public string Location { get; set; }
-    public int MaxRegistrations { get; set; }
+    public int MaxRegistrations { get; set; }   
+    public bool IsPublic { get; set; }
     public List<RegistrationDto> Registrations { get; set; }
 }     
 
