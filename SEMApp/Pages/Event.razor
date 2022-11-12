@@ -24,7 +24,6 @@ else
         <div class="event-content">
             <h1>@SportEvent.Name</h1> 
             <div class="event-field">
-               
             </div>
             <div class="event-field">
                 <b>Description: </b>
@@ -192,21 +191,24 @@ else
     private string? FailedRegistrationMessage;  
     
     private string Token = string.Empty;
-    private string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         Token = await customAuthStateProvider.GetToken();
+        var response = await HttpClient.GetAsync(semApiUrl + $"Events/{EventId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            BackToEvents();
+        }
+        SportEvent =  await response.Content.ReadFromJsonAsync<SportEvent>();
         if (!string.IsNullOrWhiteSpace(Token))
         {
             await SetRegisteredState();
             await GetRegistrations();
         }
-        SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
-        
         await AskIfICanManageThisEvent();
-
         await base.OnInitializedAsync();
     }
 
