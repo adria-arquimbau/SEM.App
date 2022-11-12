@@ -103,6 +103,9 @@ else
                     <label for="maxRegistrations" class="form-label">Max number of registrations</label>
                     <input type="number" class="form-control" id="maxRegistrations" required @bind-value="maxRegistrations" />
                 </div>
+                <div class="mb-3">
+                    * This event will be created private
+                </div>
             </div>
             <div class="modal-footer">
                 @if (!RequestingCreation)
