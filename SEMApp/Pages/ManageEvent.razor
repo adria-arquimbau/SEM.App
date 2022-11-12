@@ -43,7 +43,7 @@ else
                                         @IsPublic 
                                         @if (!RequestingIsPublicStateChange)
                                         {
-                                            <button class="btn btn-danger" @onclick="() => ChangeIsPublicState(true)">Un-Publish</button>
+                                            <button class="btn btn-danger" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
                                         }
                                         else
                                         {
