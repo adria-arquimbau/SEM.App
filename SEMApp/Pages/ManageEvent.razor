@@ -6,6 +6,7 @@
 @using System.Net.Http.Headers
 @using System.Text
 @using System.Text.Json
+@using Dialog = SEM.App.Components.Dialog
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -180,7 +181,7 @@ else
                                 }
                                 @if (!RequestingDeleteRegistration)
                                 {
-                                    <td><button class="btn btn-danger" @onclick="() => DeleteRegistration(registration.Id)">Delete</button></td>
+                                    <td><button class="btn btn-danger" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button></td>
                                 }
                                 else
                                 {
@@ -210,7 +211,7 @@ else
             <div class="event-field">
                 @if (!DeleateRequest)
                 {
-                    <button class="btn btn-danger" @onclick="() => Delete(myEvent.Id)">Delete event (irreversible changes)</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteEvent(myEvent.Id)">Delete event (irreversible changes)</button>
                 }
                 else
                 {
@@ -227,11 +228,25 @@ else
     </div>
 }
 
+@if (DialogIsOpen)
+{
+    <Dialog Caption="Delete an author"
+            RequestingDeleteRegistration="@RequestingDeleteRegistration"
+            Message="@message"
+            OnClose="@OnDialogClose"
+            Type="Dialog.Category.DeleteNot">
+    </Dialog>
+}
+
 @code { 
     [Parameter] 
     public string? EventId { get; set; }
 
     private SportEventOrganizer? myEvent;
+            
+    private Guid registrationIdToDelete;
+    private string message;
+    private bool DialogIsOpen = false;
 
     private string PreRegisteredState = "🔔 Pre-registered";
     private string CancelledState = "⛔ Cancelled";
@@ -284,7 +299,32 @@ else
         RequestingChangeRegistrationState = false;
     }
     
-    private async Task Delete(Guid id)
+    private void OpenDialog(Guid id, string userName)
+    {
+        DialogIsOpen = true;
+        registrationIdToDelete = id;
+        message = $"Do you want to delete the {userName} registration?";
+    }
+    
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            RequestingDeleteRegistration = true;
+            var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Registrations/{registrationIdToDelete}/delete");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            var response = await HttpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                ErrorMessage = true;
+            }
+            await GetMyEventAsOrganizer();
+            RequestingDeleteRegistration = false;
+        }
+        DialogIsOpen = false;
+    }
+
+    private async Task DeleteEvent(Guid id)
     {
         DeleateRequest = true;
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
@@ -317,20 +357,6 @@ else
         RequestingIsPublicStateChange = false;
     }
 
-    private async Task DeleteRegistration(Guid registrationId)
-    {
-        RequestingDeleteRegistration = true;
-        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Registrations/{registrationId}/delete");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-        var response = await HttpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-        {
-            ErrorMessage = true;
-        }
-        await GetMyEventAsOrganizer();
-        RequestingDeleteRegistration = false;
-    }
-    
     private async Task GetMyEventAsOrganizer()
     {   
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{EventId!}/organizer");
