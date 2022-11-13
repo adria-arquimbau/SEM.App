@@ -31,6 +31,9 @@ else
                 <button class="btn btn-primary" @onclick="Open">Update Information</button>
             </div>
             <div class="event-field">
+                <button class="btn btn-primary" @onclick="OpenCreateNews">Create a News</button>
+            </div>
+            <div class="event-field">
                 <b>Description: </b>
                 @myEvent.Description
             </div>
@@ -228,7 +231,7 @@ else
     </div>
 }
 
-@if (DialogIsOpen)
+@if (DialogDeleteregistrationIsOpen)
 {
     <Dialog Caption="Delete an author"
             RequestingDeleteRegistration="@RequestingDeleteRegistration"
@@ -237,6 +240,11 @@ else
             Type="Dialog.Category.DeleteNot">
     </Dialog>
 }
+@if (CreateNewsIsOpen)
+{
+    <CreateNews EventId="@EventId"
+        OnClose="@OnCreateNewsClose"></CreateNews>
+}   
 
 @code { 
     [Parameter] 
@@ -246,7 +254,8 @@ else
             
     private Guid registrationIdToDelete;
     private string message;
-    private bool DialogIsOpen = false;
+    private bool DialogDeleteregistrationIsOpen;
+    private bool CreateNewsIsOpen;
 
     private string PreRegisteredState = "🔔 Pre-registered";
     private string CancelledState = "⛔ Cancelled";
@@ -301,9 +310,14 @@ else
     
     private void OpenDialog(Guid id, string userName)
     {
-        DialogIsOpen = true;
+        DialogDeleteregistrationIsOpen = true;
         registrationIdToDelete = id;
         message = $"Do you want to delete the {userName} registration?";
+    }
+    
+    private void OpenCreateNews()
+    {   
+        CreateNewsIsOpen = true;
     }
     
     private async Task OnDialogClose(bool isOk)
@@ -321,7 +335,12 @@ else
             await GetMyEventAsOrganizer();
             RequestingDeleteRegistration = false;
         }
-        DialogIsOpen = false;
+        DialogDeleteregistrationIsOpen = false;
+    }
+
+    private async Task OnCreateNewsClose()
+    {
+        CreateNewsIsOpen = false;
     }
 
     private async Task DeleteEvent(Guid id)
