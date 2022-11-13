@@ -23,13 +23,16 @@ else
             <div class="news-content">
                 <h1>@news.Title</h1> 
                 <div class="news-field">
+                    @news.CreationDate.ToLongDateString()
+                </div>
+                <div class="news-field">
+                    @news.Author
+                </div>
+                <div class="news-field">
                     @news.Description
                 </div>
                 <div class="news-field">
                     <button type="button" class="btn btn-primary" @onclick="() => GoToEvent(news.EventId)">Go to event</button>
-                </div>
-                <div class="news-field">
-                    @news.CreationDate.ToLongDateString()
                 </div>
             </div>
         </div>
@@ -65,5 +68,6 @@ else
         public Guid EventId { get; set; }
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
+        public string Author { get; set; }
     }
 }
