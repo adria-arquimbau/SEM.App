@@ -26,11 +26,11 @@
                 <input @bind="repeatPassword" type="password" class="form-control" placeholder="RepeatPassword"/>
             </div>
             <div class="register-field">
-                @if (!RequestingRegister)
+                @if (!RequestingRegister && SuccesMessage == null)
                 {
                     <button @onclick="Registration" class="btn btn-primary">Register</button>
                 }
-                else
+                @if (RequestingRegister)
                 {
                     <button class="btn btn-success" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -47,7 +47,7 @@
                 }
                 @if (SuccesMessage != null)
                 {
-                    <div class="event-field alert alert-danger">
+                    <div class="alert alert-warning" role="alert">
                         @SuccesMessage
                     </div>
                     <div class="event-field">
