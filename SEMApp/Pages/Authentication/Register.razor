@@ -45,6 +45,15 @@
                         @FailedRegisterMessage
                     </div>
                 }
+                @if (SuccesMessage != null)
+                {
+                    <div class="event-field alert alert-danger">
+                        @SuccesMessage
+                    </div>
+                    <div class="event-field">
+                        <button class="btn btn-primary" @onclick="GoToLogIn">Go to log in</button>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -56,6 +65,7 @@
 
     private string repeatPassword = string.Empty;
     private string? FailedRegisterMessage;
+    private string? SuccesMessage;  
     
     private bool RequestingRegister;
 
@@ -67,7 +77,7 @@
 
         if (loginResponse.IsSuccessStatusCode)
         {
-            navManager.NavigateTo("/", true);
+            SuccesMessage = "You have an email. Confirm your account and Log in!";
         }
         else
         {   
@@ -76,6 +86,11 @@
             //ALERT
         }
         RequestingRegister = false;
+    }
+
+    private void GoToLogIn()
+    {
+        navManager.NavigateTo($"/login");
     }
 
     private bool RegisterValidations()
