@@ -1,0 +1,67 @@
+﻿@using SEM.App.Authentication
+@using System.Net.Http.Headers
+@using SEM.App.Data.Models
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider authenticationStateProvider
+
+<h3>EventNews</h3>
+
+@if (News == null)
+{
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading... Please wait</p>
+    </div>
+}
+else
+{
+    foreach (var news in News)
+    {
+        @news.Title
+        <button class="btn btn-danger" @onclick="() => Delete(news.Id)">Delete</button>
+    }
+}
+
+@code {
+    
+    [Parameter]
+    public string EventId { get; set; }
+
+    private List<GetNewsDto>? News;
+
+    private bool RequestingEvents;
+    private string Token;
+        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        
+        await GetNews();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Delete(Guid id)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl + $"Event/{id}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            await GetNews();
+        }
+    }
+    
+    private async Task GetNews()
+    {
+        var response = await HttpClient.GetAsync(semApiUrl + $"News/event/{EventId}");
+        if (!response.IsSuccessStatusCode)
+        {
+    
+        }
+
+        News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
+    }
+}
