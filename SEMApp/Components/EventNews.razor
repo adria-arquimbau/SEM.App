@@ -6,6 +6,10 @@
 
 <h3>EventNews</h3>
 
+<div class="event-field">
+    <button class="btn btn-primary" @onclick="OpenCreateNews">Create a News</button>
+</div>
+
 @if (News == null)
 {
     <div class="loading-page">
@@ -22,6 +26,12 @@ else
     }
 }
 
+@if (CreateNewsIsOpen)
+{
+    <CreateNews EventId="@EventId"
+        OnClose="@OnCreateNewsClose"></CreateNews>
+}  
+
 @code {
     
     [Parameter]
@@ -29,6 +39,7 @@ else
 
     private List<GetNewsDto>? News;
 
+    private bool CreateNewsIsOpen;
     private bool RequestingEvents;
     private string Token;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
@@ -63,5 +74,16 @@ else
         }
 
         News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
+    }
+    
+    private void OpenCreateNews()
+    {   
+        CreateNewsIsOpen = true;
+    }
+    
+    private async Task OnCreateNewsClose()
+    {
+        CreateNewsIsOpen = false;
+        await GetNews();
     }
 }

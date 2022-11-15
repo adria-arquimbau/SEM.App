@@ -30,9 +30,7 @@ else
             <div class="event-field">
                 <button class="btn btn-primary" @onclick="Open">Update Information</button>
             </div>
-            <div class="event-field">
-                <button class="btn btn-primary" @onclick="OpenCreateNews">Create a News</button>
-            </div>
+            
             <div class="event-field">
                 <b>Description: </b>
                 @myEvent.Description
@@ -243,11 +241,7 @@ else
             Type="Dialog.Category.DeleteNot">
     </Dialog>
 }
-@if (CreateNewsIsOpen)
-{
-    <CreateNews EventId="@EventId"
-        OnClose="@OnCreateNewsClose"></CreateNews>
-}   
+ 
 
 @code { 
     [Parameter] 
@@ -258,8 +252,7 @@ else
     private Guid registrationIdToDelete;
     private string message;
     private bool DialogDeleteregistrationIsOpen;
-    private bool CreateNewsIsOpen;
-
+    
     private string PreRegisteredState = "🔔 Pre-registered";
     private string CancelledState = "⛔ Cancelled";
     private string AcceptedState = "✅ Accepted";
@@ -318,10 +311,6 @@ else
         message = $"Do you want to delete the {userName} registration?";
     }
     
-    private void OpenCreateNews()
-    {   
-        CreateNewsIsOpen = true;
-    }
     
     private async Task OnDialogClose(bool isOk)
     {
@@ -341,10 +330,7 @@ else
         DialogDeleteregistrationIsOpen = false;
     }
 
-    private async Task OnCreateNewsClose()
-    {
-        CreateNewsIsOpen = false;
-    }
+    
 
     private async Task DeleteEvent(Guid id)
     {
