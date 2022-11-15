@@ -45,7 +45,7 @@ else
 
     private async Task Delete(Guid id)
     {
-        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl + $"Event/{id}");
+        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl + $"News/{id}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
