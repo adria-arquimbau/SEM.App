@@ -6,7 +6,6 @@
 @using System.Net.Http.Headers
 @using System.Text
 @using System.Text.Json
-@using Dialog = SEM.App.Components.Dialog
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -99,105 +98,12 @@ else
             <div class="event-field">
                 <b>Created by: </b> @myEvent.CreatorNickName
             </div>
-            <div class="event-field">
-                <b>Registrations: </b> 
-                <table class="table table-striped">
-                    <thead>
-                        <th scope="col">User Name</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Actions</th>
-                        <th scope="col">Remove</th>
-                    </thead>
-                    @foreach (var registration in myEvent.Registrations)
-                    {
-                        <tbody>
-                            <tr>
-                                <td>@registration.UserName</td>
-                                <td>@registration.Role</td>
-                                @switch (registration.State)
-                                {
-                                    case RegistrationState.PreRegistered:<td>@PreRegisteredState</td>
-                                        break;
-                                    case RegistrationState.Cancelled:<td>@CancelledState</td>
-                                        break;
-                                    case RegistrationState.Accepted:<td>@AcceptedState</td>
-                                        break;
-                                }
-                                @if (registration.State is RegistrationState.Cancelled)
-                                {
-                                    @if (!RequestingChangeRegistrationState)
-                                    {
-                                        <td>
-                                            <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                                            <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td>
-                                            
-                                            <button class="btn btn-primary" type="button" disabled>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Changing state...</span>
-                                            </button>
-                                        </td>
-                                    }
-                                }
-                                @if (registration.State is RegistrationState.PreRegistered)
-                                {
-                                    @if (!RequestingChangeRegistrationState)
-                                    {
-                                        <td>
-                                            <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                                            <button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td>
-                                            <button class="btn btn-primary" type="button" disabled>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Changing state...</span>
-                                            </button>
-                                        </td>
-                                    }
-                                }
-                                @if (registration.State == RegistrationState.Accepted)
-                                {
-                                    @if (!RequestingChangeRegistrationState)
-                                    {
-                                        <td><button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                                        <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button></td>
-                                    }
-                                    else
-                                    {
-                                        <td>
-                                            <button class="btn btn-primary" type="button" disabled>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Changing state...</span>
-                                            </button>
-                                        </td>
-                                    }
-                                }
-                                @if (!RequestingDeleteRegistration)
-                                {
-                                    <td><button class="btn btn-danger" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button></td>
-                                }
-                                else
-                                {
-                                    <td>
-                                        <button class="btn btn-danger" type="button" disabled>
-                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                            <span class="sr-only">Deleating...</span>
-                                        </button>
-                                    </td>
-                                }
-                            </tr>
-                        </tbody>
-                    }
-                </table>    
-            </div>
+        <div class="event-field">
+            <RegistrationsManager 
+                Registrations="@myEvent.Registrations"
+                RefreshEvent="@GetMyEventAsOrganizer">
+            </RegistrationsManager>
+        </div>
         <div class="event-field">
             <EventNews EventId="@EventId"></EventNews>
         </div>
@@ -213,7 +119,7 @@ else
                 <button class="btn btn-primary" @onclick="GoToEvent">Go to event</button>
             </div>
             <div class="event-field">
-                @if (!DeleateRequest)
+                @if (!DeleteRequest)
                 {
                     <button class="btn btn-danger" @onclick="() => DeleteEvent(myEvent.Id)">Delete event (irreversible changes)</button>
                 }
@@ -232,38 +138,19 @@ else
     </div>
 }
 
-@if (DialogDeleteregistrationIsOpen)
-{
-    <Dialog Caption="Delete an author"
-            RequestingDeleteRegistration="@RequestingDeleteRegistration"
-            Message="@message"
-            OnClose="@OnDialogClose"
-            Type="Dialog.Category.DeleteNot">
-    </Dialog>
-}
- 
 
 @code { 
     [Parameter] 
     public string? EventId { get; set; }
 
     private SportEventOrganizer? myEvent;
-            
-    private Guid registrationIdToDelete;
-    private string message;
-    private bool DialogDeleteregistrationIsOpen;
     
-    private string PreRegisteredState = "🔔 Pre-registered";
-    private string CancelledState = "⛔ Cancelled";
-    private string AcceptedState = "✅ Accepted";
     private const string IsPublic = "✅";
     private const string IsPrivate = "❌";
-
-    private bool RequestingChangeRegistrationState;
-    private bool RequestingDeleteRegistration;
+    
     private bool RequestingUpdateInformation;
     private bool RequestingIsPublicStateChange;
-    private bool DeleateRequest;
+    private bool DeleteRequest;
     private bool ErrorMessage;  
     
     private string Token = string.Empty;
@@ -285,56 +172,9 @@ else
         await base.OnInitializedAsync();
     }
     
-    private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
-    {
-        RequestingChangeRegistrationState = true;
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        var token = await customAuthStateProvider.GetToken();
-        
-        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Registrations/{registrationId}/{state}");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var response = await HttpClient.SendAsync(request);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            ErrorMessage = true;
-        }
-        
-        await GetMyEventAsOrganizer();
-        RequestingChangeRegistrationState = false;
-    }
-    
-    private void OpenDialog(Guid id, string userName)
-    {
-        DialogDeleteregistrationIsOpen = true;
-        registrationIdToDelete = id;
-        message = $"Do you want to delete the {userName} registration?";
-    }
-    
-    
-    private async Task OnDialogClose(bool isOk)
-    {
-        if (isOk)
-        {
-            RequestingDeleteRegistration = true;
-            var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Registrations/{registrationIdToDelete}/delete");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            var response = await HttpClient.SendAsync(request);
-            if (!response.IsSuccessStatusCode)
-            {
-                ErrorMessage = true;
-            }
-            await GetMyEventAsOrganizer();
-            RequestingDeleteRegistration = false;
-        }
-        DialogDeleteregistrationIsOpen = false;
-    }
-
-    
-
     private async Task DeleteEvent(Guid id)
     {
-        DeleateRequest = true;
+        DeleteRequest = true;
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         await EventsService.DeleteEvent(id, token);

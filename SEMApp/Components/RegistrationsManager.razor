@@ -1,0 +1,181 @@
+﻿@using SEM.App.Data
+@using SEM.App.Authentication
+@using System.Net.Http.Headers
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject HttpClient HttpClient
+
+<h3>RegistrationsManager</h3>
+
+<table class="table table-striped">
+                <thead>
+                <th scope="col">User Name</th>
+                <th scope="col">Role</th>
+                <th scope="col">State</th>
+                <th scope="col">Actions</th>
+                <th scope="col">Remove</th>
+                </thead>
+                @foreach (var registration in Registrations)
+                {
+                    <tbody>
+                    <tr>
+                        <td>@registration.UserName</td>
+                        <td>@registration.Role</td>
+                        @switch (registration.State)
+                        {
+                            case RegistrationState.PreRegistered:<td>@PreRegisteredState</td>
+                                break;
+                            case RegistrationState.Cancelled:<td>@CancelledState</td>
+                                break;
+                            case RegistrationState.Accepted:<td>@AcceptedState</td>
+                                break;
+                        }
+                        @if (registration.State is RegistrationState.Cancelled)
+                        {
+                            @if (!RequestingChangeRegistrationState)
+                            {
+                                <td>
+                                    <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
+                                    <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+
+                                    <button class="btn btn-primary" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Changing state...</span>
+                                    </button>
+                                </td>
+                            }
+                        }
+                        @if (registration.State is RegistrationState.PreRegistered)
+                        {
+                            @if (!RequestingChangeRegistrationState)
+                            {
+                                <td>
+                                    <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
+                                    <button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-primary" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Changing state...</span>
+                                    </button>
+                                </td>
+                            }
+                        }
+                        @if (registration.State == RegistrationState.Accepted)
+                        {
+                            @if (!RequestingChangeRegistrationState)
+                            {
+                                <td><button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                                    <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button></td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <button class="btn btn-primary" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Changing state...</span>
+                                    </button>
+                                </td>
+                            }
+                        }
+                        @if (!RequestingDeleteRegistration)
+                        {
+                            <td><button class="btn btn-danger" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button></td>
+                        }
+                        else
+                        {
+                            <td>
+                                <button class="btn btn-danger" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Deleating...</span>
+                                </button>
+                            </td>
+                        }
+                    </tr>
+                    </tbody>
+                }
+            </table>
+
+@if (DialogDeleteregistrationIsOpen)
+{
+    <Dialog Caption="Delete an author"
+            RequestingDeleteRegistration="@RequestingDeleteRegistration"
+            Message="@message"
+            OnClose="@OnDialogClose"
+            Type="Dialog.Category.DeleteNot">
+    </Dialog>
+}
+
+@code {
+
+    [Parameter]
+    public List<RegistrationDto> Registrations { get; set; }
+    [Parameter]
+    public EventCallback RefreshEvent { get; set; }
+    
+    private string PreRegisteredState = "🔔 Pre-registered";
+    private string CancelledState = "⛔ Cancelled";
+    private string AcceptedState = "✅ Accepted";
+    
+    private Guid registrationIdToDelete;
+    
+    private bool DialogDeleteregistrationIsOpen;
+    private bool RequestingChangeRegistrationState;
+    private bool RequestingDeleteRegistration;
+    private bool ErrorMessage;
+    
+    private string message;
+    private string Token;
+
+    private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
+    {
+        RequestingChangeRegistrationState = true;
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        
+        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registrationId}/{state}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            
+        }
+
+        await RefreshEvent.InvokeAsync();
+        RequestingChangeRegistrationState = false;
+    }
+    
+    private async Task OnDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            RequestingDeleteRegistration = true;
+            var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Registrations/{registrationIdToDelete}/delete");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            var response = await HttpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                ErrorMessage = true;
+            }
+            await RefreshEvent.InvokeAsync();
+            RequestingDeleteRegistration = false;
+        }
+        DialogDeleteregistrationIsOpen = false;
+    }
+    
+    private void OpenDialog(Guid id, string userName)
+    {
+        DialogDeleteregistrationIsOpen = true;
+        registrationIdToDelete = id;
+        message = $"Do you want to delete the {userName} registration?";
+    }
+}
