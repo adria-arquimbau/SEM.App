@@ -6,8 +6,10 @@
 @inject HttpClient HttpClient
 
 <div class="registrationManager">
-    <h3>Registrations Manager</h3>
-    
+    <div class="registrationManager-top">
+        <h3>Registrations Manager</h3>
+        <button class="btn btn-primary">Download Csv</button>
+    </div>
     <table class="table table-striped">
         <thead>
         <th scope="col">User Name</th>
@@ -43,7 +45,7 @@
                     else
                     {
                         <td>
-    
+
                             <button class="btn btn-primary" type="button" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 <span class="sr-only">Changing state...</span>
