@@ -48,10 +48,7 @@ else
                             }
                             else
                             {
-                                <button class="btn btn-danger" type="button" disabled>
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span class="sr-only">Un-Publishing...</span>
-                                </button>
+                                <LoadingButton ButtonType="danger" LoadingText="Un-publishing"></LoadingButton>
                             }
                         }
                         @if (!myEvent.IsPublic)
@@ -63,10 +60,7 @@ else
                             }
                             else
                             {
-                                <button class="btn btn-success" type="button" disabled>
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span class="sr-only">Publishing...</span>
-                                </button>
+                                <LoadingButton ButtonType="success" LoadingText="Publishing"></LoadingButton>
                             }
                         }
 
@@ -130,10 +124,7 @@ else
                 }
                 else
                 {
-                    <button class="btn btn-danger" type="button" disabled>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span class="sr-only">Deleting...</span>
-                    </button>
+                    <LoadingButton ButtonType="danger" LoadingText="Deleting"></LoadingButton>
                 }
             </div>
             <div class="event-field">

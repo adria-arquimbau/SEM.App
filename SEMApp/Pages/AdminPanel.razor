@@ -69,11 +69,27 @@
                     <div class="user-field">
                         @if (!user.Roles.Exists(x => x.Contains("Organizer")))
                         {
-                            <button class="btn btn-success" @onclick="() => SetRole(user.Id, organizerRole)">Make Organizer</button>
+                            if (!RequestingUpdateStatus)
+                            {
+                                <button class="btn btn-success" @onclick="() => SetRole(user.Id, organizerRole)">Make Organizer</button>
+                            }
+                            else
+                            {
+                                <LoadingButton ButtonType="success"
+                                    LoadingText="Setting role"></LoadingButton>
+                            }
+                            
                         }
                         @if (user.Roles.Exists(x => x.Contains("Organizer")) && !user.Roles.Exists(x => x.Contains("Admin")))
                         {
-                            <button class="btn btn-danger" @onclick="() => DeleteRole(user.Id, organizerRole)">Delete Organizer</button>
+                            if (!RequestingUpdateStatus)
+                            {
+                                <button class="btn btn-danger" @onclick="() => DeleteRole(user.Id, organizerRole)">Delete Organizer</button>
+                            }
+                            else
+                            {
+                                <LoadingButton ButtonType="danger" LoadingText="Erasing role"></LoadingButton>
+                            }
                         }
                     </div>
                 </div>
@@ -92,6 +108,8 @@
     private const string FalseCheck = "❌";
         private const string organizerRole = "organizer";
 
+    private bool RequestingUpdateStatus;
+
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
@@ -108,20 +126,24 @@
     
     private async Task SetRole(Guid userId, string role)
     {
+        RequestingUpdateStatus = true;
         var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/set-role/{userId}/role/{role}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
 
         await GetUsers();
+        RequestingUpdateStatus = false;
     }
     
     private async Task DeleteRole(Guid userId, string role)
     {   
+        RequestingUpdateStatus = true;
         var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/delete-role/{userId}/role/{role}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token); 
         var response = await HttpClient.SendAsync(request);
         
-        await GetUsers();   
+        await GetUsers();  
+        RequestingUpdateStatus = false;
     }
     
     private async Task GetUsers()
