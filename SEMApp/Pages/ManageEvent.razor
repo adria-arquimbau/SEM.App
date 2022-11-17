@@ -27,87 +27,92 @@ else
         <div class="event-content">
             <h1>@myEvent.Name</h1>
             <div class="event-field">
-                <button class="btn btn-primary" @onclick="Open">Update Information</button>
+                <div class="mainInformation">
+                    <h3>Main Information</h3>
+                    <div class="event-field">
+                        <b>Description: </b>
+                        @myEvent.Description
+                    </div>
+                    <div class="event-field">
+                        <b>Location: </b>
+                        @myEvent.Location
+                    </div>
+                    <div class="event-field">
+                        <b>Published: </b>
+                        @if (myEvent.IsPublic)
+                        {
+                            @IsPublic
+                            @if (!RequestingIsPublicStateChange)
+                            {
+                                <button class="btn btn-danger" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-danger" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Un-Publishing...</span>
+                                </button>
+                            }
+                        }
+                        @if (!myEvent.IsPublic)
+                        {
+                            @IsPrivate
+                            @if (!RequestingIsPublicStateChange)
+                            {
+                                <button class="btn btn-success" @onclick="() => ChangeIsPublicState(true)">Publish</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-success" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Publishing...</span>
+                                </button>
+                            }
+                        }
+
+                    </div>
+                    <div class="event-field">
+                        <b>Start: </b> @myEvent.StartDate
+                    </div>
+                    <div class="event-field">
+                        <b>Finish: </b> @myEvent.FinishDate
+                    </div>
+                    <div class="event-field">
+                        <b>Max registrations: </b> @myEvent.MaxRegistrations
+                    </div>
+                    <div class="event-field">
+                        <b>Total registrations: </b> @myEvent.TotalRegistrationsQuantity
+                    </div>
+                    <div class="event-field">
+                        <b>Accepted registrations: </b> @myEvent.AcceptedQuantity / @myEvent.MaxRegistrations
+                    </div>
+                    <div class="event-field">
+                        <b>Pre-registered registrations: </b> @myEvent.PreRegisteredQuantity
+                    </div>
+                    <div class="event-field">
+                        <b>Cancelled registrations: </b> @myEvent.CancelledQuantity
+                    </div>
+                    <div class="event-field">
+                        <b>Creation date: </b> @myEvent.CreationDate
+                    </div>
+                    <div class="event-field">
+                        <b>Created by: </b> @myEvent.CreatorNickName
+                    </div>
+                    <div class="event-field">
+                        <button class="btn btn-primary" @onclick="Open">Update Information</button>
+                    </div>
+                </div>
             </div>
-            
             <div class="event-field">
-                <b>Description: </b>
-                @myEvent.Description
+                <RegistrationsManager
+                    Registrations="@myEvent.Registrations"
+                    RefreshEvent="@GetMyEventAsOrganizer">
+                </RegistrationsManager>
             </div>
             <div class="event-field">
-                <b>Location: </b>
-                @myEvent.Location
+                <EventNews EventId="@EventId"></EventNews>
             </div>
             <div class="event-field">
-                <b>Published: </b>  @if (myEvent.IsPublic)
-                                    {
-                                        @IsPublic 
-                                        @if (!RequestingIsPublicStateChange)
-                                        {
-                                            <button class="btn btn-danger" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn btn-danger" type="button" disabled>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Un-Publishing...</span>
-                                            </button>
-                                        }  
-                                    }
-                                    @if (!myEvent.IsPublic)
-                                    {
-                                        @IsPrivate
-                                        @if (!RequestingIsPublicStateChange)
-                                        {
-                                            <button class="btn btn-success" @onclick="() => ChangeIsPublicState(true)">Publish</button>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn btn-success" type="button" disabled>
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="sr-only">Publishing...</span>
-                                            </button>
-                                        }   
-                                    }
-                                    
-            </div>
-            <div class="event-field">
-                <b>Start: </b> @myEvent.StartDate
-            </div>
-            <div class="event-field">
-                <b>Finish: </b> @myEvent.FinishDate
-            </div>
-            <div class="event-field">
-                <b>Max registrations: </b> @myEvent.MaxRegistrations
-            </div>
-            <div class="event-field">
-                <b>Total registrations: </b> @myEvent.TotalRegistrationsQuantity
-            </div>
-            <div class="event-field">
-                <b>Accepted registrations: </b> @myEvent.AcceptedQuantity / @myEvent.MaxRegistrations
-            </div>
-            <div class="event-field">
-                <b>Pre-registered registrations: </b> @myEvent.PreRegisteredQuantity
-            </div>
-            <div class="event-field">
-                <b>Cancelled registrations: </b> @myEvent.CancelledQuantity
-            </div>
-            <div class="event-field">
-                <b>Creation date: </b> @myEvent.CreationDate
-            </div>
-            <div class="event-field">
-                <b>Created by: </b> @myEvent.CreatorNickName
-            </div>
-        <div class="event-field">
-            <RegistrationsManager 
-                Registrations="@myEvent.Registrations"
-                RefreshEvent="@GetMyEventAsOrganizer">
-            </RegistrationsManager>
-        </div>
-        <div class="event-field">
-            <EventNews EventId="@EventId"></EventNews>
-        </div>
-        <div class="event-field">
                 @if (ErrorMessage)
                 {
                     <div class="alert alert-danger" role="alert">
