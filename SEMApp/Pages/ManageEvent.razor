@@ -72,6 +72,12 @@ else
                         <b>Finish: </b> @myEvent.FinishDate
                     </div>
                     <div class="event-field">
+                        <b>Open registrations: </b> @myEvent.OpenRegistrationsDateTime
+                    </div>
+                    <div class="event-field">
+                        <b>CloseRegistrations: </b> @myEvent.CloseRegistrationsDateTime
+                    </div>
+                    <div class="event-field">
                         <b>Max registrations: </b> @myEvent.MaxRegistrations
                     </div>
                     <div class="event-field">
@@ -223,7 +229,9 @@ else
             myEvent.Location,
             myEvent.MaxRegistrations,
             myEvent.StartDate,
-            myEvent.FinishDate
+            myEvent.FinishDate, 
+            myEvent.OpenRegistrationsDateTime, 
+            myEvent.CloseRegistrationsDateTime
         });   
         
         var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/{EventId}")
@@ -287,6 +295,14 @@ else
                 <div class="mb-3">
                     <label for="location" class="form-label">Finish Date/Time</label>
                     <input type="datetime-local" @bind-value="@myEvent.FinishDate" />
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Open Registrations Date/Time</label>
+                    <input type="datetime-local" @bind-value="@myEvent.OpenRegistrationsDateTime" />
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Close Registrations Date/Time</label>
+                    <input type="datetime-local" @bind-value="@myEvent.CloseRegistrationsDateTime" />
                 </div>
                 <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max Registrations</label>

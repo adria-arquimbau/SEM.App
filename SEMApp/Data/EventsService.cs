@@ -146,6 +146,8 @@ public class SportEvent
     public int RegistrationsQuantity { get; set; }
     public string Location { get; set; }
     public int MaxRegistrations { get; set; }
+    public DateTime OpenRegistrationsDateTime { get; set; }
+    public DateTime CloseRegistrationsDateTime { get; set; }
 }
 
 public class SportEventOrganizer
@@ -164,6 +166,8 @@ public class SportEventOrganizer
     public string Location { get; set; }
     public int MaxRegistrations { get; set; }   
     public bool IsPublic { get; set; }
+    public DateTime OpenRegistrationsDateTime { get; set; }
+    public DateTime CloseRegistrationsDateTime { get; set; }
     public List<RegistrationDto> Registrations { get; set; }
 }     
 

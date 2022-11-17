@@ -100,6 +100,14 @@ else
                     <input type="datetime-local" @bind-value="finishDateTime" />
                 </div>
                 <div class="mb-3">
+                    <label for="location" class="form-label">Open Registrations Date/Time</label>
+                    <input type="datetime-local" @bind-value="openRegistrationsDateTime" />
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Close Registrations Date/Time</label>
+                    <input type="datetime-local" @bind-value="closeRegistrationsDateTime" />
+                </div>
+                <div class="mb-3">
                     <label for="maxRegistrations" class="form-label">Max number of registrations</label>
                     <input type="number" class="form-control" id="maxRegistrations" required @bind-value="maxRegistrations" />
                 </div>
@@ -183,8 +191,10 @@ else
     private string eventDescription = "";
     private string location = "";
     private int maxRegistrations = 100;
-    private DateTime? startDateTime;
-    private DateTime? finishDateTime;
+    private DateTime? startDateTime = DateTime.Now;
+    private DateTime? finishDateTime = DateTime.Now;
+    private DateTime? openRegistrationsDateTime = DateTime.Now;
+    private DateTime? closeRegistrationsDateTime = DateTime.Now;
     
     private async Task CreateEvent()
     {
@@ -200,7 +210,9 @@ else
                 Location = location,
                 MaxRegistrations = maxRegistrations,
                 StartDate = startDateTime,
-                FinishDate = finishDateTime
+                FinishDate = finishDateTime,
+                OpenRegistrationsDateTime = openRegistrationsDateTime,
+                CloseRegistrationsDateTime = closeRegistrationsDateTime
             });   
         
             var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Events")
