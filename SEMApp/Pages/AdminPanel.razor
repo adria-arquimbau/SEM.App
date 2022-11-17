@@ -3,9 +3,11 @@
 
 @using SEM.App.Data
 @using SEM.App.Authentication
+@using System.Net.Http.Headers
 
 @inject UsersService UsersService
 @inject AuthenticationStateProvider authenticationStateProvider
+@inject HttpClient HttpClient
 
 <PageTitle>Admin Panel</PageTitle>
 
@@ -36,6 +38,12 @@
                         <b>Email: </b> @user.Email                                            
                     </div>
                     <div class="user-field">
+                        <b>Roles: </b> @foreach (var role in user.Roles)
+                                       {
+                                           @role
+                                       }
+                    </div>
+                    <div class="user-field">
                         <b>Confirmed email: </b>
                         @if (user.EmailConfirmed)
                         {
@@ -58,6 +66,16 @@
                             <button class="btn btn-info" @onclick="() => ConfirmEmail(user.Id)">Confirm Email</button>
                         }
                     </div>
+                    <div class="user-field">
+                        @if (!user.Roles.Exists(x => x.Contains("Organizer")))
+                        {
+                            <button class="btn btn-success" @onclick="() => SetRole(user.Id, organizerRole)">Make Organizer</button>
+                        }
+                        @if (user.Roles.Exists(x => x.Contains("Organizer")) && !user.Roles.Exists(x => x.Contains("Admin")))
+                        {
+                            <button class="btn btn-danger" @onclick="() => DeleteRole(user.Id, organizerRole)">Delete Organizer</button>
+                        }
+                    </div>
                 </div>
             </div>
         }
@@ -68,28 +86,46 @@
 @code
 {
     private List<UserDto>? users;
-    
-    private const string TrueCheck = "✅";
+    private string Token;
+        
+        private const string TrueCheck = "✅";
     private const string FalseCheck = "❌";
+        private const string organizerRole = "organizer";
 
     protected override async Task OnInitializedAsync()
     {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
         await GetUsers();
         await base.OnInitializedAsync();
     }
 
     private async Task ConfirmEmail(Guid userId)
     {
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        var token = await customAuthStateProvider.GetToken();
-        await UsersService.ConfirmEmail(token, userId);
+        await UsersService.ConfirmEmail(Token, userId);
         await GetUsers();
     }
     
-    private async Task GetUsers()
+    private async Task SetRole(Guid userId, string role)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/set-role/{userId}/role/{role}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+
+        await GetUsers();
+    }
+    
+    private async Task DeleteRole(Guid userId, string role)
     {   
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        var token = await customAuthStateProvider.GetToken();
-        users = await UsersService.GetUsers(token);
+        var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/delete-role/{userId}/role/{role}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token); 
+        var response = await HttpClient.SendAsync(request);
+        
+        await GetUsers();   
+    }
+    
+    private async Task GetUsers()
+    {
+        users = await UsersService.GetUsers(Token);
     }
 }
