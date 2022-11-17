@@ -93,7 +93,7 @@ else
                         <b>Cancelled registrations: </b> @myEvent.CancelledQuantity
                     </div>
                     <div class="event-field">
-                        <b>Creation date: </b> @myEvent.CreationDate
+                        <b>Creation date: </b> @myEvent.CreationDate.ToLongDateString() at @myEvent.CreationDate.ToShortTimeString()
                     </div>
                     <div class="event-field">
                         <b>Created by: </b> @myEvent.CreatorNickName
@@ -110,7 +110,7 @@ else
                 </RegistrationsManager>
             </div>
             <div class="event-field">
-                <EventNews EventId="@EventId"></EventNews>
+                <EventNewsManager EventId="@EventId"></EventNewsManager>
             </div>
             <div class="event-field">
                 @if (ErrorMessage)

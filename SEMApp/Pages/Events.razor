@@ -41,7 +41,7 @@
                             <b>Location: </b> @sportEvent.Location
                         </div>
                         <div class="event-field">
-                            <b>Start: </b> @sportEvent.StartDate
+                            <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
                         </div>
                         <div class="event-field">
                             <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
@@ -79,7 +79,7 @@
                         <b>Location: </b> @sportEvent?.Location
                     </div>
                     <div class="event-field">
-                        <b>Start: </b> @sportEvent.StartDate
+                        <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
                     </div>
                     <div class="event-field">
                         <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">

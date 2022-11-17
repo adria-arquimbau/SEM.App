@@ -34,10 +34,10 @@ else
                 @SportEvent.Location
             </div>
             <div class="event-field">
-                <b>Start: </b> @SportEvent.StartDate
+                <b>Start: </b> @SportEvent.StartDate.ToLongDateString() at @SportEvent.StartDate.ToShortTimeString()
             </div>
             <div class="event-field">
-                <b>Finish: </b> @SportEvent.FinishDate
+                <b>Finish: </b> @SportEvent.FinishDate.ToLongDateString() at @SportEvent.FinishDate.ToShortTimeString()
             </div>
             <div class="event-field">
                 <b>Registrations: </b> @SportEvent.RegistrationsQuantity / @SportEvent.MaxRegistrations
