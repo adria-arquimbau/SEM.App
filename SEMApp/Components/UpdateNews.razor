@@ -1,8 +1,8 @@
-﻿@using SEM.App.Data.Models
-@using SEM.App.Authentication
-@using System.Text.Json
+﻿@using System.Text.Json
 @using System.Text
 @using System.Net.Http.Headers
+@using SEM.App.Authentication
+@using SEM.App.Data.Models
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
@@ -11,29 +11,29 @@
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
-            <h4 class="modal-title">Create a News</h4>
+            <h4 class="modal-title">Update a News</h4>
          </div>
          <div class="modal-body">
              <div class="mb-3">
-                 <label for="name" class="form-label">Title</label>
-                 <input type="text" class="form-control" id="name" required @bind="@NewsToPublish.Title" />
+                 <label for="title" class="form-label">Title</label>
+                 <input type="text" class="form-control" id="title" required @bind="@Title" />
              </div>
              <div class="mb-3">
                  <label for="description" class="form-label">Description</label>
-                 <textarea type="text" class="form-control" id="description" required @bind="@NewsToPublish.Description"></textarea>
+                 <textarea type="text" class="form-control" id="description" required @bind="@Description"></textarea>
              </div>
          </div>
          <div class="modal-footer">
-            @if (!RequestingCreateNews)
+            @if (!RequestingUpdate)
             {  
-               <button type="button" class="btn btn-success" @onclick=Create>Create</button>
+               <button type="button" class="btn btn-success" @onclick=Update>Update</button>
             }
             else
             {
                <td>
                   <button class="btn btn-success" type="button" disabled>
                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                     <span class="sr-only">Creating...</span>
+                     <span class="sr-only">Updating...</span>
                   </button>
                </td>
             }
@@ -44,31 +44,34 @@
 </div>
 
 @code {
-   
-   [Parameter] public string? EventId { get; set; }
-   [Parameter] public EventCallback OnClose { get; set; }
-
-   private GetNewsDto NewsToPublish = new();
+   [Parameter]
+   public string? NewsId { get; set; }
+   [Parameter]
+   public string? Title { get; set; }
+   [Parameter]
+   public string? Description { get; set; }
+   [Parameter]
+   public EventCallback OnClose { get; set; }
 
    private string ErrorMessage = string.Empty;
-   private bool RequestingCreateNews { get; set; } 
-      
+   private bool RequestingUpdate;
+
    private void Cancel()
-   {        
-      OnClose.InvokeAsync();  
-   }
-         
-   private async Task Create()
    {
-      RequestingCreateNews = true;
+      OnClose.InvokeAsync();
+   }
+
+   private async Task Update()
+   {
+      RequestingUpdate = true;
       var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
       var token = await customAuthStateProvider.GetToken();
       var jsonInString = JsonSerializer.Serialize(new
       {
-         NewsToPublish.Title,
-         NewsToPublish.Description
+         Title,
+         Description
       });
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"News/event/{EventId}")
+      var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"News/{NewsId}")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
@@ -76,12 +79,13 @@
       var response = await HttpClient.SendAsync(request);
       if (response.IsSuccessStatusCode)
       {
-         await OnClose.InvokeAsync();  
+         RequestingUpdate = false;
+         await OnClose.InvokeAsync();
       }
       else
       {
          ErrorMessage = "Something went wrong";
       }
-      RequestingCreateNews = false;
    }
+
 }

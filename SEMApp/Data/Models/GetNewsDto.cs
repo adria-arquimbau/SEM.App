@@ -7,5 +7,5 @@ public class GetNewsDto
     public Guid EventId { get; set; }
     public string Title { get; set; }
     public DateTime CreationDate { get; set; }
-    public string Author { get; set; }
+    public string AuthorName { get; set; }
 }

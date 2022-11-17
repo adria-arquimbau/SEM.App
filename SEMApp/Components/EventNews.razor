@@ -1,47 +1,106 @@
 ﻿@using SEM.App.Authentication
 @using System.Net.Http.Headers
+@using System.Text
+@using System.Text.Json
 @using SEM.App.Data.Models
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
 
-<h3>EventNews</h3>
-
-<div class="event-field">
-    <button class="btn btn-primary" @onclick="OpenCreateNews">Create a News</button>
-</div>
-
-@if (News == null)
-{
-    <div class="loading-page">
-        <div class="spinner-border loading-spinner" role="status"></div>
-        <p>Loading... Please wait</p>
+<div class="eventNews">
+    <div class="eventNews-title">
+        <h3>EventNews</h3>
     </div>
-}
-else
-{
-    foreach (var news in News)
-    {
-        @news.Title
-        <button class="btn btn-danger" @onclick="() => Delete(news.Id)">Delete</button>
-    }
-}
+    <div class="eventNews-content">
+       
+        <button class="btn btn-primary" @onclick="OpenCreateNews">Create a News</button>
+        
+        <div class="eventNews-news">
+            @if (News == null)
+            {
+                <div class="loading-page">
+                    <div class="spinner-border loading-spinner" role="status"></div>
+                    <p>Loading... Please wait</p>
+                </div>
+            }
+            else
+            {
+                foreach (var news in News)
+                {
+                    <div class="eventNews-news-new">
+                        <div class="eventNews-news-new-field">
+                            Ttile: @news.Title
+                        </div>
+                        <div class="eventNews-news-new-field">
+                            Creation date: @news.CreationDate
+                        </div>
+                        <div class="eventNews-news-new-field">
+                            Author: @news.AuthorName
+                        </div>
+                        <div class="eventNews-news-new-field">
+                            Description: @GetShortDescription(news.Description)
+                        </div>
+                        <div class="eventNews-news-new-actions">
+                            <div class="eventNews-news-new-actions-button">
+                               @if (!RequestingDelete)
+                                {
+                                    <button class="btn btn-danger" @onclick="() => Delete(news.Id)">Delete</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-danger" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Deleating...</span>
+                                    </button>
+                                }
+                            </div>
+                            <div>
+                               @if (!RequestingUpdate)
+                               {
+                                   <button class="btn btn-warning" @onclick="OpenUpdateNews">Update</button>
+                               }
+                               else
+                               {
+                                   <button class="btn btn-warning" type="button" disabled>
+                                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                       <span class="sr-only">Updating...</span>
+                                   </button>
+                               }                         
+                            </div>
+                         
+                            
+                        </div>
+                    </div>
+                    @if (UpdateNewsIsOpen)
+                    {
+                        <UpdateNews NewsId="@news.Id.ToString()" 
+                                    OnClose="@OnUpdateNewsClose" 
+                                    Title="@news.Title" 
+                                    Description="@news.Description"></UpdateNews>
+                    }  
+                }
+            }
+        </div>
+    </div>
+</div>
 
 @if (CreateNewsIsOpen)
 {
     <CreateNews EventId="@EventId"
         OnClose="@OnCreateNewsClose"></CreateNews>
-}  
+}
 
 @code {
     
     [Parameter]
-    public string EventId { get; set; }
+    public string? EventId { get; set; }
 
-    private List<GetNewsDto>? News;
+    private List<GetNewsDto>? News; 
 
+    private bool UpdateNewsIsOpen;
     private bool CreateNewsIsOpen;
-    private bool RequestingEvents;
-    private string Token;
+    private bool RequestingDelete;
+    private bool RequestingUpdate;
+    private string? Token;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
     
     protected override async Task OnInitializedAsync()
@@ -56,6 +115,7 @@ else
 
     private async Task Delete(Guid id)
     {
+        RequestingDelete = true;
         var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl + $"News/{id}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
@@ -63,6 +123,7 @@ else
         {
             await GetNews();
         }
+        RequestingDelete = false;
     }
     
     private async Task GetNews()
@@ -81,9 +142,32 @@ else
         CreateNewsIsOpen = true;
     }
     
+    private void OpenUpdateNews()
+    {   
+        UpdateNewsIsOpen = true;
+    }
+    
     private async Task OnCreateNewsClose()
     {
         CreateNewsIsOpen = false;
         await GetNews();
     }
-}
+    
+    private async Task OnUpdateNewsClose()
+    {
+        UpdateNewsIsOpen = false;
+        await GetNews();
+    }
+
+    private string GetShortDescription(string description)
+    {
+        if (description.Length < 20)
+        {
+            return description;
+        }
+        var shortDescription = description.Substring(0, 25);
+        shortDescription += " ...";
+        return shortDescription;
+    }
+    
+}   
