@@ -10,86 +10,91 @@
 <PageTitle>Events</PageTitle>
  
 <div class="events-page">
+    <h1>Active Events</h1>
     <AuthorizeView>
-        <h2>My registered events</h2> 
-        @if (myRegisteredEvents == null)
-        {
-            <div class="loading-page">
-                <div class="spinner-border loading-spinner" role="status"></div>
-                <p>Loading... Please wait</p>
-            </div>
-        }
-        else if (myRegisteredEvents.Count == 0)
-        {
-            <div class="alert alert-primary" role="alert">
-                You are not registered to any event.
-            </div>
-        }
-        else if (myRegisteredEvents.Count > 0)
-        {
-            @foreach (var sportEvent in myRegisteredEvents)
+        <div class="my-registered-events">
+            <h3>My registered events</h3>
+            @if (myRegisteredEvents == null)
             {
-                <div class="event">
-                    <div class="event-content">
-                        <div class="event-field">
-                            <h3><b>Title: </b> @sportEvent.Name</h3>
-                        </div>
-                        <div class="event-field">
-                            <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
-                        </div>
-                        <div class="event-field">
-                            <b>Location: </b> @sportEvent.Location
-                        </div>
-                        <div class="event-field">
-                            <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
-                        </div>
-                        <div class="event-field">
-                            <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
-                                Go to event
-                            </button>
-                        </div>
-                    </div>
+                <div class="loading-page">
+                    <div class="spinner-border loading-spinner" role="status"></div>
+                    <p>Loading... Please wait</p>
                 </div>
             }
-        }
-    </AuthorizeView>
-    
-    <h2>All events</h2>
-    
-    @if (sportEvents == null)
-    {
-        <div class="loading-page">
-            <div class="spinner-border loading-spinner" role="status"></div>
-            <p>Loading... Please wait</p>
-        </div>
-    }
-    else
-    {
-        @foreach (var sportEvent in sportEvents)
-        {
-            <div class="event">
-                <div class="event-content">
-                    <div class="event-field">
-                        <h3><b>Title: </b> @sportEvent.Name</h3>
-                    </div>
-                    <div class="event-field">
-                        <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
-                    </div>
-                    <div class="event-field">
-                        <b>Location: </b> @sportEvent?.Location
-                    </div>
-                    <div class="event-field">
-                        <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
-                    </div>
-                    <div class="event-field">
-                        <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
-                            Go to event
-                        </button>
-                    </div>
+            else if (myRegisteredEvents.Count == 0)
+            {
+                <div class="alert alert-primary" role="alert">
+                    You are not registered to any event.
                 </div>
-            </div>
-        }
-    }
+            }
+            else if (myRegisteredEvents.Count > 0)
+            {
+                @foreach (var sportEvent in myRegisteredEvents)
+                {
+                    <div class="event">
+                        <div class="event-content">
+                            <div class="event-field">
+                                <h3><b>Title: </b> @sportEvent.Name</h3>
+                            </div>
+                            <div class="event-field">
+                                <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
+                            </div>
+                            <div class="event-field">
+                                <b>Location: </b> @sportEvent.Location
+                            </div>
+                            <div class="event-field">
+                                <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
+                            </div>
+                            <div class="event-field">
+                                <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
+                                    Go to event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </AuthorizeView>
+
+    <div class="my-registered-events">
+        <h3>All events</h3>
+        
+            @if (sportEvents == null)
+            {
+                <div class="loading-page">
+                    <div class="spinner-border loading-spinner" role="status"></div>
+                    <p>Loading... Please wait</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var sportEvent in sportEvents)
+                {
+                    <div class="event">
+                        <div class="event-content">
+                            <div class="event-field">
+                                <h3><b>Title: </b> @sportEvent.Name</h3>
+                            </div>
+                            <div class="event-field">
+                                <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
+                            </div>
+                            <div class="event-field">
+                                <b>Location: </b> @sportEvent?.Location
+                            </div>
+                            <div class="event-field">
+                                <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
+                            </div>
+                            <div class="event-field">
+                                <button class="btn btn-primary" @onclick="() => GoToEvent(sportEvent.Id)">
+                                    Go to event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+    </div>
 </div>
 
 @code {
