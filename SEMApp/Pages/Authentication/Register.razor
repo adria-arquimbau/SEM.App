@@ -1,4 +1,6 @@
 ﻿@page "/Register"
+@using System.Net
+@using System.Text.Json
 
 @inject HttpClient httpClient
 @inject NavigationManager navManager
@@ -43,6 +45,15 @@
                 {
                     <div class="event-field alert alert-danger">
                         @FailedRegisterMessage
+                        @if (RegisterErrorsList.Count != 0)
+                        {
+                            <ul>
+                                @foreach (var error in RegisterErrorsList)
+                                {
+                                    <li>@error</li>
+                                }
+                            </ul>
+                        }
                     </div>
                 }
                 @if (SuccesMessage != null)
@@ -65,12 +76,15 @@
 
     private string repeatPassword = string.Empty;
     private string? FailedRegisterMessage;
+    private List<string> RegisterErrorsList = new();
     private string? SuccesMessage;  
     
     private bool RequestingRegister;
 
     private async Task Registration()
     {
+        FailedRegisterMessage = null;
+        RegisterErrorsList = new List<string>();
         if (!RegisterValidations()) return;
         RequestingRegister = true;
         var loginResponse = await httpClient.PostAsJsonAsync<RegisterRequest>(semApiUrl + "Auth/Register", registerRequest);
@@ -79,10 +93,24 @@
         {
             SuccesMessage = "You have an email. Confirm your account and Log in!";
         }
+        else if(loginResponse.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var responseContent = await loginResponse.Content.ReadFromJsonAsync<RegisterErrorResponse>();
+            FailedRegisterMessage = responseContent?.Message;
+            if (responseContent?.Errors.DuplicateEmail != null) RegisterErrorsList.Add("This email already exists");
+            if (responseContent?.Errors.DuplicateUserName != null) RegisterErrorsList.Add("This user name already exists");
+            if (responseContent?.Errors.PasswordRequiresDigit != null) RegisterErrorsList.Add("Passwords must have at least one digit ('0'-'9').");
+            if (responseContent?.Errors.PasswordRequiresNonAlphanumeric != null) RegisterErrorsList.Add("Passwords must have at least one non alphanumeric character.");
+            if (responseContent?.Errors.PasswordRequiresUpper != null) RegisterErrorsList.Add("Passwords must have at least one uppercase ('A'-'Z').");
+            if (responseContent?.Errors.PasswordTooShort != null) RegisterErrorsList.Add("Passwords must be at least 6 characters");
+            if (responseContent?.Errors.PasswordRequiresLower != null) RegisterErrorsList.Add("Passwords must have at least one lowercase ('a'-'z').");
+            
+            
+        }
         else
         {   
             RequestingRegister = false;
-            FailedRegisterMessage = "Something went wrong, try it again later";
+            FailedRegisterMessage = "Something went wrong with our servers, try it again later";
             //ALERT
         }
         RequestingRegister = false;
@@ -104,7 +132,7 @@
         
         if (repeatPassword != registerRequest.Password)
         {
-            FailedRegisterMessage = "Not equal passwords";
+            FailedRegisterMessage = "Not equal passwords. Password and Repeat password must be identical";
             return false;
         }
 
@@ -117,4 +145,30 @@
         public string Password { get; set; }
         public string UserName { get; set; }
     }
+    
+    private class RegisterErrorResponse
+    {
+        public string Message { get; set; }
+        public RegisterErrors Errors { get; set; }
+    }   
+    
+    private class RegisterErrors
+    {
+        public DuplicateEmail DuplicateEmail { get; set; }
+        public DuplicateUserName DuplicateUserName { get; set; }    
+        public PasswordRequiresDigit PasswordRequiresDigit { get; set; }    
+        public PasswordRequiresNonAlphanumeric PasswordRequiresNonAlphanumeric { get; set; }    
+        public PasswordRequiresUpper PasswordRequiresUpper { get; set; }    
+        public PasswordRequiresLower PasswordRequiresLower { get; set; }    
+        public PasswordTooShort PasswordTooShort { get; set; }    
+    }
+    
+    private class DuplicateEmail{}   
+    private class DuplicateUserName{}
+    private class PasswordRequiresDigit{}
+    private class PasswordRequiresNonAlphanumeric{}
+    private class PasswordRequiresUpper{}
+    private class PasswordRequiresLower{}
+    private class PasswordTooShort{}
 }
+
