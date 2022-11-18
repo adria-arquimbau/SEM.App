@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components
 @using SEM.App.Authentication
+@using System.Net
 
 @inject HttpClient httpClient
 @inject AuthenticationStateProvider authStateProvider
@@ -67,9 +68,14 @@
             await customAuthStateProvider.UpdateAuthenticationState(userSession);
             navManager.NavigateTo("/", true);
         }
+        else if(loginResponse.StatusCode == HttpStatusCode.BadRequest)
+        {
+            FailedLoginMessage = "Login Failed, verify your credentials please.";
+            requestingLogIn = false;
+        }
         else
         {
-            FailedLoginMessage = "Something went wrong, try it again later.";
+            FailedLoginMessage = "Something went wrong with our services, try again later please.";
             requestingLogIn = false;
         }
     }
