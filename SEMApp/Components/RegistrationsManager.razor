@@ -142,11 +142,9 @@
     private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
     {
         RequestingChangeRegistrationState = true;
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        Token = await customAuthStateProvider.GetToken();
-        
+
         var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registrationId}/{state}");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
@@ -157,18 +155,19 @@
         await RefreshEvent.InvokeAsync();
         RequestingChangeRegistrationState = false;
     }
-    
+
     private async Task OnDialogClose(bool isOk)
     {
         if (isOk)
         {
             RequestingDeleteRegistration = true;
             var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Registrations/{registrationIdToDelete}/delete");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
             var response = await HttpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 ErrorMessage = true;
+                // ficar missatge de error 
             }
             await RefreshEvent.InvokeAsync();
             RequestingDeleteRegistration = false;
@@ -181,5 +180,11 @@
         DialogDeleteregistrationIsOpen = true;
         registrationIdToDelete = id;
         message = $"Do you want to delete the {userName} registration?";
+    }
+    
+    private async Task<string> GetToken()
+    {   
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        return await customAuthStateProvider.GetToken();
     }
 }

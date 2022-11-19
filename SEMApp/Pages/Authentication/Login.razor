@@ -59,7 +59,7 @@
     {
         FailedLoginMessage = null;
         requestingLogIn = true;
-        var loginResponse = await httpClient.PostAsJsonAsync<LoginRequest>(semApiUrl + "Auth/Login", loginRequest);
+        var loginResponse = await httpClient.PostAsJsonAsync(semApiUrl + "Auth/Login", loginRequest);
 
         if (loginResponse.IsSuccessStatusCode)
         {
@@ -82,8 +82,8 @@
 
     public class LoginRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 }
 

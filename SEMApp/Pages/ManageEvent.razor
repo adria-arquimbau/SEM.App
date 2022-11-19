@@ -224,14 +224,14 @@ else
         RequestingUpdateInformation = true;
         var jsonInString = JsonSerializer.Serialize(new
         {       
-            myEvent.Name,
-            myEvent.Description,
-            myEvent.Location,
-            myEvent.MaxRegistrations,
-            myEvent.StartDate,
-            myEvent.FinishDate, 
-            myEvent.OpenRegistrationsDateTime, 
-            myEvent.CloseRegistrationsDateTime
+            myEvent?.Name,
+            myEvent?.Description,
+            myEvent?.Location,
+            myEvent?.MaxRegistrations,
+            myEvent?.StartDate,
+            myEvent?.FinishDate, 
+            myEvent?.OpenRegistrationsDateTime, 
+            myEvent?.CloseRegistrationsDateTime
         });   
         
         var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/{EventId}")
@@ -282,7 +282,7 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea type="text" class="form-control" id="description" required @bind="@myEvent.Description" />
+                    <textarea type="text" class="form-control" id="description" required @bind="@myEvent.Description"></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
