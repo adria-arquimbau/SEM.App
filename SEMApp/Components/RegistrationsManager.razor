@@ -1,6 +1,8 @@
 ﻿@using SEM.App.Data
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
+@using System.Text
+@using System.Text.Json
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
@@ -26,15 +28,7 @@
                 <td>
                     @if (registration.Bib != null)
                     {
-                        <input type="number" class="form-control-bib" id="maxRegistrations" required @bind="@registration.Bib" />
-                        @if (!RequestingUpdateBib)
-                        {
-                            <button class="btn btn-outline-dark btn-sm" @onclick="() => UpdateBib(registration.Id, registration.Bib)">Up</button>
-                        }
-                        else
-                        {
-                            <LoadingButton ButtonType="dark" LoadingText="Up"></LoadingButton>
-                        }
+                        <input type="number" @bind="@registration.Bib" class="form-control-bib" id="bib" @oninput="() => Update(registration)" />
                     }
                 </td>
                 <td>@registration.Role</td>
@@ -94,7 +88,7 @@
     </table>
 </div>
 
-@if (DialogDeleteregistrationIsOpen)
+@if (DialogDeleteRegistrationIsOpen)
 {
     <Dialog Caption="Delete an author"
             RequestingDeleteRegistration="@RequestingDeleteRegistration"
@@ -107,7 +101,7 @@
 @code {
 
     [Parameter]
-    public List<RegistrationDto> Registrations { get; set; }
+    public List<RegistrationDto>? Registrations { get; set; }
     [Parameter]
     public EventCallback RefreshEvent { get; set; }
     
@@ -117,10 +111,9 @@
     
     private Guid registrationIdToDelete;
     
-    private bool DialogDeleteregistrationIsOpen;
+    private bool DialogDeleteRegistrationIsOpen;
     private bool RequestingChangeRegistrationState;
-    private bool RequestingDeleteRegistration;
-    private bool RequestingUpdateBib;
+    private bool RequestingDeleteRegistration;  
     private bool ErrorMessage;
     
     private string message;
@@ -143,11 +136,18 @@
         RequestingChangeRegistrationState = false;
     }
     
-    private async Task UpdateBib(Guid registrationId, int? bib)
-    {
-        RequestingUpdateBib = true;
-
-        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registrationId}/update-bib/{bib}");
+    private async Task Update(RegistrationDto registration)
+    {   
+        var jsonInString = JsonSerializer.Serialize(new
+        {       
+            registration.Id,
+            registration.Bib
+        });   
+        
+        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registration.Id}")
+        {
+            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+        };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
 
@@ -155,9 +155,7 @@
         {
             
         }
-
         await RefreshEvent.InvokeAsync();
-        RequestingUpdateBib = false;
     }
 
     private async Task OnDialogClose(bool isOk)
@@ -176,12 +174,12 @@
             await RefreshEvent.InvokeAsync();
             RequestingDeleteRegistration = false;
         }
-        DialogDeleteregistrationIsOpen = false;
+        DialogDeleteRegistrationIsOpen = false;
     }
     
     private void OpenDialog(Guid id, string userName)
     {
-        DialogDeleteregistrationIsOpen = true;
+        DialogDeleteRegistrationIsOpen = true;
         registrationIdToDelete = id;
         message = $"Do you want to delete the {userName} registration?";
     }
