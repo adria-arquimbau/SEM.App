@@ -71,7 +71,7 @@
                         {
                             if (!RequestingUpdateStatus)
                             {
-                                <button class="btn btn-dark" @onclick="() => SetRole(user.Id, organizerRole)">Make Organizer</button>
+                                <button class="btn btn-outline-dark" @onclick="() => SetRole(user.Id, organizerRole)">Make Organizer</button>
                             }
                             else
                             {
@@ -84,7 +84,7 @@
                         {
                             if (!RequestingUpdateStatus)
                             {
-                                <button class="btn btn-dark btn-sm" @onclick="() => DeleteRole(user.Id, organizerRole)">Delete Organizer</button>
+                                <button class="btn btn-outline-dark btn-sm" @onclick="() => DeleteRole(user.Id, organizerRole)">Delete Organizer</button>
                             }
                             else
                             {

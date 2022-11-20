@@ -59,7 +59,7 @@ else
 				<b>Registration Date: </b> @User.RegistrationDate
 			</div>
 			<div class="my-account-field">
-				<button class="btn btn-dark btn-sm" @onclick="Open">Set User Information</button>
+				<button class="btn btn-outline-dark btn-sm" @onclick="Open">Set User Information</button>
 			</div>
 			<div class="my-account-field">
 				@if (!HaveAllTheInformation)
@@ -113,13 +113,13 @@ else
             <div class="modal-footer">
                 @if (!RequestingSetInformation)
                 {
-                    <button type="button" class="btn btn-dark btn-sm" @onclick="SetInformation">Set</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="SetInformation">Set</button>
                 }
                 else
                 {
                     <LoadingButton ButtonType="primary" LoadingText="Setting"></LoadingButton>
                 }
-                <button type="button" class="btn btn-dark btn-sm" data-dismiss="modal" @onclick="Close">Close</button>
+                <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="Close">Close</button>
             </div>
             @if (isSet.HasValue)
             {

@@ -114,11 +114,11 @@ else
                     {
                         @if (!RequestingSignUp)
                         {
-                            <button type="button" class="btn btn-dark btn-sm" @onclick="SignUp">Sign up</button>
+                            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="SignUp">Sign up</button>
                         }
                         else
                         {
-                            <LoadingButton ButtonType="success" LoadingText="Signing up"></LoadingButton>
+                            <LoadingButton ButtonType="dark" LoadingText="Signing up"></LoadingButton>
                         }
                     }
                 </AuthorizeView>
@@ -145,7 +145,7 @@ else
             {
                 @if (!RequestingGoToMyAccount)
                 {
-                    <button type="button" class="btn btn-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
                 }
                 else
                 {
@@ -159,12 +159,12 @@ else
             @if (ICanManageThisEvent)
             {
                 <div class="event-field">
-                    <button class="btn btn-dark btn-sm" @onclick="ManageEvent">Manage event</button>
+                    <button class="btn btn-outline-dark btn-sm" @onclick="ManageEvent">Manage event</button>
                 </div>
             }
         </AuthorizeView>
         <div class="event-field">
-            <button class="btn btn-dark btn-sm" @onclick="BackToEvents">Go Back to events</button>
+            <button class="btn btn-outline-dark btn-sm" @onclick="BackToEvents">Go Back to events</button>
         </div>
         </div>
     </div>

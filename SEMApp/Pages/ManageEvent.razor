@@ -44,7 +44,7 @@ else
                             @IsPublic 
                             @if (!RequestingIsPublicStateChange)
                             {
-                                <button class="btn btn-dark btn-sm" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
+                                <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
                             }
                             else
                             {
@@ -56,7 +56,7 @@ else
                             @IsPrivate
                             @if (!RequestingIsPublicStateChange)
                             {
-                                <button class="btn btn-dark btn-sm" @onclick="() => ChangeIsPublicState(true)">Publish</button>
+                                <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeIsPublicState(true)">Publish</button>
                             }
                             else
                             {
@@ -99,7 +99,7 @@ else
                         <b>Created by: </b> @myEvent.CreatorNickName
                     </div>
                     <div class="event-field">
-                        <button class="btn btn-dark btn-sm" @onclick="Open">Update Information</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="Open">Update Information</button>
                     </div>
                 </div>
             </div>
@@ -312,16 +312,16 @@ else
             <div class="modal-footer">
                 @if (!RequestingUpdateInformation)
                 {
-                    <button type="button" class="btn btn-dark btn-sm" @onclick="UpdateInformation">Update</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="UpdateInformation">Update</button>
                 }
                 else
                 {
-                    <button class="btn btn-dark btn-sm" type="button" disabled>
+                    <button class="btn btn-outline-dark btn-sm" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         <span class="sr-only">Setting...</span>
                     </button>
                 }
-                <button type="button" class="btn btn-dark btn-sm" data-dismiss="modal" @onclick="Close">Close</button>
+                <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="Close">Close</button>
             </div>
         </div>  
     </div>
