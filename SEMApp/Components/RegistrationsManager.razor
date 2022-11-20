@@ -17,7 +17,6 @@
         <th scope="col">Role</th>
         <th scope="col">State</th>
         <th scope="col">Actions</th>
-        <th scope="col">Remove</th>
         </thead>
         @foreach (var registration in Registrations)
         {
@@ -35,75 +34,56 @@
                     case RegistrationState.Accepted:<td>@AcceptedState</td>
                         break;
                 }
+                <td>
                 @if (registration.State is RegistrationState.Cancelled)
                 {
                     @if (!RequestingChangeRegistrationState)
                     {
-                        <td>
-                            <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                            <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
-                        </td>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
                     }
                     else
                     {
-                        <td>
-
-                            <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                <span class="sr-only">Changing state...</span>
-                            </button>
-                        </td>
+                        <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">Changing state...</span>
+                        </button>
                     }
                 }
                 @if (registration.State is RegistrationState.PreRegistered)
                 {
                     @if (!RequestingChangeRegistrationState)
                     {
-                        <td>
-                            <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                            <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                        </td>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
                     }
                     else
                     {
-                        <td>
-                            <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                <span class="sr-only">Changing state...</span>
-                            </button>
-                        </td>
+                        <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="sr-only">Changing state...</span>
+                        </button>
                     }
                 }
                 @if (registration.State == RegistrationState.Accepted)
                 {
                     @if (!RequestingChangeRegistrationState)
                     {
-                        <td><button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                            <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button></td>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
                     }
                     else
                     {
-                        <td>
-                            <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                        <button class="btn btn-outline-dark btn-sm" type="button" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 <span class="sr-only">Changing state...</span>
-                            </button>
-                        </td>
+                        </button>
                     }
                 }
-                @if (!RequestingDeleteRegistration)
-                {
-                    <td><button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button></td>
-                }
-                else
-                {
-                    <td>
-                        <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span class="sr-only">Deleating...</span>
-                        </button>
-                    </td>
-                }
+                </td>
             </tr>
             </tbody>
         }

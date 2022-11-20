@@ -72,7 +72,15 @@ else
                         <b>Finish: </b> @myEvent.FinishDate
                     </div>
                     <div class="event-field">
-                        <b>Open registrations: </b> @myEvent.OpenRegistrationsDateTime
+                        <b>Open registrations: </b> @myEvent.OpenRegistrationsDateTime 
+                        @if (myEvent.OpenRegistrationsDateTime < DateTime.Now && myEvent.CloseRegistrationsDateTime > DateTime.Now)
+                           {
+                               @OpenedRegistrations
+                           }
+                           else
+                           {
+                               @ClosedRegistrations
+                           }
                     </div>
                     <div class="event-field">
                         <b>CloseRegistrations: </b> @myEvent.CloseRegistrationsDateTime
@@ -149,6 +157,8 @@ else
     
     private const string IsPublic = "✅  ";
     private const string IsPrivate = "❌  ";
+    private const string ClosedRegistrations = " - ⛔ Registrations closed";
+    private const string OpenedRegistrations = " - ✅ Registrations open";
     
     private bool RequestingUpdateInformation;
     private bool RequestingIsPublicStateChange;

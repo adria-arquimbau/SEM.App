@@ -22,7 +22,7 @@ else
 {
     <div class="event">
         <div class="event-content">
-            <h1>@SportEvent.Name</h1> 
+            <h1>@SportEvent.Name</h1>
             <div class="event-field">
             </div>
             <div class="event-field">
@@ -40,7 +40,15 @@ else
                 <b>Finish: </b> @SportEvent.FinishDate.ToLongDateString() at @SportEvent.FinishDate.ToShortTimeString()
             </div>
             <div class="event-field">
-                <b>Open registrations: </b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString()
+                <b>Open registrations: </b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString() 
+                @if (SportEvent.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
+                  {
+                      @OpenedRegistrations
+                  }
+                  else
+                  {
+                      @ClosedRegistrations
+                  }
             </div>
             <div class="event-field">
                 <b>Close registrations: </b> @SportEvent.CloseRegistrationsDateTime.ToLongDateString() at @SportEvent.CloseRegistrationsDateTime.ToShortTimeString()
@@ -82,6 +90,7 @@ else
                                     <th scope="col">Num</th>
                                     <th scope="col">User Name</th>
                                     <th scope="col">Role</th>
+                                    <th scope="col">Bib</th>
                                     </thead>
                                     
                                     @for (var index = 0; index < Registrations?.Count; index++)
@@ -93,6 +102,7 @@ else
                                                 <td>@registrationNumber</td>
                                                 <td>@registration.UserName</td>
                                                 <td>@registration.Role</td>
+                                                <td>@registration.Bib</td>
                                             </tr>
                                         </tbody>
                                     }
@@ -110,7 +120,7 @@ else
                 </AuthorizeView>
             <div class="event-field">
                 <AuthorizeView>
-                    @if (RegistrationState == RegistrationState.NonRegistered)
+                    @if (RegistrationState == RegistrationState.NonRegistered && SportEvent?.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
                     {
                         @if (!RequestingSignUp)
                         {
@@ -184,10 +194,12 @@ else
     private bool ICanManageThisEvent { get; set; }
     private bool RequestingGoToMyAccount { get; set; }
         
-    private const string AcceptedState = "✅";
-    private const string NonRegisteredState = "❌";
-    private const string PreRegisteredState = "🔔";
-    private const string CancelledState = "⛔";
+    private const string AcceptedState = "✅ Accepted";
+    private const string NonRegisteredState = "❌ Non registered";
+    private const string PreRegisteredState = "🔔 Pre-registered";
+    private const string CancelledState = "⛔ Cancelled";
+    private const string ClosedRegistrations = " - ⛔ Registrations closed";
+    private const string OpenedRegistrations = " - ✅ Registrations open";
     private const string TwoEmptySpaces = " ";
     private string? FailedRegistrationMessage;  
     
