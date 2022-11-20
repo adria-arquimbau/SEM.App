@@ -11,3 +11,7 @@
     align-items: center;
     margin-right: 10px;
 }
+
+.form-control-bib{
+    max-width: 55px;
+}
