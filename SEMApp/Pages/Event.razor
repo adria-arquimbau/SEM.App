@@ -145,7 +145,7 @@ else
             {
                 @if (!RequestingGoToMyAccount)
                 {
-                    <button type="button" class="btn btn-primary" @onclick="GoToMyAccount">Set information in my account</button>
+                    <button type="button" class="btn btn-primary btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
                 }
                 else
                 {
@@ -159,12 +159,12 @@ else
             @if (ICanManageThisEvent)
             {
                 <div class="event-field">
-                    <button class="btn btn-primary" @onclick="ManageEvent">Manage event</button>
+                    <button class="btn btn-primary btn-sm" @onclick="ManageEvent">Manage event</button>
                 </div>
             }
         </AuthorizeView>
         <div class="event-field">
-            <button class="btn btn-primary" @onclick="BackToEvents">Go Back to events</button>
+            <button class="btn btn-primary btn-sm" @onclick="BackToEvents">Go Back to events</button>
         </div>
         </div>
     </div>

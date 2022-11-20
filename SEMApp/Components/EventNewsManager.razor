@@ -12,7 +12,7 @@
     </div>
     <div class="eventNews-content">
        
-        <button class="btn btn-primary" @onclick="OpenCreateNews">Create a News</button>
+        <button class="btn btn-primary btn-sm" @onclick="OpenCreateNews">Create a News</button>
         
         <div class="eventNews-news">
             @if (News == null)
@@ -43,11 +43,11 @@
                             <div class="eventNews-news-new-actions-button">
                                @if (!RequestingDelete)
                                 {
-                                    <button class="btn btn-danger" @onclick="() => Delete(news.Id)">Delete</button>
+                                    <button class="btn btn-danger btn-sm" @onclick="() => Delete(news.Id)">Delete</button>
                                 }
                                 else
                                 {
-                                    <button class="btn btn-danger" type="button" disabled>
+                                    <button class="btn btn-danger btn-sm" type="button" disabled>
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                         <span class="sr-only">Deleating...</span>
                                     </button>
@@ -56,11 +56,11 @@
                             <div>
                                @if (!RequestingUpdate)
                                {
-                                   <button class="btn btn-warning" @onclick="OpenUpdateNews">Update</button>
+                                   <button class="btn btn-warning btn-sm" @onclick="OpenUpdateNews">Update</button>
                                }
                                else
                                {
-                                   <button class="btn btn-warning" type="button" disabled>
+                                   <button class="btn btn-warning btn-sm" type="button" disabled>
                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                        <span class="sr-only">Updating...</span>
                                    </button>

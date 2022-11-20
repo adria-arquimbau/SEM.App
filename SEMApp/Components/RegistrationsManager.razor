@@ -8,7 +8,7 @@
 <div class="registrationManager">
     <div class="registrationManager-top">
         <h3>Registrations Manager</h3>
-        <button class="btn btn-primary">Download Csv</button>
+        <button class="btn btn-primary btn-sm">Download Csv</button>
     </div>
     <table class="table table-striped">
         <thead>
@@ -39,14 +39,14 @@
                     {
                         <td>
                             <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                            <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
+                            <button class="btn btn-warning btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
                         </td>
                     }
                     else
                     {
                         <td>
 
-                            <button class="btn btn-primary" type="button" disabled>
+                            <button class="btn btn-primary btn-sm" type="button" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 <span class="sr-only">Changing state...</span>
                             </button>
@@ -59,13 +59,13 @@
                     {
                         <td>
                             <button class="btn btn-success" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                            <button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
                         </td>
                     }
                     else
                     {
                         <td>
-                            <button class="btn btn-primary" type="button" disabled>
+                            <button class="btn btn-primary btn-sm" type="button" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 <span class="sr-only">Changing state...</span>
                             </button>
@@ -76,13 +76,13 @@
                 {
                     @if (!RequestingChangeRegistrationState)
                     {
-                        <td><button class="btn btn-danger" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                            <button class="btn btn-warning" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button></td>
+                        <td><button class="btn btn-danger btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
+                            <button class="btn btn-warning btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button></td>
                     }
                     else
                     {
                         <td>
-                            <button class="btn btn-primary" type="button" disabled>
+                            <button class="btn btn-primary btn-sm" type="button" disabled>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 <span class="sr-only">Changing state...</span>
                             </button>
@@ -91,12 +91,12 @@
                 }
                 @if (!RequestingDeleteRegistration)
                 {
-                    <td><button class="btn btn-danger" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button></td>
+                    <td><button class="btn btn-danger btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button></td>
                 }
                 else
                 {
                     <td>
-                        <button class="btn btn-danger" type="button" disabled>
+                        <button class="btn btn-danger btn-sm" type="button" disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             <span class="sr-only">Deleating...</span>
                         </button>

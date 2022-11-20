@@ -11,30 +11,30 @@
             @switch (Type)
             {
                case Category.Okay:
-                  <button type="button" class="btn btn-primary"
+                  <button type="button" class="btn btn-primary btn-sm btn-sm"
                           @onclick=@Ok>OK</button>
                   break;
                case Category.SaveNot:
-                  <button type="button" class="btn btn-primary"
+                  <button type="button" class="btn btn-primary btn-sm"
                           @onclick=@Ok>Save</button>
-                  <button type="button" class="btn btn-warning"
+                  <button type="button" class="btn btn-warning btn-sm"
                           @onclick="@Cancel">Don't Save</button>
                   break;
                case Category.DeleteNot:
                   @if (!RequestingDeleteRegistration)
                   {
-                     <button type="button" class="btn btn-danger"@onclick=@Ok>Delete</button>
+                     <button type="button" class="btn btn-danger btn-sm"@onclick=@Ok>Delete</button>
                   }
                   else
                   {
                      <td>
-                        <button class="btn btn-danger" type="button" disabled>
+                        <button class="btn btn-danger btn-sm" type="button" disabled>
                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                            <span class="sr-only">Deleating...</span>
                         </button>
                      </td>
                   }
-                  <button type="button" class="btn btn-warning"
+                  <button type="button" class="btn btn-warning btn-sm"
                           @onclick="@Cancel">Don't Delete</button>
                   break;
             }

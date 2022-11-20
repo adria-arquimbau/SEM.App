@@ -30,7 +30,7 @@
             <div class="register-field">
                 @if (!RequestingRegister && SuccessMessage == null)
                 {
-                    <button @onclick="Registration" class="btn btn-primary">Register</button>
+                    <button @onclick="Registration" class="btn btn-primary btn-sm">Register</button>
                 }
                 @if (RequestingRegister)
                 {
@@ -62,7 +62,7 @@
                         @SuccessMessage
                     </div>
                     <div class="event-field">
-                        <button class="btn btn-primary" @onclick="GoToLogIn">Go to log in</button>
+                        <button class="btn btn-primary btn-sm" @onclick="GoToLogIn">Go to log in</button>
                     </div>
                 }
             </div>

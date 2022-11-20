@@ -17,7 +17,7 @@
 <div class="organizer-panel-page">
 <h1>Organizer Panel</h1>
 
-<button class="btn btn-primary" @onclick="Open">Create Event</button>
+<button class="btn btn-primary btn-sm" @onclick="Open">Create Event</button>
 
 <h2>My events:</h2> 
 
@@ -61,7 +61,7 @@ else
                                             }
                      </div>
                      <div class="event-field">
-                         <button class="btn btn-primary" @onclick="() => Manage(myEvent.Id)">Manage</button>
+                         <button class="btn btn-primary btn-sm" @onclick="() => Manage(myEvent.Id)">Manage</button>
                      </div>
                  </div>
              </div>
@@ -118,13 +118,13 @@ else
             <div class="modal-footer">
                 @if (!RequestingCreation)
                 {
-                    <button type="button" class="btn btn-primary" @onclick="CreateEvent">Create</button>
+                    <button type="button" class="btn btn-primary btn-sm" @onclick="CreateEvent">Create</button>
                 }
                 else
                 {
                     <LoadingButton ButtonType="primary" LoadingText="Creating"></LoadingButton>
                 }
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" @onclick="Close">Close</button>
             </div>
             @if (isCreated.HasValue)
             {
