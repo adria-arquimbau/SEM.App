@@ -83,10 +83,10 @@
                                 <b>Location: </b> @sportEvent?.Location
                             </div>
                             <div class="event-field">
-                                <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
+                                <b>Start: </b> @sportEvent?.StartDate.ToLongDateString() at @sportEvent?.StartDate.ToShortTimeString()
                             </div>
                             <div class="event-field">
-                                <button class="btn btn-primary btn-sm" @onclick="() => GoToEvent(sportEvent.Id)">
+                                <button class="btn btn-primary btn-sm" @onclick="() => GoToEvent(sportEvent!.Id)">
                                     Go to event
                                 </button>
                             </div>

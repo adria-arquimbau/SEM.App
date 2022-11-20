@@ -1,6 +1,5 @@
 ﻿@page "/Register"
 @using System.Net
-@using System.Text.Json
 
 @inject HttpClient httpClient
 @inject NavigationManager navManager
@@ -146,8 +145,8 @@
     
     private class RegisterErrorResponse
     {
-        public string?  Message { get; set; }
-        public RegisterErrors?  Errors { get; set; }
+        public string?  Message => null;
+        public RegisterErrors?  Errors => null;
     }   
     
     private class RegisterErrors

@@ -84,7 +84,7 @@ else
                                     <th scope="col">Role</th>
                                     </thead>
                                     
-                                    @for (var index = 0; index < Registrations.Count; index++)
+                                    @for (var index = 0; index < Registrations?.Count; index++)
                                     {
                                         var registration = Registrations[index];
                                         var registrationNumber = index + 1;
@@ -141,7 +141,7 @@ else
         {
             <div class="alert alert-warning" role="alert">
                 @FailedRegistrationMessage   @TwoEmptySpaces
-            @if (FailedRegistrationMessage.Contains("not the minimum information"))
+            @if (FailedRegistrationMessage!.Contains("not the minimum information"))
             {
                 @if (!RequestingGoToMyAccount)
                 {

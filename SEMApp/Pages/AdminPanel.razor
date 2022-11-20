@@ -102,7 +102,7 @@
 @code
 {
     private List<UserDto>? users;
-    private string Token;
+    private string? Token;
         
         private const string TrueCheck = "✅";
     private const string FalseCheck = "❌";
@@ -120,7 +120,7 @@
 
     private async Task ConfirmEmail(Guid userId)
     {
-        await UsersService.ConfirmEmail(Token, userId);
+        await UsersService.ConfirmEmail(Token!, userId);
         await GetUsers();
     }
     
@@ -129,7 +129,7 @@
         RequestingUpdateStatus = true;
         var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/set-role/{userId}/role/{role}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-        var response = await HttpClient.SendAsync(request);
+        await HttpClient.SendAsync(request);
 
         await GetUsers();
         RequestingUpdateStatus = false;
@@ -140,7 +140,7 @@
         RequestingUpdateStatus = true;
         var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/delete-role/{userId}/role/{role}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token); 
-        var response = await HttpClient.SendAsync(request);
+        await HttpClient.SendAsync(request);
         
         await GetUsers();  
         RequestingUpdateStatus = false;
@@ -148,6 +148,6 @@
     
     private async Task GetUsers()
     {
-        users = await UsersService.GetUsers(Token);
+        users = await UsersService.GetUsers(Token!);
     }
 }
