@@ -24,11 +24,11 @@
             <div class="login-field">
                 @if (!requestingLogIn)
                 {
-                    <button @onclick="Authenticate" class="btn btn-primary btn-sm">Login</button>
+                    <button @onclick="Authenticate" class="btn btn-dark btn-sm">Login</button>
                 }
                 else
                 {
-                    <button class="btn btn-success btn-sm" type="button" disabled>
+                    <button class="btn btn-dark btn-sm" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         <span class="sr-only">Signing up...</span>
                     </button>

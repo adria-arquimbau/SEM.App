@@ -29,11 +29,11 @@
             <div class="register-field">
                 @if (!RequestingRegister && SuccessMessage == null)
                 {
-                    <button @onclick="Registration" class="btn btn-primary btn-sm">Register</button>
+                    <button @onclick="Registration" class="btn btn-dark btn-sm">Register</button>
                 }
                 @if (RequestingRegister)
                 {
-                    <button class="btn btn-success btn-sm" type="button" disabled>
+                    <button class="btn btn-dark btn-sm" type="button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         <span class="sr-only">Registering..</span>
                     </button>
@@ -61,7 +61,7 @@
                         @SuccessMessage
                     </div>
                     <div class="event-field">
-                        <button class="btn btn-primary btn-sm" @onclick="GoToLogIn">Go to log in</button>
+                        <button class="btn btn-dark btn-sm" @onclick="GoToLogIn">Go to log in</button>
                     </div>
                 }
             </div>

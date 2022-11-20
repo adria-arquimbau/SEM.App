@@ -26,18 +26,18 @@
          <div class="modal-footer">
             @if (!RequestingUpdate)
             {  
-               <button type="button" class="btn btn-success" @onclick=Update>Update</button>
+               <button type="button" class="btn btn-dark" @onclick=Update>Update</button>
             }
             else
             {
                <td>
-                  <button class="btn btn-success" type="button" disabled>
+                  <button class="btn btn-dark" type="button" disabled>
                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                      <span class="sr-only">Updating...</span>
                   </button>
                </td>
             }
-            <button type="button" class="btn btn-primary btn-sm" @onclick="@Cancel">Go back</button>
+            <button type="button" class="btn btn-dark btn-sm" @onclick="@Cancel">Go back</button>
          </div>
       </div>
    </div>

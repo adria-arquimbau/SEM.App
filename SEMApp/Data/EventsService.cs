@@ -179,6 +179,7 @@ public class RegistrationDto
     public RegistrationRole Role { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public RegistrationState State { get; set; }
+    public int Bib { get; set; }
 }
 
 public enum RegistrationRole
