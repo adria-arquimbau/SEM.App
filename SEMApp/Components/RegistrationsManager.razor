@@ -18,7 +18,7 @@
         <th scope="col">Bib</th>
         <th scope="col">Role</th>
         <th scope="col">State</th>
-        <th scope="col">Actions</th>
+        <th scope="col">Remove</th>
         </thead>
         @foreach (var registration in Registrations)
         {
@@ -32,77 +32,53 @@
                     }
                 </td>
                 <td>@registration.Role</td>
-                @switch (registration.State)
-                {
-                    case RegistrationState.PreRegistered:<td>@PreRegisteredState</td>
-                        break;
-                    case RegistrationState.Cancelled:<td>@CancelledState</td>
-                        break;
-                    case RegistrationState.Accepted:<td>@AcceptedState</td>
-                        break;
-                }
-                <td>
-                    <EditForm @bind-Value=@registration.State Model=@registration @oninput="() => ChangeRegistrationStatus(registration.Id, registration.State)">
-                        <InputSelect @bind-Value=@registration.State>
-                            <option value="@registration.State">@registration.State</option>
-                            @if (registration.State is RegistrationState.Cancelled)
-                            {
-                                <option value="@RegistrationState.Accepted">Accept</option>
-                                <option value="@RegistrationState.PreRegistered">Pre-register</option>
-                            }
-                            @if (registration.State is RegistrationState.PreRegistered)
-                            {
-                                <option value="@RegistrationState.Accepted">Accept</option>
-                                <option value="@RegistrationState.Cancelled">Cancell</option>
-                            }
-                            @if (registration.State is RegistrationState.Accepted)
-                            {
-                                <option value="@RegistrationState.Cancelled">Cancell</option>
-                                <option value="@RegistrationState.PreRegistered">Pre-register</option>
-                            }
-                        </InputSelect>
-                    </EditForm>
+                <td >
+                    <div class="state-column">
+                        @switch (registration.State)
+                        {
+                            case RegistrationState.PreRegistered:
+                                @PreRegisteredState
+                                break;
+                            case RegistrationState.Cancelled:
+                                @CancelledState
+                                break;
+                            case RegistrationState.Accepted:
+                                @AcceptedState
+                                break;
+                        }
+                        <EditForm Model="@registration.State">
+                            <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration.Id, value))">
+                                @if (!RequestingChangeRegistrationState)
+                                {
+                                    <option value="@registration.State">@registration.State</option>
+                                    @if (registration.State is RegistrationState.Cancelled)
+                                    {
+                                        <option value="@RegistrationState.Accepted">Accept</option>
+                                        <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                                    }
+                                    @if (registration.State is RegistrationState.PreRegistered)
+                                    {
+                                        <option value="@RegistrationState.Accepted">Accept</option>
+                                        <option value="@RegistrationState.Cancelled">Cancel</option>
+                                    }
+                                    @if (registration.State is RegistrationState.Accepted)
+                                    {
+                                        <option value="@RegistrationState.Cancelled">Cancel</option>
+                                        <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                                    }
+                                }
+                                else
+                                {
+                                    <option value="@RegistrationState.Cancelled">Updating ...</option>
+                                    <option value="@RegistrationState.PreRegistered">Updating ...</option>
+                                    <option value="@RegistrationState.Accepted">Updating ...</option>
+                                }
+                            </InputSelect>
+                        </EditForm>
+                    </div>
                 </td>
                 <td>
-                @if (registration.State is RegistrationState.Cancelled)
-                {
-                    @if (!RequestingChangeRegistrationState)
-                    {
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
-                    }
-                    else
-                    {
-                        <LoadingButton ButtonType="dark" LoadingText="Changing state"></LoadingButton>
-                    }
-                }
-                @if (registration.State is RegistrationState.PreRegistered)
-                {
-                    @if (!RequestingChangeRegistrationState)
-                    {
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Accepted)">Accept</button>
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
-                    }
-                    else
-                    {
-                        <LoadingButton ButtonType="dark" LoadingText="Changing state"></LoadingButton>
-                    }
-                }
-                @if (registration.State == RegistrationState.Accepted)
-                {
-                    @if (!RequestingChangeRegistrationState)
-                    {
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.Cancelled)">Cancel</button>
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeRegistrationStatus(registration.Id, RegistrationState.PreRegistered)">Pre-register</button>
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
-                    }
-                    else
-                    {
-                        <LoadingButton ButtonType="dark" LoadingText="Changing state"></LoadingButton>
-                    }
-                }
+                    <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
                 </td>
             </tr>
             </tbody>
@@ -127,9 +103,11 @@
     [Parameter]
     public EventCallback RefreshEvent { get; set; }
     
-    private string PreRegisteredState = "🔔 Pre-registered";
-    private string CancelledState = "⛔ Cancelled";
-    private string AcceptedState = "✅ Accepted";
+    private EditContext? editContext;
+    
+    private string PreRegisteredState = "🔔  ";
+    private string CancelledState = "⛔  ";
+    private string AcceptedState = "✅  ";
     
     private Guid registrationIdToDelete;
     
@@ -140,6 +118,12 @@
     
     private string message;
     private string Token;
+
+    protected override Task OnInitializedAsync()
+    {
+        editContext = new EditContext(Registrations);
+        return base.OnInitializedAsync();
+    }
 
     private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
     {

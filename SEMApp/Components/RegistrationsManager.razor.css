@@ -15,3 +15,8 @@
 .form-control-bib{
     max-width: 55px;
 }
+
+.state-column{
+    display: flex;
+    flex-direction: row;
+}
