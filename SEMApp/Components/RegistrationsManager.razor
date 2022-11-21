@@ -42,6 +42,28 @@
                         break;
                 }
                 <td>
+                    <EditForm @bind-Value=@registration.State Model=@registration @oninput="() => ChangeRegistrationStatus(registration.Id, registration.State)">
+                        <InputSelect @bind-Value=@registration.State>
+                            <option value="@registration.State">@registration.State</option>
+                            @if (registration.State is RegistrationState.Cancelled)
+                            {
+                                <option value="@RegistrationState.Accepted">Accept</option>
+                                <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                            }
+                            @if (registration.State is RegistrationState.PreRegistered)
+                            {
+                                <option value="@RegistrationState.Accepted">Accept</option>
+                                <option value="@RegistrationState.Cancelled">Cancell</option>
+                            }
+                            @if (registration.State is RegistrationState.Accepted)
+                            {
+                                <option value="@RegistrationState.Cancelled">Cancell</option>
+                                <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                            }
+                        </InputSelect>
+                    </EditForm>
+                </td>
+                <td>
                 @if (registration.State is RegistrationState.Cancelled)
                 {
                     @if (!RequestingChangeRegistrationState)
