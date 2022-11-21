@@ -28,7 +28,7 @@
                 <td>
                     @if (registration.Bib != null)
                     {
-                        <input type="number" @bind="@registration.Bib" class="form-control-bib" id="bib" @oninput="() => Update(registration)" />
+                        <input class="form-control-bib" type="number" @bind="registration.Bib" @bind:event="oninput" @onkeyup="() => Update(registration)" >
                     }
                 </td>
                 <td>@registration.Role</td>
