@@ -34,23 +34,9 @@
                 <td>@registration.Role</td>
                 <td >
                     <div class="state-column">
-                        @switch (registration.State)
-                        {
-                            case RegistrationState.PreRegistered:
-                                @PreRegisteredState
-                                break;
-                            case RegistrationState.Cancelled:
-                                @CancelledState
-                                break;
-                            case RegistrationState.Accepted:
-                                @AcceptedState
-                                break;
-                        }
                         <EditForm Model="@registration.State">
                             <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration.Id, value))">
-                                @if (!RequestingChangeRegistrationState)
-                                {
-                                    <option value="@registration.State">@registration.State</option>
+                                    <option value="@registration.State">@GiveStateIcon(registration.State) @registration.State</option>
                                     @if (registration.State is RegistrationState.Cancelled)
                                     {
                                         <option value="@RegistrationState.Accepted">Accept</option>
@@ -195,4 +181,18 @@
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         return await customAuthStateProvider.GetToken();
     }
+
+    private string GiveStateIcon(RegistrationState registrationState)
+    {
+        if (registrationState == RegistrationState.Accepted)
+        {
+            return AcceptedState;
+        }
+        if (registrationState == RegistrationState.PreRegistered)
+        {
+            return PreRegisteredState;
+        }
+        return CancelledState;
+    }   
+
 }
