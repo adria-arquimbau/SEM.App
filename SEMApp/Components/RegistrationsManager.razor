@@ -36,7 +36,9 @@
                     <div class="state-column">
                         <EditForm Model="@registration.State">
                             <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration.Id, value))">
-                                    <option value="@registration.State">@GiveStateIcon(registration.State) @registration.State</option>
+                                @if(!RequestingChangeRegistrationState)
+                                {
+                                    <option value="@registration.State">@GiveStateIcon(@registration.State) @registration.State</option>
                                     @if (registration.State is RegistrationState.Cancelled)
                                     {
                                         <option value="@RegistrationState.Accepted">Accept</option>
@@ -55,9 +57,7 @@
                                 }
                                 else
                                 {
-                                    <option value="@RegistrationState.Cancelled">Updating ...</option>
-                                    <option value="@RegistrationState.PreRegistered">Updating ...</option>
-                                    <option value="@RegistrationState.Accepted">Updating ...</option>
+                                    <option value="@registration.State">Updating ...</option>
                                 }
                             </InputSelect>
                         </EditForm>
