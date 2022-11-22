@@ -28,10 +28,7 @@
                 }
                 else
                 {
-                    <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span class="sr-only">Signing up...</span>
-                    </button>
+                    <LoadingButton ButtonType="dark" LoadingText="Signing up" />
                 }
             </div>
             <div class="login-field">
@@ -42,11 +39,44 @@
                     </div>
                 }
             </div>
-            <div>
-                <label>Change password</label>
-                <input @bind="changePasswordEmail" type="text" class="form-control" placeholder="Email" />
-                <button @onclick="RequestChangePassword" class="btn btn-outline-dark btn-sm">Change password</button>
-            </div>
+            @if (!showChangePassword)
+            {
+                <div class="login-field">
+                    <button @onclick="() => ShowChangePassword(true)" class="btn btn-outline-dark btn-sm">Change password</button>
+                </div>
+            }
+            @if (showChangePassword)
+            {
+                <div class="login-field">
+                    <label>Change password</label>
+                    <input @bind="changePasswordEmail" type="text" class="form-control" placeholder="Email" />
+                </div>
+                <div class="login-field">
+                    @if (!RequestingChangePassword)
+                    {
+                        <button @onclick="RequestChangePassword" class="btn btn-outline-dark btn-sm">Change password</button>
+                        <button @onclick="() => ShowChangePassword(false)" class="btn btn-outline-dark btn-sm">Hide</button>
+                    }
+                    else
+                    {
+                        <LoadingButton ButtonType="dark" LoadingText="Requesting"></LoadingButton>
+                    }
+                </div>
+                <div class="login-field">
+                    @if (sendedEmailToChangePasswordMessage != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @sendedEmailToChangePasswordMessage
+                        </div>
+                    }
+                    @if (errorSendedEmailToChangePasswordMessage != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorSendedEmailToChangePasswordMessage
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -58,8 +88,12 @@
     
     private string? FailedLoginMessage;
     private string? changePasswordEmail;
+    private string? sendedEmailToChangePasswordMessage;
+    private string? errorSendedEmailToChangePasswordMessage;
 
     private bool requestingLogIn;
+    private bool RequestingChangePassword;
+    private bool showChangePassword;
 
     private async Task Authenticate()
     {
@@ -88,20 +122,20 @@
     
     private async Task RequestChangePassword()
     {
-        var response = await httpClient.PostAsJsonAsync(semApiUrl + "Auth/change-password", changePasswordEmail);
+        RequestingChangePassword = true;
+        sendedEmailToChangePasswordMessage = null;
+        errorSendedEmailToChangePasswordMessage = null;
+        var response = await httpClient.PostAsJsonAsync(semApiUrl + "Auth/change-password-request", changePasswordEmail);
 
         if (response.IsSuccessStatusCode)
         {
-            
-        }       
-        else if(response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            
+            sendedEmailToChangePasswordMessage = "If this account exist, you have an email.";
         }
         else
         {
-            
+            errorSendedEmailToChangePasswordMessage = "Our servers are not available right now, try it again later please.";
         }
+        RequestingChangePassword = false;
     }
 
     public class LoginRequest
@@ -109,5 +143,14 @@
         public string? Email { get; set; }
         public string? Password { get; set; }
     }
-}
 
+    private void ShowChangePassword(bool show)
+    {
+        sendedEmailToChangePasswordMessage = null;
+        errorSendedEmailToChangePasswordMessage = null;
+        showChangePassword = show;
+    }
+
+}
+    
+    
