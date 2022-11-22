@@ -35,12 +35,17 @@
                 }
             </div>
             <div class="login-field">
-            @if (FailedLoginMessage!= null)
-            {
-                <div class="event-field alert alert-danger">
-                    @FailedLoginMessage
-                </div>
-            }
+                @if (FailedLoginMessage!= null)
+                {
+                    <div class="event-field alert alert-danger">
+                        @FailedLoginMessage
+                    </div>
+                }
+            </div>
+            <div>
+                <label>Change password</label>
+                <input @bind="changePasswordEmail" type="text" class="form-control" placeholder="Email" />
+                <button @onclick="RequestChangePassword" class="btn btn-outline-dark btn-sm">Change password</button>
             </div>
         </div>
     </div>
@@ -52,6 +57,7 @@
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
     
     private string? FailedLoginMessage;
+    private string? changePasswordEmail;
 
     private bool requestingLogIn;
 
@@ -77,6 +83,24 @@
         {
             FailedLoginMessage = "Something went wrong with our services, try again later please.";
             requestingLogIn = false;
+        }   
+    }
+    
+    private async Task RequestChangePassword()
+    {
+        var response = await httpClient.PostAsJsonAsync(semApiUrl + "Auth/change-password", changePasswordEmail);
+
+        if (response.IsSuccessStatusCode)
+        {
+            
+        }       
+        else if(response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            
+        }
+        else
+        {
+            
         }
     }
 
