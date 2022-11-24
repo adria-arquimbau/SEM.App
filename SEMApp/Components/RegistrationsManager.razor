@@ -35,8 +35,8 @@
                 <td >
                     <div class="state-column">
                         <EditForm Model="@registration.State">
-                            <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration.Id, value))">
-                                @if(!RequestingChangeRegistrationState)
+                            <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration, value))">
+                                @if(!registration.RequestingChangeStatus)
                                 {
                                     <option value="@registration.State">@GiveStateIcon(@registration.State) @registration.State</option>
                                     @if (registration.State is RegistrationState.Cancelled)
@@ -98,7 +98,6 @@
     private Guid registrationIdToDelete;
     
     private bool DialogDeleteRegistrationIsOpen;
-    private bool RequestingChangeRegistrationState;
     private bool RequestingDeleteRegistration;  
     private bool ErrorMessage;
     
@@ -111,11 +110,11 @@
         return base.OnInitializedAsync();
     }
 
-    private async Task ChangeRegistrationStatus(Guid registrationId, RegistrationState state)
+    private async Task ChangeRegistrationStatus(RegistrationDto registration, RegistrationState state)
     {
-        RequestingChangeRegistrationState = true;
+        registration.RequestingChangeStatus = true;   
 
-        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registrationId}/{state}");
+        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registration.Id}/{state}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
 
@@ -125,7 +124,7 @@
         }
 
         await RefreshEvent.InvokeAsync();
-        RequestingChangeRegistrationState = false;
+        registration.RequestingChangeStatus = false;
     }
     
     private async Task Update(RegistrationDto registration)
