@@ -145,19 +145,19 @@
     
     private class RegisterErrorResponse
     {
-        public string?  Message => null;
-        public RegisterErrors?  Errors => null;
+        public string?  Message { get; set; }
+        public RegisterErrors?  Errors { get; set; }
     }   
     
     private class RegisterErrors
     {
-        public DuplicateEmail?  DuplicateEmail => null;
-        public DuplicateUserName?  DuplicateUserName => null;
-        public PasswordRequiresDigit? PasswordRequiresDigit => null;
-        public PasswordRequiresNonAlphanumeric?  PasswordRequiresNonAlphanumeric => null;
-        public PasswordRequiresUpper?  PasswordRequiresUpper => null;
-        public PasswordRequiresLower?  PasswordRequiresLower => null;
-        public PasswordTooShort?  PasswordTooShort => null; 
+        public DuplicateEmail?  DuplicateEmail { get; set; }
+        public DuplicateUserName?  DuplicateUserName { get; set; }
+        public PasswordRequiresDigit? PasswordRequiresDigit { get; set; }
+        public PasswordRequiresNonAlphanumeric?  PasswordRequiresNonAlphanumeric { get; set; }
+        public PasswordRequiresUpper?  PasswordRequiresUpper { get; set; }
+        public PasswordRequiresLower?  PasswordRequiresLower { get; set; }
+        public PasswordTooShort?  PasswordTooShort { get; set; }
     }
     
     private class DuplicateEmail{}   
