@@ -1,0 +1,57 @@
+﻿@using SEM.App.Data
+@using SEM.App.Data.Models
+@using SEM.App.Authentication
+@using System.Net.Http.Headers
+
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager Navigation
+
+<div class="nextEvents">
+    <h3 class="nextEvents-title">Next events</h3>
+    <div class="nextEvents-container">
+        @if (Events != null)
+        {
+            @foreach (var sportEvent in Events)
+            {
+                <div class="nextEvent" @onclick="() => GoToEvent(sportEvent.Id)">
+                    <div>
+                        @sportEvent.Name
+                    </div>
+                    <div class="nextEvent-date">
+                        @sportEvent.StartDate.ToLongDateString()
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="loading-page">
+                <div class="spinner-border loading-spinner" role="status"></div>
+                <p>Loading... Please wait</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<SportEvent>? Events;
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Events");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await HttpClient.SendAsync(request);
+        Events = await response.Content.ReadFromJsonAsync<List<SportEvent>>();
+        
+        await base.OnInitializedAsync();
+    }
+    
+    private void GoToEvent(Guid eventId)
+    {   
+        Navigation.NavigateTo($"/Event/{eventId}");
+    }
+}

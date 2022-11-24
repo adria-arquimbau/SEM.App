@@ -7,38 +7,40 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 
-<h3>Last news</h3>
-
-@if (News == null)
-{
-    <div class="loading-page">
-        <div class="spinner-border loading-spinner" role="status"></div>
-        <p>Loading... Please wait</p>
-    </div>
-}
-else
-{
-    @foreach (var news in News)
-    {
-        <div class="news">
-            <div class="news-content">
-                <h1>@news.Title</h1> 
-                <div class="news-field">
-                    @news.CreationDate.ToLongDateString()
+<div class="lastNews">
+    <h3 class="lastNews-title">Last news</h3>
+    <div class="lastNews-container">
+        @if (News != null)
+        {
+            @foreach (var news in News)
+            {
+                <div class="lastNew" @onclick="() => GoToEvent(news.EventId)">
+                    <div class="lastNew-top">
+                        <div>
+                           @news.Title
+                        </div>
+                        <div class="lastNew-date">
+                            @news.CreationDate.ToLongDateString()
+                        </div>
+                    </div>
+                    <div class="lastNew-field">
+                        @news.Description
+                    </div>
+                    <div class="lastNew-field">
+                        Author: @news.AuthorName
+                    </div>
                 </div>
-                <div class="news-field">
-                    Author: @news.AuthorName
-                </div>
-                <div class="news-field">
-                    @news.Description
-                </div>
-                <div class="news-field">
-                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="() => GoToEvent(news.EventId)">Go to event</button>
-                </div>
+            }
+        }
+        else
+        {
+            <div class="loading-page">
+                <div class="spinner-border loading-spinner" role="status"></div>
+                <p>Loading... Please wait</p>
             </div>
-        </div>
-    }
-}
+        }
+    </div>
+</div>
 
 @code {
 
@@ -61,5 +63,4 @@ else
     {   
         Navigation.NavigateTo($"/Event/{eventId}");
     }
-
 }
