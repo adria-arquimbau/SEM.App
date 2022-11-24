@@ -6,11 +6,12 @@
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
+@inject IJSRuntime JS
 
 <div class="registrationManager">
     <div class="registrationManager-top">
         <h3>Registrations Manager</h3>
-        <button class="btn btn-outline-dark btn-sm">Download Csv</button>
+        <button class="btn btn-outline-dark btn-sm" @onclick="DownloadCsv">Download Csv</button>
     </div>
     <table class="table table-striped">
         <thead>
@@ -94,9 +95,11 @@
     [Parameter]
     public List<RegistrationDto>? Registrations { get; set; }
     [Parameter]
+    public Guid? EventId { get; set; }
+    [Parameter]
     public EventCallback RefreshEvent { get; set; }
     
-    private EditContext? editContext;
+    private EditContext? editContext;   
     
     private string PreRegisteredState = "🔔  ";
     private string CancelledState = "⛔  ";
@@ -201,6 +204,16 @@
             return PreRegisteredState;
         }
         return CancelledState;
-    }   
+    }
 
+    private async Task DownloadCsv()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/Events/" + $"{EventId}/export-registrations");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
+        var response = await HttpClient.SendAsync(request);
+        
+        await using var streamRef = await response.Content.ReadAsStreamAsync();
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", "Test.csv", "text/csv", streamRef);
+    }
 }
