@@ -205,15 +205,20 @@
         }
         return CancelledState;
     }
-
+    
     private async Task DownloadCsv()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/Events/" + $"{EventId}/export-registrations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
+        var file = await response.Content.ReadAsByteArrayAsync();
         
-        await using var streamRef = await response.Content.ReadAsStreamAsync();
+        var fileStream1 = new MemoryStream(file);
+        var fileStream = (Stream)fileStream1;
+        var fileName = $"registrations-{EventId}.csv";
 
-        await JS.InvokeVoidAsync("downloadFileFromStream", "Test.csv", "text/csv", streamRef);
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
 }
