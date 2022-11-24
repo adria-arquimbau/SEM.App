@@ -28,7 +28,14 @@
                 <td>
                     @if (registration.Bib != null)
                     {
-                        <input class="form-control-bib" type="number" @bind="registration.Bib" @bind:event="oninput" @onchange="() => Update(registration)" >
+                        @if (!registration.RequestingUpdateBib)
+                        {
+                            <input class="form-control-bib" type="number" @bind="registration.Bib" @bind:event="oninput" @onchange="() => Update(registration)">
+                        }
+                        else
+                        {
+                            <input class="form-control-bib" type="number" placeholder="...">
+                        }
                     }
                 </td>
                 <td>@registration.Role</td>
@@ -128,7 +135,8 @@
     }
     
     private async Task Update(RegistrationDto registration)
-    {   
+    {
+        registration.RequestingUpdateBib = true;
         var jsonInString = JsonSerializer.Serialize(new
         {       
             registration.Id,
@@ -146,6 +154,7 @@
         {
             
         }
+        registration.RequestingUpdateBib = false;
         await RefreshEvent.InvokeAsync();
     }
 

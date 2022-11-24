@@ -180,8 +180,8 @@ public class RegistrationDto
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public RegistrationState State { get; set; }
     public int? Bib { get; set; }
-    
     public bool RequestingChangeStatus { get; set; }
+    public bool RequestingUpdateBib { get; set; }   
 }
 
 public enum RegistrationRole    
