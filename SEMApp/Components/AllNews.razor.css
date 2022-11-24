@@ -48,7 +48,7 @@
     align-items: center;
     width: 175px;
     height: 35px;
-    animation-duration: 1s;
+    animation-duration: 1.5s;
     animation-iteration-count: infinite;
     transform-origin: bottom;
 }
