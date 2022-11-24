@@ -33,3 +33,33 @@
     align-items: center;
     margin-right: 10px;
 }
+
+.lastNew-footer{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lastNew-click{
+    font-size: 10px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 175px;
+    height: 35px;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    transform-origin: bottom;
+}
+
+.lastNew-click:hover {
+    animation-name: bounce;
+    animation-timing-function: ease;
+}
+
+@keyframes bounce {
+    0%   { transform: translateX(0); }
+    50%  { transform: translateX(-20px); }
+    100% { transform: translateX(0); }
+}

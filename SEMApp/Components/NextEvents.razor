@@ -9,17 +9,22 @@
 
 <div class="nextEvents">
     <h3 class="nextEvents-title">Next events</h3>
-    <div class="nextEvents-container">
+    <div>
         @if (Events != null)
         {
             @foreach (var sportEvent in Events)
             {
                 <div class="nextEvent" @onclick="() => GoToEvent(sportEvent.Id)">
-                    <div>
-                        @sportEvent.Name
+                    <div class="nextEvent-info">
+                        <div>
+                            @sportEvent.Name
+                        </div>
+                        <div class="nextEvent-date">
+                            @sportEvent.StartDate.ToLongDateString()
+                        </div>
                     </div>
-                    <div class="nextEvent-date">
-                        @sportEvent.StartDate.ToLongDateString()
+                    <div class="nextEvent-click">
+                        Click and go to event!
                     </div>
                 </div>
             }

@@ -6,10 +6,6 @@
     align-items: center;
 }
 
-.nextEvents-container{
-    
-}
-
 .nextEvent-date{
     font-size: 12px;
 }
@@ -21,11 +17,41 @@
     min-width: 375px;
     max-width: 375px;
     display: flex;
-    justify-content: center;
-    flex-direction: column;
+    justify-content: space-between;
+    flex-direction: row;
     align-items: flex-start;
 }
 
 .nextEvents-title{
     margin-bottom: 20px;
+}
+
+.nextEvent-info{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.nextEvent-click{
+    font-size: 10px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 175px;
+    height: 50px;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    transform-origin: bottom;
+}
+
+.nextEvent-click:hover {
+    animation-name: bounce;
+    animation-timing-function: ease;
+}
+
+@keyframes bounce {
+    0%   { transform: translateX(0); }
+    50%  { transform: translateX(-20px); }
+    100% { transform: translateX(0); }
 }
