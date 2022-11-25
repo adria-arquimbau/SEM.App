@@ -3,6 +3,7 @@
 @using System.Text
 @using System.Text.Json
 @using SEM.App.Data.Models
+
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
 
@@ -37,7 +38,7 @@
                             Author: @news.AuthorName
                         </div>
                         <div class="eventNews-news-new-field">
-                            Description: @GetShortDescription(news.Description)
+                            Description: @news.ShortDescription
                         </div>
                         <div class="eventNews-news-new-actions">
                             <div class="eventNews-news-new-actions-button">
@@ -158,16 +159,4 @@
         UpdateNewsIsOpen = false;
         await GetNews();
     }
-
-    private string GetShortDescription(string description)
-    {
-        if (description.Length < 20)
-        {
-            return description;
-        }
-        var shortDescription = description.Substring(0, 25);
-        shortDescription += " ...";
-        return shortDescription;
-    }
-    
 }   
