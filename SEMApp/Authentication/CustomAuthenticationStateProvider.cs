@@ -1,26 +1,28 @@
 ﻿using System.Security.Claims;
-using Blazored.SessionStorage;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using SEM.App.Extensions;
 
 namespace SEM.App.Authentication;
 
 public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly ISessionStorageService _sessionStorage;
+    private readonly ILocalStorageService _localStorageService;
     private readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
 
-    public CustomAuthenticationStateProvider(ISessionStorageService sessionStorageService)
+    public CustomAuthenticationStateProvider(ILocalStorageService localStorageServiceService)
     {
-        _sessionStorage = sessionStorageService;
+        _localStorageService = localStorageServiceService;    
     }
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
+            var userSession = await _localStorageService.GetItemAsync<UserSession>("UserSession");
             if (userSession == null)
+            {
                 return await Task.FromResult(new AuthenticationState(_anonymous));
+            }
+
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new(ClaimTypes.Name, userSession.UserName),
@@ -47,12 +49,12 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 new(ClaimTypes.Role, userSession.Role)
             }));
             userSession.ExpiryTimeStamp = DateTime.Now.AddSeconds(userSession.ExpiresIn);
-            await _sessionStorage.SaveItemEncryptedAsync("UserSession", userSession);
+            await _localStorageService.SetItemAsync("UserSession", userSession);
         }
         else
         {
             claimsPrincipal = _anonymous;
-            await _sessionStorage.RemoveItemAsync("UserSession");
+            await _localStorageService.RemoveItemAsync("UserSession");
         }
         
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
@@ -64,7 +66,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 
         try
         {
-            var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
+            var userSession = await _localStorageService.GetItemAsync<UserSession>("UserSession");
             if (DateTime.Now < userSession.ExpiryTimeStamp)
             {
                 result = userSession.Token;

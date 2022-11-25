@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Blazored.SessionStorage;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -17,7 +17,7 @@ builder.Services.AddSingleton<EventsService>();
 builder.Services.AddSingleton<UsersService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
-builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore(options =>
 {
     options.AddPolicy("admin-organizer", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer));
