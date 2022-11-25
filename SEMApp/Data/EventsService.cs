@@ -43,29 +43,7 @@ public class EventsService
     {
         var response = await _httpClient.GetAsync(semApiUrl + $"Events/{eventId}");
         return await response.Content.ReadFromJsonAsync<SportEvent>();
-    }   
-    
-    public async Task<bool> CreateEvent(string name, string description, string location, int maxRegistrations, DateTime startDateTime, DateTime finishDateTime, string token)
-    {
-        var jsonInString = JsonSerializer.Serialize(new
-        {       
-            name,
-            description,
-            location,
-            maxRegistrations,
-            startDateTime,
-            finishDateTime
-        });   
-        
-        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Events")
-        {
-            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        
-        var response = await _httpClient.SendAsync(request);
-        return response.IsSuccessStatusCode;
-    }
+    } 
     
     public async Task<RegisterToAnEventResponse> RegisterToAnEvent(string token, Guid eventId)
     {
@@ -111,13 +89,6 @@ public class EventsService
         var response = await _httpClient.SendAsync(request);
         
         return await response.Content.ReadFromJsonAsync<List<SportEventOrganizer>>();
-    }
-    
-    public async Task DeleteEvent(Guid id, string token)   
-    {   
-        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Events/{id}/delete");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        await _httpClient.SendAsync(request);
     }
 }
 
