@@ -27,7 +27,7 @@
             <tr>
                 <td>@registration.UserName</td>
                 <td>
-                    @if (registration.Bib != null)
+                    @if (registration.State == RegistrationState.Accepted)
                     {
                         @if (!registration.RequestingUpdateBib)
                         {
@@ -35,7 +35,7 @@
                         }
                         else
                         {
-                            <input class="form-control-bib" type="number" placeholder="...">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
                         }
                     }
                 </td>
