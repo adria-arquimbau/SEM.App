@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using SEM.App.Extensions;
 
 namespace SEM.App.Authentication;
 
@@ -17,7 +18,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         try
         {
-            var userSession = await _localStorageService.GetItemAsync<UserSession>("UserSession");
+            var userSession = await _localStorageService.ReadEncryptedItemAsync<UserSession>("UserSession");
             if (userSession == null)
             {
                 return await Task.FromResult(new AuthenticationState(_anonymous));
@@ -49,7 +50,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 new(ClaimTypes.Role, userSession.Role)
             }));
             userSession.ExpiryTimeStamp = DateTime.Now.AddSeconds(userSession.ExpiresIn);
-            await _localStorageService.SetItemAsync("UserSession", userSession);
+            await _localStorageService.SaveItemEncryptedAsync("UserSession", userSession);
         }
         else
         {
@@ -66,7 +67,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 
         try
         {
-            var userSession = await _localStorageService.GetItemAsync<UserSession>("UserSession");
+            var userSession = await _localStorageService.ReadEncryptedItemAsync<UserSession>("UserSession");
             if (DateTime.Now < userSession.ExpiryTimeStamp)
             {
                 result = userSession.Token;
