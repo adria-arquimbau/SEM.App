@@ -6,6 +6,7 @@
 @using System.Net.Http.Headers
 @using System.Text
 @using System.Text.Json
+@using Dialog = SEM.App.Components.Dialog
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -122,10 +123,10 @@ else
                 <EventNewsManager EventId="@EventId"></EventNewsManager>
             </div>
             <div class="event-field">
-                @if (ErrorMessage)
+                @if (ErrorMessage != null)
                 {
                     <div class="alert alert-danger" role="alert">
-                        Something went wrong. Try it again later.
+                        @ErrorMessage
                     </div>
                 }
             </div>
@@ -133,20 +134,23 @@ else
                 <button class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">Go to event</button>
             </div>
             <div class="event-field">
-                @if (!DeleteRequest)
-                {
-                    <button class="btn btn-outline-dark btn-sm" @onclick="() => DeleteEvent(myEvent.Id)">Delete event (irreversible changes)</button>
-                }
-                else
-                {
-                    <LoadingButton ButtonType="dark" LoadingText="Deleting"></LoadingButton>
-                }
+                <button class="btn btn-outline-dark btn-sm" @onclick="OpenDeleteEventDialog">Delete event</button>
             </div>
             <div class="event-field">
                 <button class="btn btn-outline-dark btn-sm" @onclick="GoBack">Back</button>
             </div>
         </div>
     </div>
+}
+
+@if (DialogDeleteEventIsOpen)
+{
+    <Dialog Caption="Delete an author"
+            RequestingDeleteRegistration="@RequestingDeleteEvent"
+            Message="@message"
+            OnClose="@OnDeleteEventDialogClose"
+            Type="Dialog.Category.DeleteNot">
+    </Dialog>
 }
 
 
@@ -160,14 +164,16 @@ else
     private const string IsPrivate = "❌  ";
     private const string ClosedRegistrations = " - ⛔ Registrations closed";
     private const string OpenedRegistrations = " - ✅ Registrations open";
+    private string? message;
+    private string? ErrorMessage;  
     
-    private bool RequestingUpdateInformation;
+    private bool RequestingUpdateInformation;   
     private bool RequestingIsPublicStateChange;
-    private bool DeleteRequest;
-    private bool ErrorMessage;  
+    private bool DialogDeleteEventIsOpen;
+    private bool RequestingDeleteEvent;
     
     private string Token = string.Empty;
-        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
     
     private string ModalClass = "";
     private string ModalDisplay = "none;";
@@ -184,14 +190,28 @@ else
         
         await base.OnInitializedAsync();
     }
-    
-    private async Task DeleteEvent(Guid id)
+
+    private void OpenDeleteEventDialog()
     {
-        DeleteRequest = true;
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
-        var token = await customAuthStateProvider.GetToken();
-        await EventsService.DeleteEvent(id, token);
-        GoBack();
+        DialogDeleteEventIsOpen = true;
+        message = "Are you sure do you want to delete this event?";
+    }
+    
+    private async Task OnDeleteEventDialogClose(bool isOk)
+    {
+        if (isOk)
+        {
+            RequestingDeleteEvent = true;
+            var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Events/{EventId}/delete");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            var response = await HttpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                ErrorMessage = "Something went wrong with our servers, try it again later.";
+            }
+            GoBack();
+        }
+        DialogDeleteEventIsOpen = false;
     }
 
     private void GoBack()
@@ -212,7 +232,7 @@ else
         var response = await HttpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = true;
+            ErrorMessage = "Something went wrong with our servers, try it again later.";
         }
         await GetMyEventAsOrganizer();
         RequestingIsPublicStateChange = false;
@@ -253,7 +273,7 @@ else
         var response = await HttpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = true;
+            ErrorMessage = "Something went wrong with our servers, try it again later.";
         }
         await GetMyEventAsOrganizer();
         RequestingUpdateInformation = false;
