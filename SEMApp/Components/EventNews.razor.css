@@ -1,0 +1,76 @@
+.eventNews-component{
+    margin: 10px;
+    border-radius: 1px;
+    padding: 20px 10px 20px 10px;
+    box-shadow: rgba(50, 50, 105, 0.5) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+}
+
+.eventNews{
+    border-radius: 1px;
+    margin: 10px;
+    padding: 15px;
+    box-shadow: rgba(50, 50, 105, 0.5) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+    min-width: 375px;
+    max-width: 375px;
+}
+
+.eventNews-container{
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.eventNews-title{
+    font-size: 20px;
+}
+
+.lastNew-date{
+    font-size: 12px;
+}
+
+.eventNews-field{
+    margin-top: 7px;
+}
+
+.eventNews-top{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+.eventNews-footer{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+}
+
+.eventNews-click{
+    font-size: 10px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 175px;
+    height: 35px;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    transform-origin: bottom;
+}
+
+.eventNews-click:hover {
+    animation-name: bounce;
+    animation-timing-function: ease;
+}
+
+@keyframes bounce {
+    0%   { transform: translateX(0); }
+    50%  { transform: translateX(-20px); }
+    100% { transform: translateX(0); }
+}

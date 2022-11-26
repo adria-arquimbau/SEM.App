@@ -1,4 +1,4 @@
-﻿@page "/Event/{EventId}"
+﻿@page "/Event/{EventId:guid}"
 
 @using SEM.App.Data
 @using SEM.App.Components.Loadings
@@ -40,13 +40,13 @@ else
             <div class="event-field">
                 <b>Open registrations: </b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString() 
                 @if (SportEvent.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
-                  {
-                      @OpenedRegistrations
-                  }
-                  else
-                  {
-                      @ClosedRegistrations
-                  }
+                {
+                    @OpenedRegistrations
+                }
+                else
+                {
+                    @ClosedRegistrations
+                }
             </div>
             <div class="event-field">
                 <b>Close registrations: </b> @SportEvent.CloseRegistrationsDateTime.ToLongDateString() at @SportEvent.CloseRegistrationsDateTime.ToShortTimeString()
@@ -54,68 +54,68 @@ else
             <div class="event-field">
                 <b>Registrations: </b> @SportEvent.RegistrationsQuantity / @SportEvent.MaxRegistrations
             </div>
-        <div class="event-field">
-            <b>Registration state: </b>
-            @if (RegistrationState is RegistrationState.Accepted)
-            {
-                @AcceptedState
-            }
-            @if (RegistrationState is RegistrationState.PreRegistered)
-            {
-                @PreRegisteredState
-            }
-            @if (RegistrationState is RegistrationState.NonRegistered)
-            {
-                @NonRegisteredState
-            }
-            @if (RegistrationState is RegistrationState.Cancelled)
-            {
-                @CancelledState
-            }
-        </div>
-        <div class="event-field">
-            <b>Created by: </b> @SportEvent?.CreatorNickName
-        </div>
-        <AuthorizeView>
             <div class="event-field">
-                <RadzenAccordion>
-                    <Items>
-                        <RadzenAccordionItem Text="Registered users" Icon="list">
-                            @if (!RequestingRegistrations)
-                            {
-                                <table class="table table-striped">
-                                    <thead>
-                                    <th scope="col">Num</th>
-                                    <th scope="col">User Name</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Bib</th>
-                                    </thead>
+                <b>Registration state: </b>
+                @if (RegistrationState is RegistrationState.Accepted)
+                {
+                    @AcceptedState
+                }
+                @if (RegistrationState is RegistrationState.PreRegistered)
+                {
+                    @PreRegisteredState
+                }
+                @if (RegistrationState is RegistrationState.NonRegistered)
+                {
+                    @NonRegisteredState
+                }
+                @if (RegistrationState is RegistrationState.Cancelled)
+                {
+                    @CancelledState
+                }
+            </div>
+            <div class="event-field">
+                <b>Created by: </b> @SportEvent?.CreatorNickName
+            </div>
+            <AuthorizeView>
+                <div class="event-field">
+                    <RadzenAccordion>
+                        <Items>
+                            <RadzenAccordionItem Text="Registered users" Icon="list">
+                                @if (!RequestingRegistrations)
+                                {
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <th scope="col">Num</th>
+                                        <th scope="col">User Name</th>
+                                        <th scope="col">Role</th>
+                                        <th scope="col">Bib</th>
+                                        </thead>
                                     
-                                    @for (var index = 0; index < Registrations?.Count; index++)
-                                    {
-                                        var registration = Registrations[index];
-                                        var registrationNumber = index + 1;
-                                        <tbody>
+                                        @for (var index = 0; index < Registrations?.Count; index++)
+                                        {
+                                            var registration = Registrations[index];
+                                            var registrationNumber = index + 1;
+                                            <tbody>
                                             <tr>
                                                 <td>@registrationNumber</td>
                                                 <td>@registration.UserName</td>
                                                 <td>@registration.Role</td>
                                                 <td>@registration.Bib</td>
                                             </tr>
-                                        </tbody>
-                                    }
-                                </table>
-                            }
-                            else
-                            {
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                <span class="sr-only">Loading registrations...</span>
-                            }
-                        </RadzenAccordionItem>
-                    </Items>
-                </RadzenAccordion>
-            </div>
-                </AuthorizeView>
+                                            </tbody>
+                                        }
+                                    </table>
+                                }
+                                else
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="sr-only">Loading registrations...</span>
+                                }
+                            </RadzenAccordionItem>
+                        </Items>
+                    </RadzenAccordion>
+                </div>
+            </AuthorizeView>
             <div class="event-field">
                 <AuthorizeView>
                     @if (RegistrationState == RegistrationState.NonRegistered && SportEvent?.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
@@ -145,42 +145,46 @@ else
                     </div>
                 }
             </div>
-        @if (FailedRegistration)
-        {
-            <div class="alert alert-warning" role="alert">
-                @FailedRegistrationMessage   @TwoEmptySpaces
-            @if (FailedRegistrationMessage!.Contains("not the minimum information"))
+            @if (FailedRegistration)
             {
-                @if (!RequestingGoToMyAccount)
-                {
-                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
-                }
-                else
-                {
-                    <LoadingButton ButtonType="primary" LoadingText="Going to my account"></LoadingButton>
-                }
-            }
-            </div>
-        }
-
-        <AuthorizeView Policy="admin-organizer">
-            @if (ICanManageThisEvent)
-            {
-                <div class="event-field">
-                    <button class="btn btn-outline-dark btn-sm" @onclick="ManageEvent">Manage event</button>
+                <div class="alert alert-warning" role="alert">
+                    @FailedRegistrationMessage   @TwoEmptySpaces
+                    @if (FailedRegistrationMessage!.Contains("not the minimum information"))
+                    {
+                        @if (!RequestingGoToMyAccount)
+                        {
+                            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
+                        }
+                        else
+                        {
+                            <LoadingButton ButtonType="primary" LoadingText="Going to my account"></LoadingButton>
+                        }
+                    }
                 </div>
             }
-        </AuthorizeView>
-        <div class="event-field">
-            <button class="btn btn-outline-dark btn-sm" @onclick="BackToEvents">Go Back to events</button>
         </div>
+        <div class="event-news">
+            <EventNews EventId="EventId"></EventNews>
+        </div>
+        <div class="event-footer">
+            <AuthorizeView Policy="admin-organizer">
+                @if (ICanManageThisEvent)
+                {
+                    <div class="event-field">
+                        <button class="btn btn-outline-dark btn-sm" @onclick="ManageEvent">Manage event</button>
+                    </div>
+                }
+            </AuthorizeView>
+            <div class="event-field">
+                <button class="btn btn-outline-dark btn-sm" @onclick="BackToEvents">Go Back to events</button>
+            </div>
         </div>
     </div>
 }
 
 @code { 
     [Parameter] 
-    public string? EventId { get; set; }    
+    public Guid? EventId { get; set; }    
     
     private SportEvent? SportEvent { get; set; }
     private List<RegistrationDto>? Registrations { get; set; }
@@ -232,10 +236,10 @@ else
     {
         RequestingSignUp = true;
 
-        var response = await EventsService.RegisterToAnEvent(Token,Guid.Parse(EventId!));
+        var response = await EventsService.RegisterToAnEvent(Token, EventId.Value);
         if (response.SuccessRegistration)
         {
-            SportEvent = await EventsService.GetEvent(Guid.Parse(EventId!));
+            SportEvent = await EventsService.GetEvent(EventId.Value);
             await SetRegisteredState();
             await GetRegistrations();
             RequestingSignUp = false;
@@ -250,14 +254,14 @@ else
 
     private async Task SetRegisteredState()
     {
-        var iAmRegisteredResponse = await EventsService.IAmRegistered(Guid.Parse(EventId!), Token);
+        var iAmRegisteredResponse = await EventsService.IAmRegistered(EventId.Value, Token);
         RegistrationState = iAmRegisteredResponse.RegistrationState;
     }
 
     private async Task GetRegistrations()
     {
         RequestingRegistrations = true;
-        var registrations = await EventsService.GetAcceptedRegistrationsByEventId(Guid.Parse(EventId!), Token);
+        var registrations = await EventsService.GetAcceptedRegistrationsByEventId(EventId.Value, Token);
         Registrations = registrations;
         RequestingRegistrations = false;
     }

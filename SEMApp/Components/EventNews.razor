@@ -1,38 +1,37 @@
-﻿@using System.Net.Http.Headers
-@using SEM.App.Authentication
-@using SEM.App.Data
-@using SEM.App.Components.Loadings
+﻿@using SEM.App.Authentication
 @using SEM.App.Data.Models
+@using SEM.App.Components.Loadings
+@using System.Net.Http.Headers
 
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 
-<div class="lastNews">
-    <h3 class="lastNews-title">Last news</h3>
-    <div class="lastNews-container">
+<div class="eventNews-component">
+    <h3 class="eventNews-title">News</h3>
+    <div class="eventNews-container">
         @if (News != null)
         {
             @foreach (var news in News)
             {
-                <div class="lastNew" @onclick="() => GoToTheNews(news.Id)">
-                    <div class="lastNew-top">
-                        <div>
-                           @news.Title
+                <div class="eventNews" @onclick="() => GoToTheNews(news.Id)">
+                    <div class="eventNews-top">
+                        <div class="eventNews-title">
+                            @news.Title
                         </div>
-                        <div class="lastNew-date">
+                        <div class="eventNews-date">
                             @news.CreationDate.ToLongDateString()
                         </div>
                     </div>
-                    <div class="lastNew-field">
+                    <div class="eventNews-field">
                         @news.ShortDescription
                     </div>
-                    <div class="lastNew-footer">
-                        <div class="lastNew-field">
+                    <div class="eventNews-footer">
+                        <div class="eventNews-field">
                             Author: @news.AuthorName
                         </div>
-                        <div class="lastNew-click">
-                            Click and go to news!
+                        <div class="eventNews-click">
+                            Click and read!
                         </div>
                     </div>
                 </div>
@@ -47,14 +46,17 @@
 
 @code {
 
+    [Parameter]
+    public Guid? EventId { get; set; }
     private List<GetNewsDto>? News;
+    
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
-
+    
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"News");
+        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"News/Event/{EventId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
         News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
