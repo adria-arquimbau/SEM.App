@@ -1,4 +1,5 @@
 ﻿@using SEM.App.Data
+@using SEM.App.Components.Loadings
 @using SEM.App.Data.Models
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
@@ -31,10 +32,7 @@
         }
         else
         {
-            <div class="loading-page">
-                <div class="spinner-border loading-spinner" role="status"></div>
-                <p>Loading... Please wait</p>
-            </div>
+            <SimpleLoading></SimpleLoading>
         }
     </div>
 </div>

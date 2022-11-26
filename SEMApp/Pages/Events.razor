@@ -1,6 +1,7 @@
 ﻿@page "/events"
 
 @using SEM.App.Data
+@using SEM.App.Components.Loadings
 @using SEM.App.Authentication
 
 @inject EventsService EventsService
@@ -16,10 +17,7 @@
             <h3>My registered events</h3>
             @if (myRegisteredEvents == null)
             {
-                <div class="loading-page">
-                    <div class="spinner-border loading-spinner" role="status"></div>
-                    <p>Loading... Please wait</p>
-                </div>
+                <SimpleLoading></SimpleLoading>
             }
             else if (myRegisteredEvents.Count == 0)
             {
@@ -62,10 +60,7 @@
         
             @if (sportEvents == null)
             {
-                <div class="loading-page">
-                    <div class="spinner-border loading-spinner" role="status"></div>
-                    <p>Loading... Please wait</p>
-                </div>
+                <SimpleLoading></SimpleLoading>
             }
             else
             {

@@ -3,6 +3,7 @@
 @using System.Text
 @using System.Text.Json
 @using SEM.App.Data.Models
+@using SEM.App.Components.Loadings
 
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -18,10 +19,7 @@
         <div class="eventNews-news">
             @if (News == null)
             {
-                <div class="loading-page">
-                    <div class="spinner-border loading-spinner" role="status"></div>
-                    <p>Loading... Please wait</p>
-                </div>
+                <SimpleLoading></SimpleLoading>
             }
             else
             {

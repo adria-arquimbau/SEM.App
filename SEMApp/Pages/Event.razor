@@ -1,6 +1,7 @@
 ﻿@page "/Event/{EventId}"
 
 @using SEM.App.Data
+@using SEM.App.Components.Loadings
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 
@@ -13,10 +14,7 @@
     
 @if (SportEvent == null)
 {
-    <div class="loading-page">
-        <div class="spinner-border loading-spinner" role="status"></div>
-        <p>Loading... Please wait</p>
-    </div>
+    <SimpleLoading></SimpleLoading>
 }
 else
 {

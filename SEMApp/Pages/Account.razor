@@ -1,6 +1,7 @@
 @page "/account"
 
 @using SEM.App.Data
+@using SEM.App.Components.Loadings
 @using SEM.App.Authentication
 
 @attribute [Authorize(Policy = "admin-organizer-user")]
@@ -12,10 +13,7 @@
 
 @if (User == null)
 {
-    <div class="loading-page">
-        <div class="spinner-border loading-spinner" role="status"></div>
-        <p>Loading your user... Please wait</p>
-    </div>
+	<SimpleLoading></SimpleLoading>
 }
 else
 {

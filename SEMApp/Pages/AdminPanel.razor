@@ -2,6 +2,7 @@
 @attribute [Authorize(Policy = "admin")]
 
 @using SEM.App.Data
+@using SEM.App.Components.Loadings
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 
@@ -16,10 +17,7 @@
 
     @if (users == null)
     {
-        <div class="loading-page">
-            <div class="spinner-border loading-spinner" role="status"></div>
-            <p>Loading active users in the application... Please wait</p>
-        </div>
+        <SimpleLoading></SimpleLoading>
     } 
     else
     {

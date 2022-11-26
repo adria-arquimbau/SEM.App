@@ -20,13 +20,6 @@
     margin-bottom: 30px;
 }
 
-.loading-page{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-}
-
 .registered-user{
     display: flex;
     justify-content: center;
