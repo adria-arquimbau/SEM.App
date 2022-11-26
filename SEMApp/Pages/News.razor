@@ -5,15 +5,30 @@
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
 
-<h3>News</h3>
-
 @if (CurrentNews != null)
 {
-   @CurrentNews.Title
-   @CurrentNews.Description
-   @CurrentNews.CreationDate
-   @CurrentNews.EventId
-    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">GoToEvent</button>
+    <div class="news">
+        <div class="news-top">
+            <div>
+                <h1>@CurrentNews.Title</h1>
+            </div>
+            <div class="news-top-date-author">
+                <div>
+                    @CurrentNews.CreationDate.ToShortDateString(), @CurrentNews.CreationDate.ToShortTimeString()
+                </div>
+                <div>
+                    @CurrentNews.AuthorName
+                </div>
+            </div>
+        </div>
+        <div class="news-body">
+            @CurrentNews.Description
+        </div>
+        <div class="news-footer">
+            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="BackToMainPage">Go back</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">Go to event</button>
+        </div>
+    </div>
 }
 else
 {
