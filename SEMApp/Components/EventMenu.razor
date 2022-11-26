@@ -1,0 +1,19 @@
+﻿@using SEM.App.Data
+
+<div class="event-menu">
+    <div>
+        <h4>@Event.Name</h4>
+    </div>
+    <div>
+        <button>Information</button>
+        <button>Registrations</button>
+        <button>News</button>
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public SportEvent? Event { get; set; }
+}

@@ -19,9 +19,10 @@
 else
 {
     <div class="event">
+        <EventMenu Event="SportEvent"></EventMenu>
         <div class="event-content">
-            <h1>@SportEvent.Name</h1>
             <div class="event-field">
+                <h4>Information</h4>
             </div>
             <div class="event-field">
                 <b>Description: </b>
@@ -38,7 +39,7 @@ else
                 <b>Finish: </b> @SportEvent.FinishDate.ToLongDateString() at @SportEvent.FinishDate.ToShortTimeString()
             </div>
             <div class="event-field">
-                <b>Open registrations: </b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString() 
+                <b>Open registrations: </b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString()
                 @if (SportEvent.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
                 {
                     @OpenedRegistrations
@@ -90,7 +91,7 @@ else
                                         <th scope="col">Role</th>
                                         <th scope="col">Bib</th>
                                         </thead>
-                                    
+
                                         @for (var index = 0; index < Registrations?.Count; index++)
                                         {
                                             var registration = Registrations[index];
@@ -132,13 +133,13 @@ else
                 </AuthorizeView>
             </div>
             <div class="event-field">
-                @if(RegistrationState == RegistrationState.PreRegistered)
+                @if (RegistrationState == RegistrationState.PreRegistered)
                 {
                     <div class="alert alert-warning" role="alert">
                         You're pre-registered. Now an organizer have to confirm your registration.
                     </div>
                 }
-                @if(RegistrationState == RegistrationState.Cancelled)
+                @if (RegistrationState == RegistrationState.Cancelled)
                 {
                     <div class="alert alert-danger" role="alert">
                         You're registration was cancelled. Talk with the organizer.
@@ -148,7 +149,7 @@ else
             @if (FailedRegistration)
             {
                 <div class="alert alert-warning" role="alert">
-                    @FailedRegistrationMessage   @TwoEmptySpaces
+                    @FailedRegistrationMessage @TwoEmptySpaces
                     @if (FailedRegistrationMessage!.Contains("not the minimum information"))
                     {
                         @if (!RequestingGoToMyAccount)
