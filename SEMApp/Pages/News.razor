@@ -1,0 +1,51 @@
+﻿@page "/News/{NewsId:guid}"
+
+@using SEM.App.Data.Models
+
+@inject NavigationManager Navigation
+@inject HttpClient HttpClient
+
+<h3>News</h3>
+
+@if (CurrentNews != null)
+{
+   @CurrentNews.Title
+    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">GoToEvent</button>
+}
+else
+{
+    <div class="loading-page">
+        <div class="spinner-border loading-spinner" role="status"></div>
+        <p>Loading... Please wait</p>
+    </div>
+}
+
+@code {
+    [Parameter] 
+    public Guid? NewsId { get; set; }    
+    
+    private GetNewsDto? CurrentNews { get; set; }    
+        
+    protected override async Task OnInitializedAsync()
+    {   
+        var response = await HttpClient.GetAsync("https://sport-management-api.azurewebsites.net/api/" + $"News/{NewsId}");
+        if (!response.IsSuccessStatusCode)
+        {   
+            BackToMainPage();
+        }
+        CurrentNews =  await response.Content.ReadFromJsonAsync<GetNewsDto>();
+        
+        await base.OnInitializedAsync();
+    }
+    
+    private void BackToMainPage()
+    {
+        Navigation.NavigateTo($"/");
+    }
+
+    private void GoToEvent()    
+    {
+        Navigation.NavigateTo($"/Event/{CurrentNews.EventId}");
+    }
+
+}   
