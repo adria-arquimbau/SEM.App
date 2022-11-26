@@ -19,8 +19,13 @@
 else
 {
     <div class="event">
-        <EventMenu Event="SportEvent"></EventMenu>
-        <div class="event-content">
+        <EventMenu
+            ShowMenuCallBack="ShowMenu"
+            Event="SportEvent">
+        </EventMenu>
+        @if (ShowMenuSection == MenuSection.Information)
+        {
+            <div class="event-content">
             <div class="event-field">
                 <h4>Information</h4>
             </div>
@@ -164,9 +169,18 @@ else
                 </div>
             }
         </div>
-        <div class="event-news">
-            <EventNews EventId="EventId"></EventNews>
-        </div>
+        }
+        @if (ShowMenuSection == MenuSection.Registrations)
+        {
+            
+        }
+        @if (ShowMenuSection == MenuSection.News)
+        {
+            <div class="event-news">
+                <EventNews EventId="EventId"></EventNews>
+            </div>
+        }
+
         <div class="event-footer">
             <AuthorizeView Policy="admin-organizer">
                 @if (ICanManageThisEvent)
@@ -204,7 +218,9 @@ else
     private const string ClosedRegistrations = " - ⛔ Registrations closed";
     private const string OpenedRegistrations = " - ✅ Registrations open";
     private const string TwoEmptySpaces = " ";
-    private string? FailedRegistrationMessage;  
+    private string? FailedRegistrationMessage;
+
+    private MenuSection ShowMenuSection = MenuSection.Information;
     
     private string Token = string.Empty;
         private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
@@ -289,5 +305,17 @@ else
         {
             ICanManageThisEvent = true;
         }
+    }   
+
+    private void ShowMenu(MenuSection section)
+    {
+        ShowMenuSection = section;
     }
+
+    public enum MenuSection
+    {
+        Information,
+        Registrations,
+        News
+    }  
 }   

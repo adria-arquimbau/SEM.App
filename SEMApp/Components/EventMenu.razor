@@ -1,13 +1,14 @@
 ﻿@using SEM.App.Data
+@using Event = SEM.App.Pages.Event
 
 <div class="event-menu">
     <div>
         <h4>@Event.Name</h4>
     </div>
     <div>
-        <button>Information</button>
-        <button>Registrations</button>
-        <button>News</button>
+        <button @onclick="() => ShowMenu(Pages.Event.MenuSection.Information)">Information</button>
+        <button @onclick="() => ShowMenu(Pages.Event.MenuSection.Registrations)">Registrations</button>
+        <button @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
     </div>
 </div>
 
@@ -16,4 +17,12 @@
 
     [Parameter]
     public SportEvent? Event { get; set; }
+    [Parameter]
+    public EventCallback<Event.MenuSection> ShowMenuCallBack { get; set; }
+
+    private Task ShowMenu(Event.MenuSection section)
+    {
+        return ShowMenuCallBack.InvokeAsync(section);
+    }
 }
+    
