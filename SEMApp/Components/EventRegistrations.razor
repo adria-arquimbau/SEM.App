@@ -1,0 +1,163 @@
+@using SEM.App.Data
+@using SEM.App.Components.Loadings
+@using SEM.App.Authentication
+
+@inject EventsService EventsService
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager Navigation
+@inject HttpClient HttpClient
+
+<h3>Event Registrations</h3>
+
+@if (!RequestingRegistrationState || !RequestingRegistrations)
+{
+    <div class="event-field">
+        <b>Registration state: </b>
+        @if (RegistrationState is RegistrationState.Accepted)
+        {
+            @AcceptedState
+        }
+        @if (RegistrationState is RegistrationState.PreRegistered)
+        {
+            @PreRegisteredState
+        }
+        @if (RegistrationState is RegistrationState.NonRegistered)
+        {
+            @NonRegisteredState
+        }
+        @if (RegistrationState is RegistrationState.Cancelled)
+        {
+            @CancelledState
+        }
+    </div>
+    <div class="event-field">
+        @if (RegistrationState == RegistrationState.PreRegistered)
+        {
+            <div class="alert alert-warning" role="alert">
+                You're pre-registered. Now an organizer have to confirm your registration.
+            </div>
+        }
+        @if (RegistrationState == RegistrationState.Cancelled)
+        {
+            <div class="alert alert-danger" role="alert">
+                You're registration was cancelled. Talk with the organizer.
+            </div>
+        }
+    </div>
+    @if (FailedRegistration)
+    {
+        <div class="alert alert-warning" role="alert">
+            @FailedRegistrationMessage @TwoEmptySpaces
+            @if (FailedRegistrationMessage!.Contains("not the minimum information"))
+            {
+                @if (!RequestingGoToMyAccount)
+                {
+                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
+                }
+                else
+                {
+                    <LoadingButton ButtonType="primary" LoadingText="Going to my account"></LoadingButton>
+                }
+            }
+        </div>
+    }
+    <div class="event-field">
+        <AuthorizeView>
+            @if (RegistrationState == RegistrationState.NonRegistered && SportEvent?.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
+            {
+                @if (!RequestingSignUp)
+                {
+                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="SignUp">Sign up</button>
+                }
+                else
+                {
+                    <LoadingButton ButtonType="dark" LoadingText="Signing up"></LoadingButton>
+                }
+            }
+        </AuthorizeView>
+    </div>
+}
+else
+{
+    <SimpleLoading></SimpleLoading>
+}
+
+@code {
+    [Parameter]
+    public SportEvent? SportEvent { get; set; }
+    private List<RegistrationDto>? Registrations { get; set; }
+    
+    private RegistrationState RegistrationState;
+        
+    private bool RequestingSignUp { get; set; }
+    private bool FailedRegistration { get; set; }
+    private bool RequestingGoToMyAccount { get; set; }
+    private bool RequestingRegistrations { get; set; }
+    private bool RequestingRegistrationState { get; set; }
+    
+    private string? FailedRegistrationMessage;
+    private const string TwoEmptySpaces = " ";
+    
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private string Token = string.Empty;
+    
+    private const string AcceptedState = "✅ Accepted";
+    private const string NonRegisteredState = "❌ Non registered";
+    private const string PreRegisteredState = "🔔 Pre-registered";
+    private const string CancelledState = "⛔ Cancelled";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        if (!string.IsNullOrWhiteSpace(Token))
+        {
+            await SetRegisteredState();
+            await GetRegistrations();
+        }
+        await base.OnInitializedAsync();
+    }
+
+    private async Task SignUp()
+    {
+        RequestingSignUp = true;
+
+        var response = await EventsService.RegisterToAnEvent(Token, SportEvent.Id);
+        if (response.SuccessRegistration)
+        {
+            SportEvent = await EventsService.GetEvent(SportEvent.Id);
+            await SetRegisteredState();
+            await GetRegistrations();
+            RequestingSignUp = false;
+        }
+        if (!response.SuccessRegistration)
+        {
+            FailedRegistration = true;
+            FailedRegistrationMessage = response.Message;
+            RequestingSignUp = false;
+        }
+    }
+    
+    private async Task SetRegisteredState()
+    {
+        RequestingRegistrationState = true;
+        var iAmRegisteredResponse = await EventsService.IAmRegistered(SportEvent.Id, Token);
+        RegistrationState = iAmRegisteredResponse.RegistrationState;
+        RequestingRegistrationState = false;
+    }
+    
+    private async Task GetRegistrations()
+    {
+        RequestingRegistrations = true;
+        var registrations = await EventsService.GetAcceptedRegistrationsByEventId(SportEvent.Id, Token);
+        Registrations = registrations;
+        RequestingRegistrations = false;
+    }
+    
+    private void GoToMyAccount()
+    {
+        RequestingGoToMyAccount = true;
+        Navigation.NavigateTo($"/account");
+        RequestingGoToMyAccount = false;
+    }
+}

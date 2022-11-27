@@ -60,26 +60,7 @@ else
             <div class="event-field">
                 <b>Registrations: </b> @SportEvent.RegistrationsQuantity / @SportEvent.MaxRegistrations
             </div>
-            <div class="event-field">
-                <b>Registration state: </b>
-                @if (RegistrationState is RegistrationState.Accepted)
-                {
-                    @AcceptedState
-                }
-                @if (RegistrationState is RegistrationState.PreRegistered)
-                {
-                    @PreRegisteredState
-                }
-                @if (RegistrationState is RegistrationState.NonRegistered)
-                {
-                    @NonRegisteredState
-                }
-                @if (RegistrationState is RegistrationState.Cancelled)
-                {
-                    @CancelledState
-                }
-            </div>
-            <div class="event-field">
+                <div class="event-field">
                 <b>Created by: </b> @SportEvent?.CreatorNickName
             </div>
             <AuthorizeView>
@@ -122,57 +103,11 @@ else
                     </RadzenAccordion>
                 </div>
             </AuthorizeView>
-            <div class="event-field">
-                <AuthorizeView>
-                    @if (RegistrationState == RegistrationState.NonRegistered && SportEvent?.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
-                    {
-                        @if (!RequestingSignUp)
-                        {
-                            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="SignUp">Sign up</button>
-                        }
-                        else
-                        {
-                            <LoadingButton ButtonType="dark" LoadingText="Signing up"></LoadingButton>
-                        }
-                    }
-                </AuthorizeView>
             </div>
-            <div class="event-field">
-                @if (RegistrationState == RegistrationState.PreRegistered)
-                {
-                    <div class="alert alert-warning" role="alert">
-                        You're pre-registered. Now an organizer have to confirm your registration.
-                    </div>
-                }
-                @if (RegistrationState == RegistrationState.Cancelled)
-                {
-                    <div class="alert alert-danger" role="alert">
-                        You're registration was cancelled. Talk with the organizer.
-                    </div>
-                }
-            </div>
-            @if (FailedRegistration)
-            {
-                <div class="alert alert-warning" role="alert">
-                    @FailedRegistrationMessage @TwoEmptySpaces
-                    @if (FailedRegistrationMessage!.Contains("not the minimum information"))
-                    {
-                        @if (!RequestingGoToMyAccount)
-                        {
-                            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
-                        }
-                        else
-                        {
-                            <LoadingButton ButtonType="primary" LoadingText="Going to my account"></LoadingButton>
-                        }
-                    }
-                </div>
-            }
-        </div>
         }
         @if (ShowMenuSection == MenuSection.Registrations)
         {
-            
+            <EventRegistrations SportEvent="SportEvent"></EventRegistrations>
         }
         @if (ShowMenuSection == MenuSection.News)
         {
@@ -203,27 +138,19 @@ else
     
     private SportEvent? SportEvent { get; set; }
     private List<RegistrationDto>? Registrations { get; set; }
-
-    private RegistrationState RegistrationState { get; set; }
-    private bool RequestingSignUp { get; set; }
+    
     private bool RequestingRegistrations { get; set; }
-    private bool FailedRegistration { get; set; }
+    
     private bool ICanManageThisEvent { get; set; }
-    private bool RequestingGoToMyAccount { get; set; }
-        
-    private const string AcceptedState = "✅ Accepted";
-    private const string NonRegisteredState = "❌ Non registered";
-    private const string PreRegisteredState = "🔔 Pre-registered";
-    private const string CancelledState = "⛔ Cancelled";
+    
     private const string ClosedRegistrations = " - ⛔ Registrations closed";
     private const string OpenedRegistrations = " - ✅ Registrations open";
-    private const string TwoEmptySpaces = " ";
-    private string? FailedRegistrationMessage;
+    
 
     private MenuSection ShowMenuSection = MenuSection.Information;
     
     private string Token = string.Empty;
-        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -235,11 +162,7 @@ else
             BackToEvents();
         }
         SportEvent =  await response.Content.ReadFromJsonAsync<SportEvent>();
-        if (!string.IsNullOrWhiteSpace(Token))
-        {
-            await SetRegisteredState();
-            await GetRegistrations();
-        }
+        
         await AskIfICanManageThisEvent();
         await base.OnInitializedAsync();
     }
@@ -249,52 +172,11 @@ else
         Navigation.NavigateTo($"/Events");
     }
 
-    private async Task SignUp()
-    {
-        RequestingSignUp = true;
-
-        var response = await EventsService.RegisterToAnEvent(Token, EventId.Value);
-        if (response.SuccessRegistration)
-        {
-            SportEvent = await EventsService.GetEvent(EventId.Value);
-            await SetRegisteredState();
-            await GetRegistrations();
-            RequestingSignUp = false;
-        }
-        if (!response.SuccessRegistration)
-        {
-            FailedRegistration = true;
-            FailedRegistrationMessage = response.Message;
-            RequestingSignUp = false;
-        }
-    }
-
-    private async Task SetRegisteredState()
-    {
-        var iAmRegisteredResponse = await EventsService.IAmRegistered(EventId.Value, Token);
-        RegistrationState = iAmRegisteredResponse.RegistrationState;
-    }
-
-    private async Task GetRegistrations()
-    {
-        RequestingRegistrations = true;
-        var registrations = await EventsService.GetAcceptedRegistrationsByEventId(EventId.Value, Token);
-        Registrations = registrations;
-        RequestingRegistrations = false;
-    }
-    
     private void ManageEvent()
     {
         Navigation.NavigateTo($"/manage-event/{EventId}");
     }
-        
-    private void GoToMyAccount()
-    {
-        RequestingGoToMyAccount = true;
-        Navigation.NavigateTo($"/account");
-        RequestingGoToMyAccount = false;
-    }
-    
+
     private async Task AskIfICanManageThisEvent()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{EventId}/organizer");
