@@ -8,7 +8,7 @@
     <div>
         <button class="@InformationButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Information)">Information</button>
         <button class="@RegistrationsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Registrations)">Registrations</button>
-        <button class="@RegistrationsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Schedule)">Schedule</button>
+        <button class="@ScheduleButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Schedule)">Schedule</button>
         <button class="@NewsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
         <button class="@CompetitionButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Competition)">Competition</button>
     </div>
@@ -32,29 +32,25 @@
 
     private Task ShowMenu(Event.MenuSection section)
     {
+        SetALlButtonsOutline();
         if (section == Pages.Event.MenuSection.Information)
         {
-            SetALlButtonsOutline();
             InformationButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.Registrations)
         {
-            SetALlButtonsOutline();
             RegistrationsButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.Schedule)
         {
-            SetALlButtonsOutline();
             ScheduleButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.News)
         {
-            SetALlButtonsOutline();
             NewsButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.Competition)
         {
-            SetALlButtonsOutline();
             CompetitionButtonStyle = SelectedButton;
         }
         return ShowMenuCallBack.InvokeAsync(section);
