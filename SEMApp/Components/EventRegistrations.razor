@@ -9,11 +9,8 @@
 
 <div class="eventRegistrations">
     <h4>Registrations</h4>
-    
     <div class="eventRegistrations-info">
-        <div class="eventRegistrations-separator"></div>
         <div>
-            <b>Open:</b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString()
             @if (SportEvent.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
             {
                 @OpenedRegistrations
@@ -22,6 +19,9 @@
             {
                 @ClosedRegistrations
             }
+        </div>
+        <div>
+            <b>Open:</b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString()
         </div>
         <div>
             <b>Close:</b> @SportEvent.CloseRegistrationsDateTime.ToLongDateString() at @SportEvent.CloseRegistrationsDateTime.ToShortTimeString()
@@ -39,7 +39,7 @@
                 @if (RegistrationState.HasValue)
                 {
                     <div class="event-field">
-                        <b>Registration state: </b>
+                        <b>State: </b>
                         @if (RegistrationState is Data.RegistrationState.Accepted) @AcceptedState
                         @if (RegistrationState is Data.RegistrationState.PreRegistered) @PreRegisteredState
                         @if (RegistrationState is Data.RegistrationState.NonRegistered) @NonRegisteredState
@@ -180,8 +180,8 @@
     private const string NonRegisteredState = "❌ Non registered";
     private const string PreRegisteredState = "🔔 Pre-registered";
     private const string CancelledState = "⛔ Cancelled";
-    private const string ClosedRegistrations = " - ⛔ Registrations closed";
-    private const string OpenedRegistrations = " - ✅ Registrations open";
+    private const string ClosedRegistrations = "⛔ Registrations closed";
+    private const string OpenedRegistrations = "✅ Registrations open";
 
     protected override async Task OnInitializedAsync()
     {
