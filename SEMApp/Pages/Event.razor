@@ -57,6 +57,12 @@ else
                 <EventNews EventId="EventId"></EventNews>
             </div>
         }
+        @if (ShowMenuSection == MenuSection.Competition)
+        {
+            <div class="event-news">
+                <EventCompetitions></EventCompetitions>
+            </div>
+        }
 
         <div class="event-footer">
             <AuthorizeView Policy="admin-organizer">
@@ -131,6 +137,7 @@ else
     {
         Information,
         Registrations,
-        News
+        News,
+        Competition
     }  
 }   
