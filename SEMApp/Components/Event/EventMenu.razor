@@ -6,10 +6,10 @@
         <h4>@Event.Name</h4>
     </div>
     <div>
-        <button class="btn btn-outline-dark btn-sm" @onclick="() => ShowMenu(Pages.Event.MenuSection.Information)">Information</button>
-        <button class="btn btn-outline-dark btn-sm" @onclick="() => ShowMenu(Pages.Event.MenuSection.Registrations)">Registrations</button>
-        <button class="btn btn-outline-dark btn-sm" @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
-        <button class="btn btn-outline-dark btn-sm" @onclick="() => ShowMenu(Pages.Event.MenuSection.Competition)">Competition</button>
+        <button class="@OutlineButton" @onclick="() => ShowMenu(Pages.Event.MenuSection.Information)">Information</button>
+        <button class="@OutlineButton" @onclick="() => ShowMenu(Pages.Event.MenuSection.Registrations)">Registrations</button>
+        <button class="@OutlineButton" @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
+        <button class="@OutlineButton" @onclick="() => ShowMenu(Pages.Event.MenuSection.Competition)">Competition</button>
     </div>
 </div>
 
@@ -19,7 +19,17 @@
     [Parameter]
     public SportEvent? Event { get; set; }
     [Parameter]
+    public Event.MenuSection CurrentMenu { get; set; }
+    [Parameter]
     public EventCallback<Event.MenuSection> ShowMenuCallBack { get; set; }
+
+    private string OutlineButton = "btn btn-outline-dark btn-sm";
+    private string SelectedButton = "btn btn-dark btn-sm";
+    
+    private string InformationButtonStyle;
+    private string RegistrationsButtonStyle;
+    private string NewsButtonStyle;
+    private string CompetitionButtonStyle;
 
     private Task ShowMenu(Event.MenuSection section)
     {
