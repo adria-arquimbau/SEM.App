@@ -43,23 +43,6 @@ else
                 <b>Finish: </b> @SportEvent.FinishDate.ToLongDateString() at @SportEvent.FinishDate.ToShortTimeString()
             </div>
             <div class="event-field">
-                <b>Open registrations: </b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString()
-                @if (SportEvent.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
-                {
-                    @OpenedRegistrations
-                }
-                else
-                {
-                    @ClosedRegistrations
-                }
-            </div>
-            <div class="event-field">
-                <b>Close registrations: </b> @SportEvent.CloseRegistrationsDateTime.ToLongDateString() at @SportEvent.CloseRegistrationsDateTime.ToShortTimeString()
-            </div>
-            <div class="event-field">
-                <b>Registrations: </b> @SportEvent.RegistrationsQuantity / @SportEvent.MaxRegistrations
-            </div>
-                <div class="event-field">
                 <b>Created by: </b> @SportEvent?.CreatorNickName
             </div>
         </div>
@@ -97,10 +80,6 @@ else
     private SportEvent? SportEvent { get; set; }
     
     private bool ICanManageThisEvent { get; set; }
-    
-    private const string ClosedRegistrations = " - ⛔ Registrations closed";
-    private const string OpenedRegistrations = " - ✅ Registrations open";
-
     private MenuSection ShowMenuSection = MenuSection.Information;
     
     private string Token = string.Empty;

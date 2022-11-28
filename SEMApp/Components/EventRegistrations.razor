@@ -10,7 +10,29 @@
 <div class="eventRegistrations">
     <h4>Registrations</h4>
     
+    <div class="eventRegistrations-info">
+        <div class="eventRegistrations-separator"></div>
+        <div>
+            <b>Open:</b> @SportEvent.OpenRegistrationsDateTime.ToLongDateString() at @SportEvent.OpenRegistrationsDateTime.ToShortTimeString()
+            @if (SportEvent.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
+            {
+                @OpenedRegistrations
+            }
+            else
+            {
+                @ClosedRegistrations
+            }
+        </div>
+        <div>
+            <b>Close:</b> @SportEvent.CloseRegistrationsDateTime.ToLongDateString() at @SportEvent.CloseRegistrationsDateTime.ToShortTimeString()
+        </div>
+        <div>
+            <b>Registrations: </b> @SportEvent.RegistrationsQuantity / @SportEvent.MaxRegistrations
+        </div>
+    </div>
+
     <div class="eventRegistrations-state">
+        <div class="eventRegistrations-separator"></div>
         <h5>My registration state</h5>
         <AuthorizeView>
             <Authorized>
@@ -83,6 +105,7 @@
         </AuthorizeView>
     </div>
     <div class="eventRegistrations-registrations">
+        <div class="eventRegistrations-separator"></div>
         <h5>Registrations list</h5>
         <AuthorizeView>
             <Authorized>
@@ -157,6 +180,8 @@
     private const string NonRegisteredState = "❌ Non registered";
     private const string PreRegisteredState = "🔔 Pre-registered";
     private const string CancelledState = "⛔ Cancelled";
+    private const string ClosedRegistrations = " - ⛔ Registrations closed";
+    private const string OpenedRegistrations = " - ✅ Registrations open";
 
     protected override async Task OnInitializedAsync()
     {
