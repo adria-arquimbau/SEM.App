@@ -30,30 +30,44 @@
     private string CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
     private string ScheduleButtonStyle = "btn btn-outline-dark btn-sm";
 
+    protected override void OnInitialized()
+    {
+        SetButtons(Pages.Event.MenuSection.Information);
+    }
+
     private Task ShowMenu(Event.MenuSection section)
+    {
+        SetButtons(section);
+        return ShowMenuCallBack.InvokeAsync(section);
+    }
+
+    private void SetButtons(Event.MenuSection section)
     {
         SetALlButtonsOutline();
         if (section == Pages.Event.MenuSection.Information)
         {
             InformationButtonStyle = SelectedButton;
         }
+
         if (section == Pages.Event.MenuSection.Registrations)
         {
             RegistrationsButtonStyle = SelectedButton;
         }
+
         if (section == Pages.Event.MenuSection.Schedule)
         {
             ScheduleButtonStyle = SelectedButton;
         }
+
         if (section == Pages.Event.MenuSection.News)
         {
             NewsButtonStyle = SelectedButton;
         }
+
         if (section == Pages.Event.MenuSection.Competition)
         {
             CompetitionButtonStyle = SelectedButton;
         }
-        return ShowMenuCallBack.InvokeAsync(section);
     }
 
     private void SetALlButtonsOutline()
