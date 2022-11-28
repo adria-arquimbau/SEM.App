@@ -3,11 +3,12 @@
 
 <div class="event-menu">
     <div>
-        <h4>@Event.Name</h4>
+        <h4>@Event?.Name</h4>
     </div>
     <div>
         <button class="@InformationButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Information)">Information</button>
         <button class="@RegistrationsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Registrations)">Registrations</button>
+        <button class="@RegistrationsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Schedule)">Schedule</button>
         <button class="@NewsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
         <button class="@CompetitionButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Competition)">Competition</button>
     </div>
@@ -15,7 +16,6 @@
 
 
 @code {
-
     [Parameter]
     public SportEvent? Event { get; set; }
     [Parameter]
@@ -28,38 +28,45 @@
     private string RegistrationsButtonStyle = "btn btn-outline-dark btn-sm";
     private string NewsButtonStyle = "btn btn-outline-dark btn-sm";
     private string CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
+    private string ScheduleButtonStyle = "btn btn-outline-dark btn-sm";
 
     private Task ShowMenu(Event.MenuSection section)
     {
         if (section == Pages.Event.MenuSection.Information)
         {
-            RegistrationsButtonStyle = "btn btn-outline-dark btn-sm";
-            NewsButtonStyle = "btn btn-outline-dark btn-sm";
-            CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
+            SetALlButtonsOutline();
             InformationButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.Registrations)
         {
-            InformationButtonStyle = "btn btn-outline-dark btn-sm";
-            NewsButtonStyle = "btn btn-outline-dark btn-sm";
-            CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
+            SetALlButtonsOutline();
             RegistrationsButtonStyle = SelectedButton;
+        }
+        if (section == Pages.Event.MenuSection.Schedule)
+        {
+            SetALlButtonsOutline();
+            ScheduleButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.News)
         {
-            InformationButtonStyle = "btn btn-outline-dark btn-sm";
-            RegistrationsButtonStyle = "btn btn-outline-dark btn-sm";
-            CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
+            SetALlButtonsOutline();
             NewsButtonStyle = SelectedButton;
         }
         if (section == Pages.Event.MenuSection.Competition)
         {
-            InformationButtonStyle = "btn btn-outline-dark btn-sm";
-            RegistrationsButtonStyle = "btn btn-outline-dark btn-sm";
-            NewsButtonStyle = "btn btn-outline-dark btn-sm";
+            SetALlButtonsOutline();
             CompetitionButtonStyle = SelectedButton;
         }
         return ShowMenuCallBack.InvokeAsync(section);
+    }
+
+    private void SetALlButtonsOutline()
+    {
+        InformationButtonStyle = OutlineButton;
+        NewsButtonStyle = OutlineButton;
+        CompetitionButtonStyle = OutlineButton;
+        ScheduleButtonStyle = OutlineButton;
+        RegistrationsButtonStyle = OutlineButton;
     }
 }
     

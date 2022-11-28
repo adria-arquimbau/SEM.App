@@ -52,6 +52,12 @@ else
         {
             <EventRegistrations SportEvent="SportEvent"></EventRegistrations>
         }
+        @if (ShowMenuSection == MenuSection.Schedule)
+        {
+            <div class="event-news">
+                <EventSchedule></EventSchedule>
+            </div>
+        }
         @if (ShowMenuSection == MenuSection.News)
         {
             <div class="event-news">
@@ -139,6 +145,7 @@ else
         Information,
         Registrations,
         News,
-        Competition
+        Competition,
+        Schedule
     }  
 }   
