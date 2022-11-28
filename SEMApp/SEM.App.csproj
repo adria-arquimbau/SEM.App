@@ -15,4 +15,9 @@
         <PackageReference Include="Smart.Blazor" Version="14.4.39" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="Components\Event\EventMenu.razor.css" />
+      <Content Include="Components\Event\EventNews.razor.css" />
+    </ItemGroup>
+
 </Project>

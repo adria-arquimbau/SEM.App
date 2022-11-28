@@ -2,6 +2,7 @@
 
 @using SEM.App.Data
 @using SEM.App.Components.Loadings
+@using SEM.App.Components.Event
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 
@@ -60,7 +61,7 @@ else
         @if (ShowMenuSection == MenuSection.Competition)
         {
             <div class="event-news">
-                <EventCompetitions></EventCompetitions>
+                <EventCompetition></EventCompetition>
             </div>
         }
 
