@@ -5,7 +5,6 @@
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 
-@inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
@@ -63,47 +62,7 @@ else
                 <div class="event-field">
                 <b>Created by: </b> @SportEvent?.CreatorNickName
             </div>
-            <AuthorizeView>
-                <div class="event-field">
-                    <RadzenAccordion>
-                        <Items>
-                            <RadzenAccordionItem Text="Registered users" Icon="list">
-                                @if (!RequestingRegistrations)
-                                {
-                                    <table class="table table-striped">
-                                        <thead>
-                                        <th scope="col">Num</th>
-                                        <th scope="col">User Name</th>
-                                        <th scope="col">Role</th>
-                                        <th scope="col">Bib</th>
-                                        </thead>
-
-                                        @for (var index = 0; index < Registrations?.Count; index++)
-                                        {
-                                            var registration = Registrations[index];
-                                            var registrationNumber = index + 1;
-                                            <tbody>
-                                            <tr>
-                                                <td>@registrationNumber</td>
-                                                <td>@registration.UserName</td>
-                                                <td>@registration.Role</td>
-                                                <td>@registration.Bib</td>
-                                            </tr>
-                                            </tbody>
-                                        }
-                                    </table>
-                                }
-                                else
-                                {
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span class="sr-only">Loading registrations...</span>
-                                }
-                            </RadzenAccordionItem>
-                        </Items>
-                    </RadzenAccordion>
-                </div>
-            </AuthorizeView>
-            </div>
+        </div>
         }
         @if (ShowMenuSection == MenuSection.Registrations)
         {
@@ -135,17 +94,12 @@ else
 @code { 
     [Parameter] 
     public Guid? EventId { get; set; }    
-    
     private SportEvent? SportEvent { get; set; }
-    private List<RegistrationDto>? Registrations { get; set; }
-    
-    private bool RequestingRegistrations { get; set; }
     
     private bool ICanManageThisEvent { get; set; }
     
     private const string ClosedRegistrations = " - ⛔ Registrations closed";
     private const string OpenedRegistrations = " - ✅ Registrations open";
-    
 
     private MenuSection ShowMenuSection = MenuSection.Information;
     

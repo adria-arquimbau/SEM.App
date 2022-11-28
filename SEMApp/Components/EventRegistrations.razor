@@ -7,91 +7,143 @@
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
 
-<h3>Event Registrations</h3>
-
-@if (!RequestingRegistrationState || !RequestingRegistrations)
-{
-    <div class="event-field">
-        <b>Registration state: </b>
-        @if (RegistrationState is RegistrationState.Accepted)
-        {
-            @AcceptedState
-        }
-        @if (RegistrationState is RegistrationState.PreRegistered)
-        {
-            @PreRegisteredState
-        }
-        @if (RegistrationState is RegistrationState.NonRegistered)
-        {
-            @NonRegisteredState
-        }
-        @if (RegistrationState is RegistrationState.Cancelled)
-        {
-            @CancelledState
-        }
-    </div>
-    <div class="event-field">
-        @if (RegistrationState == RegistrationState.PreRegistered)
-        {
-            <div class="alert alert-warning" role="alert">
-                You're pre-registered. Now an organizer have to confirm your registration.
-            </div>
-        }
-        @if (RegistrationState == RegistrationState.Cancelled)
-        {
-            <div class="alert alert-danger" role="alert">
-                You're registration was cancelled. Talk with the organizer.
-            </div>
-        }
-    </div>
-    @if (FailedRegistration)
-    {
-        <div class="alert alert-warning" role="alert">
-            @FailedRegistrationMessage @TwoEmptySpaces
-            @if (FailedRegistrationMessage!.Contains("not the minimum information"))
-            {
-                @if (!RequestingGoToMyAccount)
-                {
-                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
-                }
-                else
-                {
-                    <LoadingButton ButtonType="primary" LoadingText="Going to my account"></LoadingButton>
-                }
-            }
-        </div>
-    }
-    <div class="event-field">
+<div class="eventRegistrations">
+    <h4>Registrations</h4>
+    
+    <div class="eventRegistrations-state">
+        <h5>My registration state</h5>
         <AuthorizeView>
-            @if (RegistrationState == RegistrationState.NonRegistered && SportEvent?.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
-            {
-                @if (!RequestingSignUp)
+            <Authorized>
+                @if (RegistrationState.HasValue)
                 {
-                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="SignUp">Sign up</button>
+                    <div class="event-field">
+                        <b>Registration state: </b>
+                        @if (RegistrationState is Data.RegistrationState.Accepted) @AcceptedState
+                        @if (RegistrationState is Data.RegistrationState.PreRegistered) @PreRegisteredState
+                        @if (RegistrationState is Data.RegistrationState.NonRegistered) @NonRegisteredState
+                        @if (RegistrationState is Data.RegistrationState.Cancelled) @CancelledState
+                    </div>
+                    <div class="event-field">
+                        @if (RegistrationState == Data.RegistrationState.PreRegistered)
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                You're pre-registered. Now an organizer have to confirm your registration.
+                            </div>
+                        }
+                        @if (RegistrationState == Data.RegistrationState.Cancelled)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                You're registration was cancelled. Talk with the organizer.
+                            </div>
+                        }
+                    </div>
+                    @if (FailedRegistration)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            @FailedRegistrationMessage @TwoEmptySpaces
+                            @if (FailedRegistrationMessage!.Contains("not the minimum information"))
+                            {
+                                @if (!RequestingGoToMyAccount)
+                                {
+                                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="GoToMyAccount">Set information in my account</button>
+                                }
+                                else
+                                {
+                                    <LoadingButton ButtonType="primary" LoadingText="Going to my account"></LoadingButton>
+                                }
+                            }
+                        </div>
+                    }
+                    <div class="event-field">
+
+                        @if (RegistrationState == Data.RegistrationState.NonRegistered && SportEvent?.OpenRegistrationsDateTime < DateTime.Now && SportEvent.CloseRegistrationsDateTime > DateTime.Now)
+                        {
+                            @if (!RequestingSignUp)
+                            {
+                                <button type="button" class="btn btn-outline-dark btn-sm" @onclick="SignUp">Sign up</button>
+                            }
+                            else
+                            {
+                                <LoadingButton ButtonType="dark" LoadingText="Signing up"></LoadingButton>
+                            }
+                        }
+
+                    </div>
                 }
                 else
                 {
-                    <LoadingButton ButtonType="dark" LoadingText="Signing up"></LoadingButton>
+                    <SimpleLoading></SimpleLoading>
                 }
-            }
+            </Authorized>
+            <NotAuthorized>
+                <div class="alert alert-warning" role="alert">
+                    You must login to register for this event.
+                </div>
+            </NotAuthorized>
         </AuthorizeView>
     </div>
-}
-else
-{
-    <SimpleLoading></SimpleLoading>
-}
+    <div class="eventRegistrations-registrations">
+        <h5>Registrations list</h5>
+        <AuthorizeView>
+            <Authorized>
+                @if (Registrations != null)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                        <th scope="col">Num</th>
+                        <th scope="col">User Name</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Bib</th>
+                        </thead>
+                        @for (var index = 0; index < Registrations?.Count; index++)
+                        {
+                            var registration = Registrations[index];
+                            var registrationNumber = index + 1;
+                            <tbody>
+                            <tr>
+                                <td>@registrationNumber</td>
+                                <td>@registration.UserName</td>
+                                <td>@registration.Role</td>
+                                <td>@registration.Bib</td>
+                            </tr>
+                            </tbody>
+                        }
+                    </table>
+                }
+                else
+                {
+                    <SimpleLoading></SimpleLoading>
+                }
+            </Authorized>
+            <NotAuthorized>
+                <table class="table table-striped">
+                    <thead>
+                    <th scope="col">Num</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Bib</th>
+                    </thead>
+                </table>
+                <div class="alert alert-warning" role="alert">
+                    You must Log in to see the registrations of this event.
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+    
+</div>
+
 
 @code {
     [Parameter]
     public SportEvent? SportEvent { get; set; }
     private List<RegistrationDto>? Registrations { get; set; }
     
-    private RegistrationState RegistrationState;
+    private RegistrationState? RegistrationState;
         
     private bool RequestingSignUp { get; set; }
     private bool FailedRegistration { get; set; }
-    private bool RequestingGoToMyAccount { get; set; }
+    private bool RequestingGoToMyAccount { get; set; }  
     private bool RequestingRegistrations { get; set; }
     private bool RequestingRegistrationState { get; set; }
     
@@ -112,7 +164,7 @@ else
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            await SetRegisteredState();
+            await GetRegisteredState();
             await GetRegistrations();
         }
         await base.OnInitializedAsync();
@@ -126,7 +178,7 @@ else
         if (response.SuccessRegistration)
         {
             SportEvent = await EventsService.GetEvent(SportEvent.Id);
-            await SetRegisteredState();
+            await GetRegisteredState();
             await GetRegistrations();
             RequestingSignUp = false;
         }
@@ -138,7 +190,7 @@ else
         }
     }
     
-    private async Task SetRegisteredState()
+    private async Task GetRegisteredState()
     {
         RequestingRegistrationState = true;
         var iAmRegisteredResponse = await EventsService.IAmRegistered(SportEvent.Id, Token);
