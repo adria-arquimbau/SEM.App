@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using SEM.App.Data.Models
 @using SEM.App.Components.Loadings
+@using SEM.App.Pages
 
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -55,7 +56,7 @@
                             <div>
                                @if (!RequestingUpdate)
                                {
-                                   <button class="btn btn-outline-dark btn-sm" @onclick="OpenUpdateNews">Update</button>
+                                   <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenUpdateNews(news)">Update</button>
                                }
                                else
                                {
@@ -71,10 +72,8 @@
                     </div>
                     @if (UpdateNewsIsOpen)
                     {
-                        <UpdateNews NewsId="@news.Id.ToString()" 
-                                    OnClose="@OnUpdateNewsClose" 
-                                    Title="@news.Title" 
-                                    Description="@news.Description"></UpdateNews>
+                        <UpdateNews NewsToUpdate="@NewsToUpdate"
+                                    OnClose="@OnUpdateNewsClose"></UpdateNews>
                     }  
                 }
             }
@@ -94,6 +93,7 @@
     public string? EventId { get; set; }
 
     private List<GetNewsDto>? News; 
+    private GetNewsDto? NewsToUpdate; 
 
     private bool UpdateNewsIsOpen;
     private bool CreateNewsIsOpen;
@@ -141,8 +141,9 @@
         CreateNewsIsOpen = true;
     }
     
-    private void OpenUpdateNews()
-    {   
+    private void OpenUpdateNews(GetNewsDto news)
+    {
+        NewsToUpdate = news;
         UpdateNewsIsOpen = true;
     }
     

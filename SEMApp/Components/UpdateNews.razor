@@ -16,11 +16,11 @@
          <div class="modal-body">
              <div class="mb-3">
                  <label for="title" class="form-label">Title</label>
-                 <input type="text" class="form-control" id="title" required @bind="@Title" />
+                 <input type="text" class="form-control" id="title" required @bind="@NewsToUpdate.Title" />
              </div>
              <div class="mb-3">
                  <label for="description" class="form-label">Description</label>
-                 <textarea type="text" class="form-control" id="description" required @bind="@Description"></textarea>
+                 <textarea type="text" class="form-control" id="description" required @bind="@NewsToUpdate.Description"></textarea>
              </div>
          </div>
          <div class="modal-footer">
@@ -45,11 +45,7 @@
 
 @code {
    [Parameter]
-   public string? NewsId { get; set; }
-   [Parameter]
-   public string? Title { get; set; }
-   [Parameter]
-   public string? Description { get; set; }
+   public GetNewsDto? NewsToUpdate { get; set; }
    [Parameter]
    public EventCallback OnClose { get; set; }
 
@@ -68,10 +64,10 @@
       var token = await customAuthStateProvider.GetToken();
       var jsonInString = JsonSerializer.Serialize(new
       {
-         Title,
-         Description
+         NewsToUpdate.Title,
+         NewsToUpdate.Description
       });
-      var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"News/{NewsId}")
+      var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"News/{NewsToUpdate.Id}")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
