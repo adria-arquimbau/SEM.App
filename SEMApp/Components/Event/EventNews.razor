@@ -12,9 +12,14 @@
     <div class="eventNews-container">
         @if (News != null)
         {
-            @foreach (var news in News)
-            {
-                <div class="eventNews" @onclick="() => GoToTheNews(news.Id)">
+            @for (var index = 0; index < News.Count; index++)
+            {   
+                var news = News[index];
+                <div class="eventNews" @onclick="@(() => GoToTheNews(news.Id))">
+                    @if (index != 0)
+                    {
+                        <div class="eventNews-separator"></div>
+                    }
                     <div class="eventNews-top">
                         <div class="eventNews-title">
                             @news.Title
@@ -24,7 +29,7 @@
                         </div>
                     </div>
                     <div class="eventNews-field">
-                        @news.ShortDescription
+                        @news.Description
                     </div>
                     <div class="eventNews-footer">
                         <div class="eventNews-field">
