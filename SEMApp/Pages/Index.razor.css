@@ -6,3 +6,11 @@
     position: center;
     padding-top: 50px;
 }
+
+.index-widgets{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+}

@@ -3,17 +3,19 @@
 @using SEM.App.Data
 @using SEM.App.Components.Loadings
 @using SEM.App.Authentication
+@using System.Net.Http.Headers
+@using System.Text.Json.Serialization
 
 @inject EventsService EventsService
+@inject HttpClient HttpClient
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider authenticationStateProvider
 
 <PageTitle>Events</PageTitle>
  
 <div class="events-page">
-    <h1>Active Events</h1>
     <AuthorizeView>
-        <div class="my-registered-events">
+        <div class="events-page-events">
             <h3>My registered events</h3>
             @if (myRegisteredEvents == null)
             {
@@ -29,25 +31,21 @@
             {
                 @foreach (var sportEvent in myRegisteredEvents)
                 {
-                    <div class="event">
-                        <div class="event-content">
-                            <div class="event-field">
-                                <h3><b>Title: </b> @sportEvent.Name</h3>
-                            </div>
-                            <div class="event-field">
-                                <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
-                            </div>
-                            <div class="event-field">
-                                <b>Location: </b> @sportEvent.Location
-                            </div>
-                            <div class="event-field">
-                                <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
-                            </div>
-                            <div class="event-field">
-                                <button class="btn btn-outline-dark btn-sm" @onclick="() => GoToEvent(sportEvent.Id)">
-                                    Go to event
-                                </button>
-                            </div>
+                    <div class="event" @onclick="() => GoToEvent(sportEvent!.Id)">
+                        <div class="event-field">
+                            <h3>@sportEvent.Name</h3>
+                        </div>
+                        <div class="event-field">
+                            <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
+                        </div>
+                        <div class="event-field">
+                            <b>Registration State: </b> @sportEvent.UserRegistrationState
+                        </div>
+                        <div class="event-field">
+                            <b>Location: </b> @sportEvent.Location
+                        </div>
+                        <div class="event-field">
+                            <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
                         </div>
                     </div>
                 }
@@ -55,7 +53,7 @@
         </div>
     </AuthorizeView>
 
-    <div class="my-registered-events">
+    <div class="events-page-events">
         <h3>All events</h3>
         
             @if (sportEvents == null)
@@ -66,25 +64,18 @@
             {
                 @foreach (var sportEvent in sportEvents)
                 {
-                    <div class="event">
-                        <div class="event-content">
-                            <div class="event-field">
-                                <h3><b>Title: </b> @sportEvent.Name</h3>
-                            </div>
-                            <div class="event-field">
-                                <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
-                            </div>
-                            <div class="event-field">
-                                <b>Location: </b> @sportEvent?.Location
-                            </div>
-                            <div class="event-field">
-                                <b>Start: </b> @sportEvent?.StartDate.ToLongDateString() at @sportEvent?.StartDate.ToShortTimeString()
-                            </div>
-                            <div class="event-field">
-                                <button class="btn btn-outline-dark btn-sm" @onclick="() => GoToEvent(sportEvent!.Id)">
-                                    Go to event
-                                </button>
-                            </div>
+                    <div class="event" @onclick="() => GoToEvent(sportEvent!.Id)">
+                        <div class="event-field">
+                            <h3>@sportEvent.Name</h3>
+                        </div>
+                        <div class="event-field">
+                            <b>Registrations: </b> @sportEvent.RegistrationsQuantity / @sportEvent.MaxRegistrations
+                        </div>
+                        <div class="event-field">
+                            <b>Location: </b> @sportEvent.Location
+                        </div>
+                        <div class="event-field">
+                            <b>Start: </b> @sportEvent.StartDate.ToLongDateString() at @sportEvent.StartDate.ToShortTimeString()
                         </div>
                     </div>
                 }
@@ -94,7 +85,9 @@
 
 @code {
     private List<SportEvent>? sportEvents;
-    private List<SportEvent>? myRegisteredEvents; 
+    private List<MyRegisteredSportEvent>? myRegisteredEvents; 
+    
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
@@ -105,12 +98,29 @@
 
         if (!string.IsNullOrWhiteSpace(token))
         {
-            myRegisteredEvents = await EventsService.GetMyRegisteredEvents(token);
+            var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/Registered");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+            var response = await HttpClient.SendAsync(request);
+            myRegisteredEvents = await response.Content.ReadFromJsonAsync<List<MyRegisteredSportEvent>>();
         }
     }
+
+    public class MyRegisteredSportEvent
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }    
+        public DateTime StartDate { get; set; }
+        public int RegistrationsQuantity { get; set; }
+        public string Location { get; set; }
+        public int MaxRegistrations { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public RegistrationState UserRegistrationState { get; set; }
+    }       
 
     private void GoToEvent(Guid eventId)
     {
         Navigation.NavigateTo($"/Event/{eventId}");
     }
 }
+    

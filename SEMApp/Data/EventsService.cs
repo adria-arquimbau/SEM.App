@@ -28,15 +28,6 @@ public class EventsService
         return await response.Content.ReadFromJsonAsync<List<RegistrationDto>>();        
     }
 
-    public async Task<List<SportEvent>> GetMyRegisteredEvents(string token)
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/Registered");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        
-        var response = await _httpClient.SendAsync(request);
-        return await response.Content.ReadFromJsonAsync<List<SportEvent>>();        
-    }
-        
     public async Task<SportEvent> GetEvent(Guid eventId)
     {
         var response = await _httpClient.GetAsync(semApiUrl + $"Events/{eventId}");
@@ -122,7 +113,7 @@ public class SportEvent
 public class SportEventOrganizer
 {   
     public Guid Id { get; set; }
-    public string Name { get; set; }    
+    public string Name { get; set; }        
     public string Description { get; set; }
     public string CreatorNickName { get; set; }
     public DateTime CreationDate { get; set; }
