@@ -23,7 +23,12 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
             {
                 return await Task.FromResult(new AuthenticationState(_anonymous));
             }
-
+            
+            if (userSession.ExpiresIn == 0)
+            {
+                return await Task.FromResult(new AuthenticationState(_anonymous));
+            }
+            
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new(ClaimTypes.Name, userSession.UserName),
