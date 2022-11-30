@@ -24,7 +24,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 return await Task.FromResult(new AuthenticationState(_anonymous));
             }
             
-            if (userSession.ExpiresIn == 0)
+            if (userSession.ExpiryTimeStamp < DateTime.Now)
             {
                 return await Task.FromResult(new AuthenticationState(_anonymous));
             }
