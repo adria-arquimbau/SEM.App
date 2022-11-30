@@ -1,0 +1,82 @@
+@using SEM.App.Data
+@using Event = SEM.App.Pages.Event
+
+<div class="event-menu-manager">
+    <div>
+        <h4>@Event?.Name Manager</h4>
+    </div>
+    <div>
+        <button class="@InformationButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Information)">Information</button>
+        <button class="@RegistrationsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Registrations)">Registrations</button>
+        <button class="@ScheduleButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Schedule)">Schedule</button>
+        <button class="@NewsButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
+        <button class="@CompetitionButtonStyle" @onclick="() => ShowMenu(Pages.Event.MenuSection.Competition)">Competition</button>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public SportEventOrganizer? Event { get; set; }
+    [Parameter]
+    public EventCallback<Event.MenuSection> ShowMenuCallBack { get; set; }
+
+    private string OutlineButton = "btn btn-outline-dark btn-sm";
+    private string SelectedButton = "btn btn-dark btn-sm";
+    
+    private string InformationButtonStyle = "btn btn-outline-dark btn-sm";
+    private string RegistrationsButtonStyle = "btn btn-outline-dark btn-sm";
+    private string NewsButtonStyle = "btn btn-outline-dark btn-sm";
+    private string CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
+    private string ScheduleButtonStyle = "btn btn-outline-dark btn-sm";
+
+    protected override void OnInitialized()
+    {
+        SetButtons(Pages.Event.MenuSection.Information);
+    }
+
+    private Task ShowMenu(Event.MenuSection section)
+    {
+        SetButtons(section);
+        return ShowMenuCallBack.InvokeAsync(section);
+    }
+
+    private void SetButtons(Event.MenuSection section)
+    {
+        SetALlButtonsOutline();
+        if (section == Pages.Event.MenuSection.Information)
+        {
+            InformationButtonStyle = SelectedButton;
+        }
+
+        if (section == Pages.Event.MenuSection.Registrations)
+        {
+            RegistrationsButtonStyle = SelectedButton;
+        }
+
+        if (section == Pages.Event.MenuSection.Schedule)
+        {
+            ScheduleButtonStyle = SelectedButton;
+        }
+
+        if (section == Pages.Event.MenuSection.News)
+        {
+            NewsButtonStyle = SelectedButton;
+        }
+
+        if (section == Pages.Event.MenuSection.Competition)
+        {
+            CompetitionButtonStyle = SelectedButton;
+        }
+    }
+
+    private void SetALlButtonsOutline()
+    {
+        InformationButtonStyle = OutlineButton;
+        NewsButtonStyle = OutlineButton;
+        CompetitionButtonStyle = OutlineButton;
+        ScheduleButtonStyle = OutlineButton;
+        RegistrationsButtonStyle = OutlineButton;
+    }
+}
+    

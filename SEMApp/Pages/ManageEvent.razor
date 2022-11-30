@@ -3,18 +3,16 @@
 
 @using SEM.App.Data
 @using SEM.App.Components.Loadings
+@using SEM.App.Components.EventManager
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 @using System.Text
 @using System.Text.Json
 @using Dialog = SEM.App.Components.Dialog
 
-@inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
-
-<h3>Manage Event</h3>
 
 @if (myEvent == null)
 {
@@ -23,6 +21,7 @@
 else
 {
     <div class="event">
+        <EventMenuManager Event="@myEvent"></EventMenuManager>
         <div class="event-content">
             <h1>@myEvent.Name</h1>
             <div class="event-field">
@@ -40,7 +39,7 @@ else
                         <b>Published: </b>
                         @if (myEvent.IsPublic)
                         {
-                            @IsPublic 
+                            @IsPublic
                             @if (!RequestingIsPublicStateChange)
                             {
                                 <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
@@ -71,15 +70,15 @@ else
                         <b>Finish: </b> @myEvent.FinishDate
                     </div>
                     <div class="event-field">
-                        <b>Open registrations: </b> @myEvent.OpenRegistrationsDateTime 
+                        <b>Open registrations: </b> @myEvent.OpenRegistrationsDateTime
                         @if (myEvent.OpenRegistrationsDateTime < DateTime.Now && myEvent.CloseRegistrationsDateTime > DateTime.Now)
-                           {
-                               @OpenedRegistrations
-                           }
-                           else
-                           {
-                               @ClosedRegistrations
-                           }
+                        {
+                            @OpenedRegistrations
+                        }
+                        else
+                        {
+                            @ClosedRegistrations
+                        }
                     </div>
                     <div class="event-field">
                         <b>CloseRegistrations: </b> @myEvent.CloseRegistrationsDateTime
