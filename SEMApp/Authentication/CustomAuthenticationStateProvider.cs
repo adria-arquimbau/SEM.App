@@ -54,7 +54,6 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 new(ClaimTypes.Name, userSession.UserName),
                 new(ClaimTypes.Role, userSession.Role)
             }));
-            userSession.ExpiryTimeStamp = DateTime.Now.AddSeconds(userSession.ExpiresIn);
             await _localStorageService.SaveItemEncryptedAsync("UserSession", userSession);
         }
         else
@@ -92,6 +91,5 @@ public class UserSession
     public string UserName { get; set; }
     public string Token { get; set; }
     public string Role { get; set; }
-    public int ExpiresIn { get; set; }
     public DateTime ExpiryTimeStamp { get; set; }
 }
