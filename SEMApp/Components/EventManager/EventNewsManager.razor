@@ -10,23 +10,22 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 
 <div class="eventNews">
-    <div class="eventNews-title">
-        <h3>Event News Manager</h3>
-    </div>
-    <div class="eventNews-content">
-       
-        <button class="btn btn-outline-dark btn-sm" @onclick="OpenCreateNews">Create a News</button>
-        
-        <div class="eventNews-news">
-            @if (News == null)
+    <button class="btn btn-outline-dark btn-sm" @onclick="OpenCreateNews">Create a News</button>
+        <div class="eventNews-separator"></div>
+    @if (News == null)
             {
                 <SimpleLoading></SimpleLoading>
             }
             else
             {
-                foreach (var news in News)
+                for (var index = 0; index < News.Count; index++)
                 {
-                    <div class="eventNews-news-new">
+                    var news = News[index];
+                    <div class="news">  
+                        @if (index != 0)
+                        {
+                            <div class="eventNews-separator"></div>
+                        }
                         <div class="eventNews-news-new-field">
                             Ttile: @news.Title
                         </div>
@@ -41,9 +40,9 @@
                         </div>
                         <div class="eventNews-news-new-actions">
                             <div class="eventNews-news-new-actions-button">
-                               @if (!RequestingDelete)
+                                @if (!RequestingDelete)
                                 {
-                                    <button class="btn btn-outline-dark btn-sm" @onclick="() => Delete(news.Id)">Delete</button>
+                                    <button class="btn btn-outline-dark btn-sm" @onclick="@(() => Delete(news.Id))">Delete</button>
                                 }
                                 else
                                 {
@@ -54,31 +53,30 @@
                                 }
                             </div>
                             <div>
-                               @if (!RequestingUpdate)
-                               {
-                                   <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenUpdateNews(news)">Update</button>
-                               }
-                               else
-                               {
-                                   <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                       <span class="sr-only">Updating...</span>
-                                   </button>
-                               }                         
+                                @if (!RequestingUpdate)
+                                {
+                                    <button class="btn btn-outline-dark btn-sm" @onclick="@(() => OpenUpdateNews(news))">Update</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="sr-only">Updating...</span>
+                                    </button>
+                                }
                             </div>
-                         
-                            
+
+
                         </div>
                     </div>
-                    @if (UpdateNewsIsOpen)
+                    if (UpdateNewsIsOpen)
                     {
                         <UpdateNews NewsToUpdate="@NewsToUpdate"
-                                    OnClose="@OnUpdateNewsClose"></UpdateNews>
-                    }  
+                                    OnClose="@OnUpdateNewsClose">
+                        </UpdateNews>
+                    }
                 }
             }
-        </div>
-    </div>
 </div>
 
 @if (CreateNewsIsOpen)
