@@ -51,26 +51,3 @@
     align-items: center;
     font-size: 12px;
 }
-
-.eventNews-click{
-    font-size: 10px;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    width: 175px;
-    height: 35px;
-    animation-duration: 1.5s;
-    animation-iteration-count: infinite;
-    transform-origin: bottom;
-}
-
-.eventNews-click:hover {
-    animation-name: bounce;
-    animation-timing-function: ease;
-}
-
-@keyframes bounce {
-    0%   { transform: translateX(0); }
-    50%  { transform: translateX(-20px); }
-    100% { transform: translateX(0); }
-}

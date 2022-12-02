@@ -6,8 +6,6 @@
 @using SEM.App.Components.EventManager
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
-@using System.Text
-@using System.Text.Json
 @using Dialog = SEM.App.Components.Dialog
 
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -21,121 +19,57 @@
 else
 {
     <div class="event">
-        <EventMenuManager Event="@myEvent"></EventMenuManager>
-        <div class="event-content">
-            <h1>@myEvent.Name</h1>
-            <div class="event-field">
-                <div class="mainInformation">
-                    <h3>Main Information</h3>
-                    <div class="event-field">
-                        <b>Description: </b>
-                        @myEvent.Description
-                    </div>
-                    <div class="event-field">
-                        <b>Location: </b>
-                        @myEvent.Location
-                    </div>
-                    <div class="event-field">
-                        <b>Published: </b>
-                        @if (myEvent.IsPublic)
-                        {
-                            @IsPublic
-                            @if (!RequestingIsPublicStateChange)
-                            {
-                                <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeIsPublicState(false)">Un-Publish</button>
-                            }
-                            else
-                            {
-                                <LoadingButton ButtonType="dark" LoadingText="Un-publishing"></LoadingButton>
-                            }
-                        }
-                        @if (!myEvent.IsPublic)
-                        {
-                            @IsPrivate
-                            @if (!RequestingIsPublicStateChange)
-                            {
-                                <button class="btn btn-outline-dark btn-sm" @onclick="() => ChangeIsPublicState(true)">Publish</button>
-                            }
-                            else
-                            {
-                                <LoadingButton ButtonType="dark" LoadingText="Publishing"></LoadingButton>
-                            }
-                        }
-
-                    </div>
-                    <div class="event-field">
-                        <b>Start: </b> @myEvent.StartDate
-                    </div>
-                    <div class="event-field">
-                        <b>Finish: </b> @myEvent.FinishDate
-                    </div>
-                    <div class="event-field">
-                        <b>Open registrations: </b> @myEvent.OpenRegistrationsDateTime
-                        @if (myEvent.OpenRegistrationsDateTime < DateTime.Now && myEvent.CloseRegistrationsDateTime > DateTime.Now)
-                        {
-                            @OpenedRegistrations
-                        }
-                        else
-                        {
-                            @ClosedRegistrations
-                        }
-                    </div>
-                    <div class="event-field">
-                        <b>CloseRegistrations: </b> @myEvent.CloseRegistrationsDateTime
-                    </div>
-                    <div class="event-field">
-                        <b>Max registrations: </b> @myEvent.MaxRegistrations
-                    </div>
-                    <div class="event-field">
-                        <b>Total registrations: </b> @myEvent.TotalRegistrationsQuantity
-                    </div>
-                    <div class="event-field">
-                        <b>Accepted registrations: </b> @myEvent.AcceptedQuantity / @myEvent.MaxRegistrations
-                    </div>
-                    <div class="event-field">
-                        <b>Pre-registered registrations: </b> @myEvent.PreRegisteredQuantity
-                    </div>
-                    <div class="event-field">
-                        <b>Cancelled registrations: </b> @myEvent.CancelledQuantity
-                    </div>
-                    <div class="event-field">
-                        <b>Creation date: </b> @myEvent.CreationDate.ToLongDateString() at @myEvent.CreationDate.ToShortTimeString()
-                    </div>
-                    <div class="event-field">
-                        <b>Created by: </b> @myEvent.CreatorNickName
-                    </div>
-                    <div class="event-field">
-                        <button class="btn btn-outline-dark btn-sm" @onclick="Open">Update Information</button>
-                    </div>
+        <EventMenuManager 
+            ShowMenuCallBack="ShowMenu"
+            Event="@myEvent"></EventMenuManager>
+        
+        @if (ShowMenuSection == Event.MenuSection.Information)
+        {
+            <EventInformationManager
+                EventId="@EventId">
+            </EventInformationManager>
+        }
+        @if (ShowMenuSection == Event.MenuSection.Registrations)
+        {
+            <RegistrationsManager
+                EventId="@myEvent.Id"
+                Registrations="@myEvent.Registrations"
+                RefreshEvent="@GetMyEventAsOrganizer">
+            </RegistrationsManager>
+        }
+        @if (ShowMenuSection == Event.MenuSection.Schedule)
+        {
+            <div class="event-news">
+                <EventSchedule></EventSchedule>
+            </div>
+        }
+        @if (ShowMenuSection == Event.MenuSection.News)
+        {
+            <EventNewsManager EventId="@EventId"></EventNewsManager>
+        }
+        @if (ShowMenuSection == Event.MenuSection.Competition)
+        {
+            <div class="event-news">
+                <EventCompetition></EventCompetition>
+            </div>
+        }
+        
+        <div class="event-field">
+            @if (ErrorMessage != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ErrorMessage
                 </div>
-            </div>
-            <div class="event-field">
-                <RegistrationsManager
-                    EventId="@myEvent.Id"
-                    Registrations="@myEvent.Registrations"
-                    RefreshEvent="@GetMyEventAsOrganizer">
-                </RegistrationsManager>
-            </div>
-            <div class="event-field">
-                <EventNewsManager EventId="@EventId"></EventNewsManager>
-            </div>
-            <div class="event-field">
-                @if (ErrorMessage != null)
-                {
-                    <div class="alert alert-danger" role="alert">
-                        @ErrorMessage
-                    </div>
-                }
-            </div>
-            <div class="event-field">
-                <button class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">Go to event</button>
-            </div>
-            <div class="event-field">
-                <button class="btn btn-outline-dark btn-sm" @onclick="OpenDeleteEventDialog">Delete event</button>
-            </div>
-            <div class="event-field">
-                <button class="btn btn-outline-dark btn-sm" @onclick="GoBack">Back</button>
-            </div>
+            }
+        </div>
+        <div class="event-field">
+            <button class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">Go to event</button>
+        </div>
+        <div class="event-field">
+            <button class="btn btn-outline-dark btn-sm" @onclick="OpenDeleteEventDialog">Delete event</button>
+        </div>
+        <div class="event-field">
+            <button class="btn btn-outline-dark btn-sm" @onclick="GoBack">Back</button>
         </div>
     </div>
 }
@@ -153,28 +87,19 @@ else
 
 @code { 
     [Parameter] 
-    public string? EventId { get; set; }
+    public string? EventId { get; set; }    
 
     private SportEventOrganizer? myEvent;
-    
-    private const string IsPublic = "✅  ";
-    private const string IsPrivate = "❌  ";
-    private const string ClosedRegistrations = " - ⛔ Registrations closed";
-    private const string OpenedRegistrations = " - ✅ Registrations open";
-    private string? message;
+    private Event.MenuSection ShowMenuSection = Event.MenuSection.Information;
+
+    private string? message;    
     private string? ErrorMessage;  
     
-    private bool RequestingUpdateInformation;   
-    private bool RequestingIsPublicStateChange;
     private bool DialogDeleteEventIsOpen;
     private bool RequestingDeleteEvent;
     
     private string Token = string.Empty;
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
-    
-    private string ModalClass = "";
-    private string ModalDisplay = "none;";
-    private bool ShowBackdrop;    
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,6 +111,11 @@ else
         }
         
         await base.OnInitializedAsync();
+    }
+    
+    private void ShowMenu(Event.MenuSection section)
+    {
+        ShowMenuSection = section;
     }
 
     private void OpenDeleteEventDialog()
@@ -220,20 +150,6 @@ else
     {
         Navigation.NavigateTo($"/Event/{EventId}");
     }
-    
-    private async Task ChangeIsPublicState(bool isPublic)
-    {
-        RequestingIsPublicStateChange = true;
-        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl +  $"Events/{EventId}/is-public/{isPublic}");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-        var response = await HttpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-        {
-            ErrorMessage = "Something went wrong with our servers, try it again later.";
-        }
-        await GetMyEventAsOrganizer();
-        RequestingIsPublicStateChange = false;
-    }
 
     private async Task GetMyEventAsOrganizer()
     {   
@@ -246,117 +162,4 @@ else
         }
         myEvent = await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
     }
-    
-    private async Task UpdateInformation()
-    {
-        RequestingUpdateInformation = true;
-        var jsonInString = JsonSerializer.Serialize(new
-        {       
-            myEvent?.Name,
-            myEvent?.Description,
-            myEvent?.Location,
-            myEvent?.MaxRegistrations,
-            myEvent?.StartDate,
-            myEvent?.FinishDate, 
-            myEvent?.OpenRegistrationsDateTime, 
-            myEvent?.CloseRegistrationsDateTime
-        });   
-        
-        var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl + $"Events/{EventId}")
-        {
-            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-        var response = await HttpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-        {
-            ErrorMessage = "Something went wrong with our servers, try it again later.";
-        }
-        await GetMyEventAsOrganizer();
-        RequestingUpdateInformation = false;
-        Close();
-    }
-    
-    private void Open()
-    {
-        ModalDisplay = "block;";    
-        ModalClass = "Show";
-        ShowBackdrop = true;
-        StateHasChanged();
-    }
-
-    private void Close()
-    {
-        ModalDisplay = "none";
-        ModalClass = "";
-        ShowBackdrop = false;
-        StateHasChanged();
-    }
-}
-
-@* Modal Update Information *@
-@if (myEvent != null)
-{
-    <div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Update Event Information</h5>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" required @bind="@myEvent.Name" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea type="text" class="form-control" id="description" required @bind="@myEvent.Description"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" id="location" required @bind="@myEvent.Location" />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Start Date/Time</label>
-                    <input type="datetime-local" @bind-value="@myEvent.StartDate" />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Finish Date/Time</label>
-                    <input type="datetime-local" @bind-value="@myEvent.FinishDate" />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Open Registrations Date/Time</label>
-                    <input type="datetime-local" @bind-value="@myEvent.OpenRegistrationsDateTime" />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Close Registrations Date/Time</label>
-                    <input type="datetime-local" @bind-value="@myEvent.CloseRegistrationsDateTime" />
-                </div>
-                <div class="mb-3">
-                    <label for="maxRegistrations" class="form-label">Max Registrations</label>
-                    <input type="number" class="form-control" id="maxRegistrations" required @bind="@myEvent.MaxRegistrations" />
-                </div>
-            </div>
-            <div class="modal-footer">
-                @if (!RequestingUpdateInformation)
-                {
-                    <button type="button" class="btn btn-outline-dark btn-sm" @onclick="UpdateInformation">Update</button>
-                }
-                else
-                {
-                    <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span class="sr-only">Setting...</span>
-                    </button>
-                }
-                <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="Close">Close</button>
-            </div>
-        </div>  
-    </div>
-</div>
-@if (ShowBackdrop)
-{
-    <div class="modal-backdrop fade show"></div>
-}
-
 }
