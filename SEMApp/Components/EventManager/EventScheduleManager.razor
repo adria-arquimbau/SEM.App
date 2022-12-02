@@ -1,8 +1,18 @@
-﻿
+﻿@using SEM.App.Data
+
 <div class="main">
-    <h3>EventScheduleManager</h3>
+    <h3>Schedule Manager</h3>
+    
+    <Separator></Separator>
+        Event starts at: @Event.StartDate.ToLongDateString() at @Event.StartDate.ToShortTimeString()
+        Event finish at: @Event.StartDate.ToLongDateString() at @Event.FinishDate.ToShortTimeString()
+    
+    <Separator></Separator>
+        <h4>Schedule</h4>
+        <button>Add</button>
 </div>
 
 @code {
-    
+    [Parameter]
+    public SportEventOrganizer Event { get; set; }
 }
