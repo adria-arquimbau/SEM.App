@@ -15,7 +15,7 @@
         {
             @foreach (var news in News)
             {
-                <div class="lastNew" @onclick="() => GoToTheNews(news.Id)">
+                <div class="lastNew" @onclick="() => GoToTheNews(news.EventId)">
                     <div class="lastNew-top">
                         <div>
                            @news.Title
@@ -62,8 +62,8 @@
         await base.OnInitializedAsync();
     }
     
-    private void GoToTheNews(Guid newsId)
+    private void GoToTheNews(Guid eventId)
     {   
-        Navigation.NavigateTo($"/News/{newsId}");
+        Navigation.NavigateTo($"/Event/{eventId}");
     }
 }

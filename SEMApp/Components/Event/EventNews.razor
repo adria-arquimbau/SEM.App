@@ -15,7 +15,7 @@
             @for (var index = 0; index < News.Count; index++)
             {   
                 var news = News[index];
-                <div class="eventNews" @onclick="@(() => GoToTheNews(news.Id))">
+                <div>
                     @if (index != 0)
                     {
                         <div class="eventNews-separator"></div>
@@ -34,9 +34,6 @@
                     <div class="eventNews-footer">
                         <div class="eventNews-field">
                             Author: @news.AuthorName
-                        </div>
-                        <div class="eventNews-click">
-                            Click and read!
                         </div>
                     </div>
                 </div>
