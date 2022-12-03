@@ -1,18 +1,39 @@
 ﻿@using SEM.App.Data
+@using SEM.App.Components
 
 <div class="main">
     <h3>Schedule Manager</h3>
     
     <Separator></Separator>
-        Event starts at: @Event.StartDate.ToLongDateString() at @Event.StartDate.ToShortTimeString()
-        Event finish at: @Event.StartDate.ToLongDateString() at @Event.FinishDate.ToShortTimeString()
+    Event starts at: @Event.StartDate.ToLongDateString() at @Event.StartDate.ToShortTimeString()
+    Event finish at: @Event.StartDate.ToLongDateString() at @Event.FinishDate.ToShortTimeString()
     
     <Separator></Separator>
-        <h4>Schedule</h4>
-        <button>Add</button>
+    <h4>Schedule</h4>
+    <button @onclick="OpenCreateSchedule">Add</button>
 </div>
+
+@if (CreateScheduleIsOpen)
+{
+    <CreateSchedule EventId="@Event.Id"
+        OnClose="@OnCreateScheduleClose"></CreateSchedule>
+}
 
 @code {
     [Parameter]
     public SportEventOrganizer Event { get; set; }
+
+    private bool CreateScheduleIsOpen;
+    
+    private void OpenCreateSchedule()
+    {   
+        CreateScheduleIsOpen = true;
+    }
+
+    private async Task OnCreateScheduleClose()
+    {
+        CreateScheduleIsOpen = false;
+        //await GetNews();
+    }
+    
 }

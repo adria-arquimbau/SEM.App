@@ -18,14 +18,10 @@
             }
             else
             {
-                for (var index = 0; index < News.Count; index++)
+                foreach (var news in News)
                 {
-                    var news = News[index];
-                    <div class="news">  
-                        @if (index != 0)
-                        {
-                            <Separator></Separator>
-                        }
+                    <div class="news">
+                        <Separator></Separator>
                         <div class="eventNews-news-new-field">
                             Ttile: @news.Title
                         </div>
@@ -98,7 +94,7 @@
     private bool RequestingDelete;
     private bool RequestingUpdate;
     private string? Token;
-        private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
     
     protected override async Task OnInitializedAsync()
     {

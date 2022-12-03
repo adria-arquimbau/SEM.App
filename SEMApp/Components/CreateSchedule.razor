@@ -1,0 +1,87 @@
+﻿@using SEM.App.Data.Models
+@using SEM.App.Authentication
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject HttpClient HttpClient
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h4 class="modal-title">Create a Schedule</h4>
+         </div>
+         <div class="modal-body">
+             <div class="mb-3">
+                 <label for="name" class="form-label">Title</label>
+                 <input type="text" class="form-control" id="name" required @bind="@NewsToPublish.Title" />
+             </div>
+             <div class="mb-3">
+                 <label for="description" class="form-label">Description</label>
+                 <textarea type="text" class="form-control" id="description" required @bind="@NewsToPublish.Description"></textarea>
+             </div>
+         </div>
+         <div class="modal-footer">
+            @if (!RequestingCreateNews)
+            {  
+               <button type="button" class="btn btn-outline-dark btn-sm" @onclick=Create>Create</button>
+            }
+            else
+            {
+               <td>
+                  <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                     <span class="sr-only">Creating...</span>
+                  </button>
+               </td>
+            }
+            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="@Cancel">Go back</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+@code {
+   
+   [Parameter] public Guid? EventId { get; set; }
+   [Parameter] public EventCallback OnClose { get; set; }
+
+   private GetNewsDto NewsToPublish = new();
+
+   private string ErrorMessage = string.Empty;
+   private bool RequestingCreateNews { get; set; } 
+      
+   private void Cancel()
+   {        
+      OnClose.InvokeAsync();  
+   }
+         
+   private async Task Create()
+   {
+      RequestingCreateNews = true;
+      var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+      var token = await customAuthStateProvider.GetToken();
+      var jsonInString = JsonSerializer.Serialize(new
+      {
+         NewsToPublish.Title,
+         NewsToPublish.Description
+      });
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Schedule/event/{EventId}")
+      {
+         Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+      };
+      request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+      var response = await HttpClient.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+         await OnClose.InvokeAsync();  
+      }
+      else
+      {
+         ErrorMessage = "Something went wrong";
+      }
+      RequestingCreateNews = false;
+   }
+}
