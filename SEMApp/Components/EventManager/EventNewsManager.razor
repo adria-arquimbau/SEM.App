@@ -102,8 +102,6 @@
         Token = await customAuthStateProvider.GetToken();
         
         await GetNews();
-
-        await base.OnInitializedAsync();
     }
 
     private async Task Delete(Guid id)

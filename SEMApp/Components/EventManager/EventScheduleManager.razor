@@ -1,16 +1,59 @@
 ﻿@using SEM.App.Data
 @using SEM.App.Components
+@using SEM.App.Components.Loadings
+@using SEM.App.Data.Models
+@using SEM.App.Authentication
+@using System.Net.Http.Headers
+@using Dialog = SEM.App.Components.Dialog
 
-<div class="main">
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider authenticationStateProvider
+
+<div class="top">
     <h3>Schedule Manager</h3>
     
-    <Separator></Separator>
-    Event starts at: @Event.StartDate.ToLongDateString() at @Event.StartDate.ToShortTimeString()
-    Event finish at: @Event.StartDate.ToLongDateString() at @Event.FinishDate.ToShortTimeString()
-    
-    <Separator></Separator>
+    <div class="dates-content">
+        <div class="dates-content-field">
+            Event starts at: @Event.StartDate.ToLongDateString() at @Event.StartDate.ToShortTimeString()
+        </div>
+        <div class="dates-content-field">
+            Event finish at: @Event.StartDate.ToLongDateString() at @Event.FinishDate.ToShortTimeString()
+        </div>
+    </div>
+</div>
+<div class="main">
     <h4>Schedule</h4>
-    <button @onclick="OpenCreateSchedule">Add</button>
+    <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="OpenCreateSchedule">Add</button>
+    
+    @if (Schedules == null)
+    {
+        <SimpleLoading></SimpleLoading>
+    }
+    else
+    {
+        <div class="schedules">
+            @foreach (var schedule in Schedules)
+            {
+                <Separator></Separator>
+                <div>
+                    <div>
+                        Title: @schedule.Title
+                    </div>
+                    <div>
+                        Description: @schedule.Description
+                    </div>
+                    <div>
+                        Date and time: @schedule.DateTime
+                    </div>
+                    <div class="schedule-footer">
+                        <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" >Update</button>
+                        <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="() => OpenDeleteDialog(schedule.Id, schedule.Title)">Delete</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    
 </div>
 
 @if (CreateScheduleIsOpen)
@@ -18,13 +61,48 @@
     <CreateSchedule EventId="@Event.Id"
         OnClose="@OnCreateScheduleClose"></CreateSchedule>
 }
+@if (DialogDeleteScheduleIsOpen)
+{
+    <Dialog Caption="Delete registration"
+            RequestingDeleteRegistration="@RequestingDeleteSchedule"
+            Message="@message"
+            OnClose="@OnDeleteScheduleDialogClose"
+            Type="Dialog.Category.DeleteNot">
+    </Dialog>
+}
 
 @code {
     [Parameter]
-    public SportEventOrganizer Event { get; set; }
-
-    private bool CreateScheduleIsOpen;
+    public SportEventOrganizer? Event { get; set; }
     
+    private List<ScheduleDto>? Schedules;
+    private Guid scheduleIdToDelete;    
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private string? Token;  
+    private string message;
+    private bool CreateScheduleIsOpen;
+    private bool DialogDeleteScheduleIsOpen;
+    private bool RequestingDeleteSchedule;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        
+        await GetSchedules();
+    }
+    
+    private async Task GetSchedules()
+    {
+        var response = await HttpClient.GetAsync(semApiUrl + $"events/{Event.Id}/schedules");
+        if (!response.IsSuccessStatusCode)
+        {
+    
+        }
+
+        Schedules = await response.Content.ReadFromJsonAsync<List<ScheduleDto>>();
+    }
+
     private void OpenCreateSchedule()
     {   
         CreateScheduleIsOpen = true;
@@ -33,7 +111,32 @@
     private async Task OnCreateScheduleClose()
     {
         CreateScheduleIsOpen = false;
-        //await GetNews();
+        await GetSchedules();
+    }
+    
+    private void OpenDeleteDialog(Guid id, string title)
+    {
+        DialogDeleteScheduleIsOpen = true;
+        scheduleIdToDelete = id;
+        message = $"Do you want to delete the {title} schedule?";
+    }
+    
+    private async Task OnDeleteScheduleDialogClose(bool isOk)   
+    {
+        if (isOk)
+        {
+            RequestingDeleteSchedule = true;
+            var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"events/{Event.Id}/schedule/{scheduleIdToDelete}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            var response = await HttpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+               //TODO error message;
+            }
+            await GetSchedules();
+            RequestingDeleteSchedule = false;
+        }
+        DialogDeleteScheduleIsOpen = false;
     }
     
 }
