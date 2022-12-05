@@ -18,10 +18,14 @@
                  <label for="name" class="form-label">Title</label>
                  <input type="text" class="form-control" id="name" required @bind="@scheduleToPublish.Title" />
              </div>
-             <div class="mb-3">
-                 <label for="description" class="form-label">Description</label>
-                 <textarea type="text" class="form-control" id="description" required @bind="@scheduleToPublish.Description"></textarea>
-             </div>
+            <div class="mb-3">
+               <label for="description" class="form-label">Description</label>
+               <textarea type="text" class="form-control" id="description" required @bind="@scheduleToPublish.Description"></textarea>
+            </div>
+            <div class="mb-3">
+               <label for="location" class="form-label">Start Date/Time</label>
+               <input type="datetime-local" @bind-value="@dateTimeNow" />
+            </div>
          </div>
          <div class="modal-footer">
             @if (!RequestingCreateNews)
@@ -50,6 +54,8 @@
 
    private ScheduleDto scheduleToPublish = new();
 
+   private DateTime? dateTimeNow = DateTime.Now;
+   
    private string ErrorMessage = string.Empty;
    private bool RequestingCreateNews { get; set; } 
       
@@ -67,9 +73,9 @@
       {
          scheduleToPublish.Title,
          scheduleToPublish.Description,
-         scheduleToPublish.DateTime
+         DateTime = dateTimeNow
       });
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"event/{EventId}/schedule")
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"events/{EventId}/schedule")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
