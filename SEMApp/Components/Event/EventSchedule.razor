@@ -1,9 +1,109 @@
-<div class="eventSchedule">
-    <h3>Event Schedule</h3>
+@using SEM.App.Authentication
+@using SEM.App.Data
+@using SEM.App.Data.Models
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider authenticationStateProvider
 
-    <p>Coming Soon!</p>
+<div class="main">
+    <h4>Schedule</h4>
+
+    @if (Schedules == null)
+    {
+        <SimpleLoading></SimpleLoading>
+    }
+    else
+    {
+        <div class="schedules">
+            @foreach (var schedule in GetScheduleOrganizedByDays())
+            {
+                <Separator></Separator>
+                <div>
+                    @schedule.Day.ToLongDateString()
+                </div>
+                
+                @foreach (var program in schedule.Schedules)
+                {
+                    <SmallSeparator></SmallSeparator>
+                    <div class="program">
+                        <div class="program-top">
+                            <div>
+                                @program.Title
+                            </div>
+                            <div>
+                                @program.DateTime.ToShortTimeString()     
+                            </div>
+                        </div>
+                        
+                        <div>
+                            @program.Description                         
+                        </div>
+                    </div>
+                }
+            }   
+        </div>
+    }
+    
 </div>
 
+
 @code {
+    [Parameter]
+    public SportEvent? Event { get; set; }
+    private List<ScheduleDto>? Schedules;
     
+    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private string? Token;  
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        
+        await GetSchedules();
+    }
+    
+    private async Task GetSchedules()
+    {
+        
+        var response = await HttpClient.GetAsync(semApiUrl + $"events/{Event.Id}/schedules");
+        if (!response.IsSuccessStatusCode)
+        {
+    
+        }
+
+        Schedules = await response.Content.ReadFromJsonAsync<List<ScheduleDto>>();
+    }
+
+    private List<ScheduleDays> GetScheduleOrganizedByDays()
+    {
+        var scheduleDays = new List<ScheduleDays>();
+        foreach (var schedule in Schedules)
+        {
+            var day = scheduleDays.FirstOrDefault(x => x.Day == DateOnly.FromDateTime(schedule.DateTime));
+
+            if (day == null)
+            {
+                scheduleDays.Add(new ScheduleDays
+                {
+                    Day = DateOnly.FromDateTime(schedule.DateTime),
+                    Schedules = new List<ScheduleDto>
+                    {
+                        schedule
+                    }
+                });
+            }
+            if (day != null)
+            {
+                day.Schedules?.Add(schedule);
+            }
+        }
+        
+        return scheduleDays;
+    }
+
+    private class ScheduleDays
+    {
+        public DateOnly Day { get; set; }
+        public List<ScheduleDto>? Schedules { get; set; }
+    }
 }
