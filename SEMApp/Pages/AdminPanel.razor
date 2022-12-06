@@ -13,15 +13,12 @@
 <PageTitle>Admin Panel</PageTitle>
 
 <div class="admin-panel-page">
-    <h1>Admin Panel</h1> 
-
     @if (users == null)
     {
         <SimpleLoading></SimpleLoading>
     } 
     else
     {
-        <h2>Users</h2>
         @foreach (var user in users)
         {
             <div class="user">
