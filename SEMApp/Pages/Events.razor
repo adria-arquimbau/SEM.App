@@ -16,7 +16,9 @@
 <div class="events-page">
     <AuthorizeView>
         <div class="events-page-events">
-            <h3>My registered events</h3>
+            <div class="title">
+                <h3>My registered events</h3>
+            </div>
             @if (myRegisteredEvents == null)
             {
                 <SimpleLoading></SimpleLoading>
@@ -54,7 +56,9 @@
     </AuthorizeView>
 
     <div class="events-page-events">
-        <h3>All events</h3>
+        <div class="title">
+            <h3>All events</h3>
+        </div>
         
             @if (sportEvents == null)
             {
