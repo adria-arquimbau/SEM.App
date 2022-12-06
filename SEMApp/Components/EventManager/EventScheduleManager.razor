@@ -32,24 +32,32 @@
     else
     {
         <div class="schedules">
-            @foreach (var schedule in Schedules)
+            @foreach (var schedule in GetScheduleOrganizedByDays())
             {
                 <Separator></Separator>
                 <div>
-                    <div>
-                        Title: @schedule.Title
-                    </div>
-                    <div>
-                        Description: @schedule.Description
-                    </div>
-                    <div>
-                        Date and time: @schedule.DateTime
-                    </div>
-                    <div class="schedule-footer">
-                        <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" >Update</button>
-                        <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="() => OpenDeleteDialog(schedule.Id, schedule.Title)">Delete</button>
-                    </div>
+                    @schedule.Day.ToLongDateString()
                 </div>
+                
+                @foreach (var program in schedule.Schedules)
+                {
+                    <SmallSeparator></SmallSeparator>
+                    <div>
+                        <div>
+                            Title: @program.Title
+                        </div>
+                        <div>
+                            Description: @program.Description
+                        </div>
+                        <div>
+                            Date and time: @program.DateTime
+                        </div>
+                        <div class="schedule-footer">
+                            <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal">Update</button>
+                            <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="() => OpenDeleteDialog(program.Id, program.Title)">Delete</button>
+                        </div>
+                    </div>
+                }
             }
         </div>
     }
@@ -137,6 +145,39 @@
             RequestingDeleteSchedule = false;
         }
         DialogDeleteScheduleIsOpen = false;
+    }
+    
+    private List<ScheduleDays> GetScheduleOrganizedByDays()
+    {
+        var scheduleDays = new List<ScheduleDays>();
+        foreach (var schedule in Schedules)
+        {
+            var day = scheduleDays.FirstOrDefault(x => x.Day == DateOnly.FromDateTime(schedule.DateTime));
+
+            if (day == null)
+            {
+                scheduleDays.Add(new ScheduleDays
+                {
+                    Day = DateOnly.FromDateTime(schedule.DateTime),
+                    Schedules = new List<ScheduleDto>
+                    {
+                        schedule
+                    }
+                });
+            }
+            if (day != null)
+            {
+                day.Schedules?.Add(schedule);
+            }
+        }
+        
+        return scheduleDays;
+    }
+
+    private class ScheduleDays
+    {
+        public DateOnly Day { get; set; }
+        public List<ScheduleDto>? Schedules { get; set; }
     }
     
 }
