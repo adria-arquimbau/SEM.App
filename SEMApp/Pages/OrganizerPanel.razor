@@ -16,53 +16,56 @@
 <PageTitle>Organizer Panel</PageTitle>
 
 <div class="organizer-panel-page">
-<h1>Organizer Panel</h1>
-
-<button class="btn btn-outline-dark btn-sm" @onclick="Open">Create Event</button>
-@if (myEvents == null)
-{
-    <SimpleLoading></SimpleLoading>
-}
-else
-{
-     @foreach (var myEvent in myEvents)
-     {
-         <div class="event">
-             <div class="event-content">
-                 <div class="event-field">
-                     <div class="event-field">
-                         <h2><b>Title: </b> @myEvent.Name</h2>
-                     </div>
-                     <div class="event-field">
-                         <b>Registrations: </b> @myEvent.TotalRegistrationsQuantity / @myEvent.MaxRegistrations
-                     </div>
-                     <div class="event-field">
-                         <b>Start: </b> @myEvent.StartDate
-                     </div>
-                     <div class="event-field">
-                         <b>Finish: </b> @myEvent.FinishDate
-                     </div>
-                     <div class="event-field">
-                         <b>Creation date: </b> @myEvent.CreationDate
-                     </div>
-                     <div class="event-field">
-                         <b>Published: </b> @if (myEvent.IsPublic)
-                                            {
-                                                @IsPublic 
-                                            }
-                                            @if (!myEvent.IsPublic)
-                                            {
-                                                @IsPrivate
-                                            }
-                     </div>
-                     <div class="event-field">
-                         <button class="btn btn-outline-dark btn-sm" @onclick="() => Manage(myEvent.Id)">Manage</button>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     }
-} 
+    <div class="organizer-panel-top">
+        <h1>Organizer Panel</h1>
+        <button class="btn btn-outline-dark btn-sm" @onclick="Open">Create Event</button>
+    </div>
+    
+    @if (myEvents == null)
+    {
+        <SimpleLoading></SimpleLoading>
+    }
+    else
+    {
+        @foreach (var myEvent in myEvents)
+        {
+            <div class="event">
+                <div class="event-content">
+                    <div class="event-field">
+                        <div class="event-field">
+                            <h2><b>Title: </b> @myEvent.Name</h2>
+                        </div>
+                        <div class="event-field">
+                            <b>Registrations: </b> @myEvent.TotalRegistrationsQuantity / @myEvent.MaxRegistrations
+                        </div>
+                        <div class="event-field">
+                            <b>Start: </b> @myEvent.StartDate
+                        </div>
+                        <div class="event-field">
+                            <b>Finish: </b> @myEvent.FinishDate
+                        </div>
+                        <div class="event-field">
+                            <b>Creation date: </b> @myEvent.CreationDate
+                        </div>
+                        <div class="event-field">
+                            <b>Published: </b>
+                            @if (myEvent.IsPublic)
+                            {
+                                @IsPublic
+                            }
+                            @if (!myEvent.IsPublic)
+                            {
+                                @IsPrivate
+                            }
+                        </div>
+                        <div class="event-field">
+                            <button class="btn btn-outline-dark btn-sm" @onclick="() => Manage(myEvent.Id)">Manage</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
 </div>
 
 @* Modal Create Event *@
