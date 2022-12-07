@@ -95,8 +95,29 @@
             <div class="event-field">
                 <b>Created by: </b> @myEvent.CreatorNickName
             </div>
+            @if (!RequestingUploadImage)
+            {
+                <div class="event-field">
+                    <b>Image: </b>
+                    @if (myEvent.ImageUrl != null)
+                    {
+                        <img src="@myEvent.ImageUrl" alt=""/>
+                    }
+                    else
+                    {
+                        <p>No image</p>
+                    }
+                    <InputFile OnChange="UploadImage" multiple />
+                </div>
+                
+            }
+            else
+            {
+                <LoadingButton ButtonType="dark" LoadingText="Uploading"></LoadingButton>
+            }
+            
             <div class="event-field">
-                <button class="btn btn-outline-dark btn-sm" @onclick="Open">Update Information</button>
+                <button class="btn btn-outline-dark btn-sm" @onclick="Open">Edit Information</button>
             </div>
         }
     </div>
@@ -114,6 +135,7 @@
     private const string OpenedRegistrations = " - ✅ Registrations open";
     
     private bool RequestingIsPublicStateChange;
+    private bool RequestingUploadImage;
     private bool RequestingUpdateInformation;   
     private string? ErrorMessage;  
     
@@ -212,6 +234,24 @@
         RequestingUpdateInformation = false;
         Close();
     }
+
+    private async Task UploadImage(InputFileChangeEventArgs e)    
+    {
+        RequestingUploadImage = true;
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Events/{EventId}/upload-image")
+        {
+            Content = new MultipartFormDataContent(e.File.ToString())
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = "Something went wrong with our servers, try it again later.";
+        }
+        await GetMyEventAsOrganizer();
+        RequestingUploadImage = false;
+    }   
+
 }
 
 @* Modal Update Information *@

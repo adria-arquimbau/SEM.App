@@ -127,8 +127,9 @@ public class SportEventOrganizer
     public int MaxRegistrations { get; set; }   
     public bool IsPublic { get; set; }
     public DateTime OpenRegistrationsDateTime { get; set; }
-    public DateTime CloseRegistrationsDateTime { get; set; }
+    public DateTime CloseRegistrationsDateTime { get; set; }    
     public List<RegistrationDto> Registrations { get; set; }
+    public Uri ImageUrl { get; set; }
 }     
 
 public class RegistrationDto
