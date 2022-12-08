@@ -103,13 +103,24 @@
                         <b>Image: </b>
                         <img size="" src="@myEvent.ImageUrl" alt="Event image" />
                     </div>
+                    @if (!RequestingDeleteImage)
+                    {
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => DeleteImage()">Delete image</button>
+                    }
+                    else
+                    {
+                        <LoadingButton ButtonType="dark" LoadingText="Deleting"></LoadingButton>
+                    }
                 }
                 @if(myEvent.ImageUrl == null)
                 {
                     <form @onsubmit="@UploadImage" enctype="multipart/form-data">
                         <InputFile OnChange="@SelectFile"/>
                         <input type="submit" value="Upload"> 
-                        <img src="@imgUrl">
+                        @if(imgUrl != null)
+                        {
+                            <img size="" src="@imgUrl" alt="Event image" />
+                        }
                     </form>
                 }
             }
@@ -137,6 +148,7 @@
     private const string OpenedRegistrations = " - ✅ Registrations open";
     
     private bool RequestingIsPublicStateChange;
+    private bool RequestingDeleteImage;
     private bool RequestingUploadImage;
     private bool RequestingUpdateInformation;   
     private string? ErrorMessage;  
@@ -150,7 +162,7 @@
     
     private StreamContent fileContent;
     private string fileName;
-    private string imgUrl;
+    private string? imgUrl;
     private string imageType;
     
     protected override async Task OnInitializedAsync()
@@ -262,6 +274,21 @@
 
         StateHasChanged();
     }
+    
+    private async Task DeleteImage()    
+    {
+        RequestingDeleteImage = true;
+        var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl + $"Events/{EventId}/delete-image");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)  
+        {
+            ErrorMessage = "Something went wrong with our servers, try it again later.";
+        }
+        imgUrl = null;
+        await GetMyEventAsOrganizer();
+        RequestingDeleteImage = false;
+    }   
 
     private async Task UploadImage()    
     {
