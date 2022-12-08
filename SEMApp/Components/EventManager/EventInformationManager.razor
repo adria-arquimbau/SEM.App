@@ -97,19 +97,21 @@
             </div>
             @if (!RequestingUploadImage)
             {
-                <div class="event-field">
-                    <b>Image: </b>
-                    @if (myEvent.ImageUrl != null)
-                    {
-                        <img src="@myEvent.ImageUrl" alt=""/>
-                    }
-                    else
-                    {
-                        <p>No image</p>
-                    }
-                    <InputFile OnChange="UploadImage" multiple />
-                </div>
-                
+                @if(myEvent.ImageUrl != null)
+                {
+                    <div class="event-field">
+                        <b>Image: </b>
+                        <img size="" src="@myEvent.ImageUrl" alt="Event image" />
+                    </div>
+                }
+                @if(myEvent.ImageUrl == null)
+                {
+                    <form @onsubmit="@UploadImage" enctype="multipart/form-data">
+                        <InputFile OnChange="@SelectFile"/>
+                        <input type="submit" value="Upload"> 
+                        <img src="@imgUrl">
+                    </form>
+                }
             }
             else
             {
@@ -145,6 +147,11 @@
     
     private string Token = string.Empty;
     private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    
+    private StreamContent fileContent;
+    private string fileName;
+    private string imgUrl;
+    private string imageType;
     
     protected override async Task OnInitializedAsync()
     {
@@ -234,17 +241,40 @@
         RequestingUpdateInformation = false;
         Close();
     }
+    
+    private async Task SelectFile(InputFileChangeEventArgs  e)
+    {
+    // setting the max size for the file 
+        long maxFileSize = 1024 * 1024 * 10;
+    // Provide the HTTP Content based Stream
+    // and open the stream for reading the uploaded file
+        fileContent = new StreamContent(e.File.OpenReadStream(maxFileSize));
+    // read file name
+        fileName = e.File.Name;
 
-    private async Task UploadImage(InputFileChangeEventArgs e)    
+        var fileSize = new byte[e.File.Size];
+    // read the file bytes in sequence
+        await e.File.OpenReadStream().ReadAsync(fileSize);
+    // read file content type
+        imageType = e.File.ContentType;
+    // create URL
+        imgUrl = $"data:{imageType};base64,{Convert.ToBase64String(fileSize)}";
+
+        StateHasChanged();
+    }
+
+    private async Task UploadImage()    
     {
         RequestingUploadImage = true;
+        using var content = new MultipartFormDataContent();
+        content.Add(content: fileContent, name: "\"file\"", fileName:fileName);
         var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + $"Events/{EventId}/upload-image")
         {
-            Content = new MultipartFormDataContent(e.File.ToString())
+            Content = content
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)  
         {
             ErrorMessage = "Something went wrong with our servers, try it again later.";
         }
