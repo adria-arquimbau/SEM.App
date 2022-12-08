@@ -12,7 +12,10 @@
 <div class="registrationManager">
     <div class="registrationManager-top">
         <h3>Registrations Manager</h3>
-        <button class="btn btn-outline-dark btn-sm" @onclick="DownloadCsv">Download Csv</button>
+        @if (Registrations.Count > 0)
+        {
+            <button class="btn btn-outline-dark btn-sm" @onclick="DownloadCsv">Download Csv</button>
+        }
     </div>
     <table class="table table-striped">
         <thead>
