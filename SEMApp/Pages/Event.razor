@@ -26,27 +26,33 @@ else
         @if (ShowMenuSection == MenuSection.Information)
         {
             <div class="event-content">
-            <div class="event-field">
-                <h4>Information</h4>
+                <div class="event-field">
+                    <h4>Information</h4>
+                </div>
+                <div class="event-field">
+                    @if(SportEvent.ImageUrl != null)
+                    {
+                        <img src="@SportEvent.ImageUrl" width="300" />
+                    }
+                </div>
+                <div class="event-field">
+                    <b>Description: </b>
+                    @SportEvent.Description
+                </div>
+                <div class="event-field">
+                    <b>Location: </b>
+                    @SportEvent.Location
+                </div>
+                <div class="event-field">
+                    <b>Start: </b> @SportEvent.StartDate.ToLongDateString() at @SportEvent.StartDate.ToShortTimeString()
+                </div>
+                <div class="event-field">
+                    <b>Finish: </b> @SportEvent.FinishDate.ToLongDateString() at @SportEvent.FinishDate.ToShortTimeString()
+                </div>
+                <div class="event-field">
+                    <b>Created by: </b> @SportEvent?.CreatorNickName
             </div>
-            <div class="event-field">
-                <b>Description: </b>
-                @SportEvent.Description
             </div>
-            <div class="event-field">
-                <b>Location: </b>
-                @SportEvent.Location
-            </div>
-            <div class="event-field">
-                <b>Start: </b> @SportEvent.StartDate.ToLongDateString() at @SportEvent.StartDate.ToShortTimeString()
-            </div>
-            <div class="event-field">
-                <b>Finish: </b> @SportEvent.FinishDate.ToLongDateString() at @SportEvent.FinishDate.ToShortTimeString()
-            </div>
-            <div class="event-field">
-                <b>Created by: </b> @SportEvent?.CreatorNickName
-            </div>
-        </div>
         }
         @if (ShowMenuSection == MenuSection.Registrations)
         {

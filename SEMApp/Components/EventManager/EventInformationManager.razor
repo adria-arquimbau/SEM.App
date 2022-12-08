@@ -104,7 +104,7 @@
                 {
                     @if (myEvent.ImageUrl != null)
                     {
-                        <img size="" src="@myEvent.ImageUrl" alt="Event image"/>
+                        <img size="" src="@myEvent.ImageUrl" alt="Event image" width="300"/>
 
                         @if (!RequestingDeleteImage)
                         {
@@ -121,7 +121,7 @@
                             
                             @if (imgUrl != null)
                             {
-                                <img size="" src="@imgUrl" alt="Event image"/>
+                                <img size="" src="@imgUrl" alt="Event image" width="300"/>
                                 <input type="submit" value="Upload">
                                 <button class="btn btn-outline-dark btn-sm" @onclick="DeleteLocalImage">Delete image</button>
                             }
