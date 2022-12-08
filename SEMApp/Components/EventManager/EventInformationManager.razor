@@ -13,6 +13,9 @@
     <div class="eventInformation-title">
         <h3>Event Information Manager</h3>
     </div>
+    <div class="event-field">
+        <button class="btn btn-outline-dark btn-sm" @onclick="Open">Edit Information</button>
+    </div>
     <div class="eventInformation-content">
         @if (myEvent == null)
         {
@@ -95,42 +98,44 @@
             <div class="event-field">
                 <b>Created by: </b> @myEvent.CreatorNickName
             </div>
-            @if (!RequestingUploadImage)
-            {
-                @if(myEvent.ImageUrl != null)
-                {
-                    <div class="event-field">
-                        <b>Image: </b>
-                        <img size="" src="@myEvent.ImageUrl" alt="Event image" />
-                    </div>
-                    @if (!RequestingDeleteImage)
-                    {
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => DeleteImage()">Delete image</button>
-                    }
-                    else
-                    {
-                        <LoadingButton ButtonType="dark" LoadingText="Deleting"></LoadingButton>
-                    }
-                }
-                @if(myEvent.ImageUrl == null)
-                {
-                    <form @onsubmit="@UploadImage" enctype="multipart/form-data">
-                        <InputFile OnChange="@SelectFile"/>
-                        <input type="submit" value="Upload"> 
-                        @if(imgUrl != null)
-                        {
-                            <img size="" src="@imgUrl" alt="Event image" />
-                        }
-                    </form>
-                }
-            }
-            else
-            {
-                <LoadingButton ButtonType="dark" LoadingText="Uploading"></LoadingButton>
-            }
-            
             <div class="event-field">
-                <button class="btn btn-outline-dark btn-sm" @onclick="Open">Edit Information</button>
+                <b>Image: </b>
+                @if (!RequestingUploadImage)
+                {
+                    @if (myEvent.ImageUrl != null)
+                    {
+                        <img size="" src="@myEvent.ImageUrl" alt="Event image"/>
+
+                        @if (!RequestingDeleteImage)
+                        {
+                            <button class="btn btn-outline-dark btn-sm" @onclick="DeleteImage">Delete image</button>
+                        }
+                        else
+                        {
+                            <LoadingButton ButtonType="dark" LoadingText="Deleting"></LoadingButton>
+                        }
+                    }
+                    @if (myEvent.ImageUrl == null)
+                    {
+                        <form @onsubmit="@UploadImage" enctype="multipart/form-data">
+                            
+                            @if (imgUrl != null)
+                            {
+                                <img size="" src="@imgUrl" alt="Event image"/>
+                                <input type="submit" value="Upload">
+                                <button class="btn btn-outline-dark btn-sm" @onclick="DeleteLocalImage">Delete image</button>
+                            }
+                            else
+                            {
+                                <InputFile OnChange="@SelectFile"/>
+                            }
+                        </form>
+                    }
+                }
+                else
+                {
+                    <LoadingButton ButtonType="dark" LoadingText="Uploading"></LoadingButton>
+                }
             </div>
         }
     </div>
@@ -274,6 +279,11 @@
 
         StateHasChanged();
     }
+    
+    private void DeleteLocalImage()
+    {
+        imgUrl = null;
+    }   
     
     private async Task DeleteImage()    
     {
