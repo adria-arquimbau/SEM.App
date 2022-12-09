@@ -26,14 +26,14 @@ else
         @if (ShowMenuSection == MenuSection.Information)
         {
             <div class="event-content">
-                <div class="event-field">
-                    <h4>Information</h4>
+                <div class="event-image-container">
+                    @if (SportEvent.ImageUrl != null)
+                    {
+                        <img class="event-image" src="@SportEvent.ImageUrl"/>
+                    }
                 </div>
                 <div class="event-field">
-                    @if(SportEvent.ImageUrl != null)
-                    {
-                        <img src="@SportEvent.ImageUrl" width="300" />
-                    }
+                    <h4>Information</h4>
                 </div>
                 <div class="event-field">
                     <b>Description: </b>
@@ -51,7 +51,7 @@ else
                 </div>
                 <div class="event-field">
                     <b>Created by: </b> @SportEvent?.CreatorNickName
-            </div>
+                </div>
             </div>
         }
         @if (ShowMenuSection == MenuSection.Registrations)

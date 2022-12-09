@@ -1,16 +1,20 @@
-﻿
+﻿.event-image{
+    position: center;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 1px;
+    box-shadow: rgba(50, 50, 105, 0.5) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+}
 
 .event-content{
     margin: 10px;
     border-radius: 1px;
-    padding: 20px 10px 20px 10px;
     box-shadow: rgba(50, 50, 105, 0.5) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
 }
 
 .event-field{
     padding-bottom: 10px;
-    border-radius: 25px;
-    border-color: #ff0000;
+    margin: 10px;
 }
 
 .loading-spinner{
@@ -24,8 +28,6 @@
     flex-direction: row;
     align-items: center;
 }
-
-
 
 .event-footer{
     margin: 10px;
