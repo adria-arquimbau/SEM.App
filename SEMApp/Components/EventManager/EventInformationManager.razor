@@ -123,7 +123,7 @@
                             {
                                 <img size="" src="@imgUrl" alt="Event image" width="300"/>
                                 <input type="submit" value="Upload">
-                                <button class="btn btn-outline-dark btn-sm" @onclick="DeleteLocalImage">Delete image</button>
+                                <button class="btn btn-outline-dark btn-sm" @onclick="DeleteLocalImage">Delete preview</button>
                             }
                             else
                             {
@@ -135,6 +135,14 @@
                 else
                 {
                     <LoadingButton ButtonType="dark" LoadingText="Uploading"></LoadingButton>
+                }
+            </div>
+            <div class="event-field">
+                @if (ErrorMessage != null)
+                {
+                    <div class="alert alert-warning" role="alert">
+                        @ErrorMessage
+                    </div>
                 }
             </div>
         }
@@ -167,7 +175,7 @@
     
     private StreamContent fileContent;
     private string fileName;
-    private string? imgUrl;
+    private string? imgUrl; 
     private string imageType;
     
     protected override async Task OnInitializedAsync()
@@ -183,7 +191,8 @@
     }
     
     private async Task GetMyEventAsOrganizer()
-    {   
+    {
+        ErrorMessage = null;
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{EventId}/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
@@ -261,23 +270,35 @@
     
     private async Task SelectFile(InputFileChangeEventArgs  e)
     {
+        ErrorMessage = null;
+        if (e.File.ContentType is "image/jpeg" or "image/png")
+        {
     // setting the max size for the file 
-        long maxFileSize = 1024 * 1024 * 10;
+            long maxFileSize = 1024 * 1024 * 5; //5MB
     // Provide the HTTP Content based Stream
     // and open the stream for reading the uploaded file
-        fileContent = new StreamContent(e.File.OpenReadStream(maxFileSize));
+            if (e.File.Size > maxFileSize)
+            {
+                ErrorMessage = "File is too big, max size is 5 MB";
+                return;
+            }
+            fileContent = new StreamContent(e.File.OpenReadStream(maxFileSize));
     // read file name
-        fileName = e.File.Name;
-
-        var fileSize = new byte[e.File.Size];
+            fileName = e.File.Name;
+            var fileSize = new byte[e.File.Size];
     // read the file bytes in sequence
-        await e.File.OpenReadStream().ReadAsync(fileSize);
+            await e.File.OpenReadStream(maxFileSize).ReadAsync(fileSize);
     // read file content type
-        imageType = e.File.ContentType;
+            imageType = e.File.ContentType;
     // create URL
-        imgUrl = $"data:{imageType};base64,{Convert.ToBase64String(fileSize)}";
+            imgUrl = $"data:{imageType};base64,{Convert.ToBase64String(fileSize)}";
 
-        StateHasChanged();
+            StateHasChanged();
+        }
+        else
+        {
+            ErrorMessage = "Only jpeg and png files are allowed.";
+        }
     }
     
     private void DeleteLocalImage()
