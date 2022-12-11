@@ -18,13 +18,16 @@
                 Registration Id: @registration.Id
             </div>
             <div class="registration-field">
-                 Name: @registration.Name           
+                Bib: @registration.Bib
+            </div>
+            <div class="registration-field">
+                 Name: @registration.Name @registration.SecondName        
             </div>
             <div class="registration-field">
                 Email: @registration.Email
             </div>
             <div class="registration-field">
-                Second Name: @registration.SecondName            
+                CheckInQr: @registration.CheckInQrUrl     
             </div>
             <div class="registration-field">
                 Checked In: @registration.CheckedIn            
@@ -111,6 +114,8 @@
         public string SecondName { get; set; }
         public string Email { get; set; }   
         public bool CheckedIn { get; set; }
+        public int? Bib { get; set; }
+        public Uri CheckInQrUrl { get; set; }
     }
 
     private async Task CheckInRequest(bool checkedIn)
