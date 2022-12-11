@@ -1,4 +1,4 @@
-﻿@page "/manage-event/{EventId}"
+﻿@page "/manage-event/{EventId}/{OpenMenu}"
 @attribute [Authorize(Policy = "admin-organizer")]
 
 @using SEM.App.Data
@@ -90,13 +90,15 @@ else
 
 @code { 
     [Parameter] 
-    public string? EventId { get; set; }    
+    public string? EventId { get; set; }
+    [Parameter]
+    public string? OpenMenu { get; set; }
 
     private SportEventOrganizer? myEvent;
     private Event.MenuSection ShowMenuSection = Event.MenuSection.Information;
 
-    private string? message;    
-    private string? ErrorMessage;  
+    private string? message;
+    private string? ErrorMessage;
     
     private bool DialogDeleteEventIsOpen;
     private bool RequestingDeleteEvent;
@@ -106,6 +108,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        ShowMenuSection = (Event.MenuSection)Enum.Parse(typeof(Event.MenuSection), OpenMenu);
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
@@ -118,6 +121,7 @@ else
     
     private void ShowMenu(Event.MenuSection section)
     {
+        OpenMenu = section.ToString();
         ShowMenuSection = section;
     }
 
