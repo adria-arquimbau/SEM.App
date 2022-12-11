@@ -144,6 +144,7 @@ public class RegistrationDto
     public int? Bib { get; set; }
     public bool RequestingChangeStatus { get; set; }
     public bool RequestingUpdateBib { get; set; }   
+    public bool CheckedIn { get; set; }   
 }
 
 public enum RegistrationRole    

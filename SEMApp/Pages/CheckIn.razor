@@ -29,17 +29,28 @@
             <div class="registration-field">
                 Checked In: @registration.CheckedIn            
             </div>
+            
             @if (!registration.CheckedIn)
             {
                 @if (!RequestingCheckIn)
                 {
-                    <button class="btn btn-outline-dark btn-sm" @onclick="CheckInRequest">Check In</button>
+                    <button class="btn btn-outline-dark btn-sm" @onclick="() => CheckInRequest(true)">Check In</button>
                 }
                 else
                 {
                     <LoadingButton ButtonType="dark" LoadingText="Checking in"></LoadingButton>
                 }
-                
+            }
+            @if (registration.CheckedIn)
+            {
+                @if (!RequestingCheckIn)
+                {
+                    <button class="btn btn-outline-dark btn-sm" @onclick="() => CheckInRequest(false)">Uncheck In</button>
+                }
+                else
+                {
+                    <LoadingButton ButtonType="dark" LoadingText="Checking in"></LoadingButton>
+                }
             }
         </div>
     }
@@ -74,18 +85,26 @@
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{RegistrationId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            var response = await HttpClient.SendAsync(request);
-            if (!response.IsSuccessStatusCode)
-            {
-                ErrorMessage = "Something went wrong while fetching the data, try again later.";
-            }
-            registration = await response.Content.ReadFromJsonAsync<RegistrationCheckIn>();
+            await GetRegistration();
         }
     }
 
-    private class RegistrationCheckIn
+    private async Task GetRegistration()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{RegistrationId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            registration = await response.Content.ReadFromJsonAsync<RegistrationCheckIn>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = "Something went wrong while fetching the data, try again later.";
+        }
+    }
+
+    private class RegistrationCheckIn   
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -94,12 +113,16 @@
         public bool CheckedIn { get; set; }
     }
 
-    private async Task CheckInRequest()
+    private async Task CheckInRequest(bool checkedIn)
     {
         RequestingCheckIn = true;
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{RegistrationId}/check-in");
+        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{RegistrationId}/check-in/{checkedIn}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            await GetRegistration();
+        }
         if (!response.IsSuccessStatusCode)
         {
             ErrorMessage = "Something went wrong while fetching the data, try again later.";

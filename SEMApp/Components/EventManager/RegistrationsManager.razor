@@ -25,6 +25,7 @@
         <th scope="col">Bib</th>
         <th scope="col">Role</th>
         <th scope="col">State</th>
+        <th scope="col">Checked in</th>
         <th scope="col">Remove</th>
         </thead>
         @foreach (var registration in Registrations)
@@ -78,6 +79,16 @@
                     </div>
                 </td>
                 <td>
+                    @if(registration.CheckedIn)
+                    {
+                        @CheckedIn
+                    }
+                    else
+                    {
+                        @NonCheckedIn
+                    }
+                </td>
+                <td>
                     <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
                 </td>
             </tr>
@@ -110,6 +121,9 @@
     private string PreRegisteredState = "🔔  ";
     private string CancelledState = "⛔  ";
     private string AcceptedState = "✅  ";
+    
+    private string CheckedIn = "✅";
+    private string NonCheckedIn = "⛔";
     
     private Guid registrationIdToDelete;
     
