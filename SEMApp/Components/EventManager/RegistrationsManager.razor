@@ -7,6 +7,7 @@
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
+@inject NavigationManager navManager
 @inject IJSRuntime JS
 
 <div class="registrationManager">
@@ -17,6 +18,7 @@
             <button class="btn btn-outline-dark btn-sm" @onclick="DownloadCsv">Download Csv</button>
         }
     </div>
+    *Click name to check in
     <table class="table table-striped">
         <thead>
         <th scope="col">User Name</th>
@@ -29,7 +31,7 @@
         {
             <tbody>
             <tr>
-                <td>@registration.UserName</td>
+                <td @onclick="() => GoToCheckIn(registration.Id)">@registration.UserName</td>
                 <td>
                     @if (registration.State == RegistrationState.Accepted)
                     {
@@ -225,4 +227,9 @@
 
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
+
+    private void GoToCheckIn(Guid registrationId)
+    {
+        navManager.NavigateTo($"/manage-event/{EventId}/Check-in/{registrationId}");
+    }   
 }
