@@ -2,6 +2,7 @@
 @using SEM.App.Components.Loadings
 @using SEM.App.Data
 @using System.Net.Http.Headers
+@using System.Net.Mime
 @using System.Text
 @using System.Text.Json
 
@@ -271,7 +272,8 @@
     private async Task SelectFile(InputFileChangeEventArgs  e)
     {
         ErrorMessage = null;
-        if (e.File.ContentType is "image/jpeg" or "image/png")
+        string[] imageTypes = { "image/jpeg", "image/png" };
+        if (imageTypes.Contains(e.File.ContentType))
         {
     // setting the max size for the file 
             long maxFileSize = 1024 * 1024 * 5; //5MB
@@ -282,14 +284,15 @@
                 ErrorMessage = "File is too big, max size is 5 MB";
                 return;
             }
-            fileContent = new StreamContent(e.File.OpenReadStream(maxFileSize));
+            var resized = await e.File.RequestImageFileAsync(e.File.ContentType, 300, int.MaxValue);
+            fileContent = new StreamContent(resized.OpenReadStream(maxFileSize));
     // read file name
-            fileName = e.File.Name;
-            var fileSize = new byte[e.File.Size];
+            fileName = resized.Name;
+            var fileSize = new byte[resized.Size];
     // read the file bytes in sequence
-            await e.File.OpenReadStream(maxFileSize).ReadAsync(fileSize);
+            await resized.OpenReadStream(maxFileSize).ReadAsync(fileSize);
     // read file content type
-            imageType = e.File.ContentType;
+            imageType = resized.ContentType;
     // create URL
             imgUrl = $"data:{imageType};base64,{Convert.ToBase64String(fileSize)}";
 
