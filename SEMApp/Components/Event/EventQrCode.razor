@@ -25,7 +25,7 @@
 
 @code {
     [Parameter]
-    public Guid EventId { get; set; }
+    public Guid? EventId { get; set; }
     
     private Registration? registration; 
     private string qrCode = string.Empty;
@@ -33,7 +33,7 @@
     private string? ErrorMessage;
         
     protected override async Task OnInitializedAsync()
-    {
+    {   
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
@@ -50,7 +50,7 @@
         if (response.IsSuccessStatusCode)
         {
             registration = await response.Content.ReadFromJsonAsync<Registration>();
-            qrCode = GenerateQRCode($"{Navigation.BaseUri}/manage-event/{EventId}/Check-in/{registration.Id}");
+            qrCode = GenerateQRCode($"{Navigation.BaseUri}manage-event/{EventId}/Check-in/{registration.Id}");
         }
         if (!response.IsSuccessStatusCode)
         {
