@@ -4,6 +4,7 @@
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 @using QRCoder
+@using System.Net
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
@@ -15,22 +16,30 @@
     @if (registration != null)
     {
         <div class="registration">
+            <div class="registration-field bib">
+                Bib: @registration.Bib
+            </div>
             <div class="registration-field">
                 Registration Id: @registration.Id
             </div>
             <div class="registration-field">
-                Bib: @registration.Bib
-            </div>
-            <div class="registration-field">
-                Name: @registration.Name @registration.SecondName        
+                Name: @registration.Name @registration.SecondName
             </div>
             <div class="registration-field">
                 Email: @registration.Email
             </div>
             <div class="registration-field">
-                Checked In: @registration.CheckedIn            
+                Checked In:
+                @if (registration.CheckedIn)
+                {
+                    @CheckedIn
+                }
+                else
+                {
+                    @NonCheckedIn
+                }
             </div>
-            
+
             @if (!registration.CheckedIn)
             {
                 @if (!RequestingCheckIn)
@@ -84,6 +93,9 @@
     private string? ErrorMessage;
     private string qrCode = string.Empty;
     private bool RequestingCheckIn;
+    
+    private string CheckedIn = "✅";
+    private string NonCheckedIn = "⛔";
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,18 +118,22 @@
         {
             registration = await response.Content.ReadFromJsonAsync<RegistrationCheckIn>();
         }
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            ErrorMessage = "Only organizers and admins of the event can check in.";
+        }
         if (!response.IsSuccessStatusCode)
         {
             ErrorMessage = "Something went wrong while fetching the data, try again later.";
         }
     }
 
-    private string GenerateQRCode(string input) 
+    private static string GenerateQRCode(string input) 
     {
         using var qrGenerator = new QRCodeGenerator();
         using var qrCodeData = qrGenerator.CreateQrCode(input, QRCodeGenerator.ECCLevel.Q);
-        using var qrCode = new PngByteQRCode(qrCodeData);
-        var graphic = qrCode.GetGraphic(10);
+        using var pngByteQRCode = new PngByteQRCode(qrCodeData);
+        var graphic = pngByteQRCode.GetGraphic(10);
         var base64String = Convert.ToBase64String(graphic, 0, graphic.Length); // Convert the bytes to base64 string  
         return $"data:image/png;base64,{base64String}";
     }

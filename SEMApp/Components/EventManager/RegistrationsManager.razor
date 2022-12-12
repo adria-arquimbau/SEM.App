@@ -21,24 +21,32 @@
     *Click name to check in
     <table class="table table-striped">
         <thead>
-        <th scope="col">User Name</th>
+        <th scope="col">User</th>
         <th scope="col">Bib</th>
-        <th scope="col">Role</th>
         <th scope="col">State</th>
-        <th scope="col">Checked in</th>
+        <th scope="col">Check-in</th>
         <th scope="col">Remove</th>
         </thead>
         @foreach (var registration in Registrations)
         {
             <tbody>
             <tr>
-                <td @onclick="() => GoToCheckIn(registration.Id)">@registration.UserName</td>
+                <td @onclick="() => GoToCheckIn(registration.Id)">
+                    @registration.UserName
+                </td>
                 <td>
                     @if (registration.State == RegistrationState.Accepted)
                     {
                         @if (!registration.RequestingUpdateBib)
                         {
-                            <input class="form-control-bib" type="number" @bind="registration.Bib" @bind:event="oninput" @onchange="() => Update(registration)">
+                            @if (registration.CheckedIn)
+                            {
+                                <b>@registration.Bib</b>
+                            }
+                            else
+                            {
+                                <input class="form-control-bib" type="number" @bind="registration.Bib" @bind:event="oninput" @onchange="() => Update(registration)">
+                            }
                         }
                         else
                         {
@@ -46,36 +54,43 @@
                         }
                     }
                 </td>
-                <td>@registration.Role</td>
                 <td >
                     <div class="state-column">
-                        <EditForm Model="@registration.State">
-                            <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration, value))">
-                                @if(!registration.RequestingChangeStatus)
-                                {
-                                    <option value="@registration.State">@GiveStateIcon(@registration.State) @registration.State</option>
-                                    @if (registration.State is RegistrationState.Cancelled)
+                        @if (!registration.CheckedIn)
+                        {
+                            <EditForm Model="@registration.State">
+                                <InputSelect ValueExpression="@(() => registration.State)" Value="@registration.State" ValueChanged="@((RegistrationState value) => ChangeRegistrationStatus(registration, value))">
+                                    @if (!registration.RequestingChangeStatus)
                                     {
-                                        <option value="@RegistrationState.Accepted">Accept</option>
-                                        <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                                        <option value="@registration.State">@GiveStateIcon(registration.State) @registration.State</option>
+                                        @if (registration.State is RegistrationState.Cancelled)
+                                        {
+                                            <option value="@RegistrationState.Accepted">Accept</option>
+                                            <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                                        }
+                                        @if (registration.State is RegistrationState.PreRegistered)
+                                        {
+                                            <option value="@RegistrationState.Accepted">Accept</option>
+                                            <option value="@RegistrationState.Cancelled">Cancel</option>
+                                        }
+                                        @if (registration.State is RegistrationState.Accepted)
+                                        {
+                                            <option value="@RegistrationState.Cancelled">Cancel</option>
+                                            <option value="@RegistrationState.PreRegistered">Pre-register</option>
+                                        }
                                     }
-                                    @if (registration.State is RegistrationState.PreRegistered)
+                                    else
                                     {
-                                        <option value="@RegistrationState.Accepted">Accept</option>
-                                        <option value="@RegistrationState.Cancelled">Cancel</option>
+                                        <option value="@registration.State">Updating ...</option>
                                     }
-                                    @if (registration.State is RegistrationState.Accepted)
-                                    {
-                                        <option value="@RegistrationState.Cancelled">Cancel</option>
-                                        <option value="@RegistrationState.PreRegistered">Pre-register</option>
-                                    }
-                                }
-                                else
-                                {
-                                    <option value="@registration.State">Updating ...</option>
-                                }
-                            </InputSelect>
-                        </EditForm>
+                                </InputSelect>
+                            </EditForm>
+                        }
+                        else
+                        {
+                            <b>@registration.State</b>
+                        }
+                        
                     </div>
                 </td>
                 <td>
@@ -89,7 +104,10 @@
                     }
                 </td>
                 <td>
-                    <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
+                    @if (!registration.CheckedIn)
+                    {
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => OpenDialog(registration.Id, registration.UserName)">Delete</button>
+                    }
                 </td>
             </tr>
             </tbody>
