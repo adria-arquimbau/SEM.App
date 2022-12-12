@@ -28,9 +28,6 @@
                 Email: @registration.Email
             </div>
             <div class="registration-field">
-                CheckInQr: @registration.CheckInQrUrl      
-            </div>
-            <div class="registration-field">
                 Checked In: @registration.CheckedIn            
             </div>
             
@@ -60,6 +57,7 @@
         <div>
             <img src="@qrCode" width="300"/>
         </div>
+        <button class="btn btn-outline-dark btn-sm" @onclick="GoBack">Go Back</button>
     }
     @if (registration == null && ErrorMessage == null)
     {
@@ -152,4 +150,8 @@
         RequestingCheckIn = false;
     }
 
+    private void GoBack()
+    {
+        Navigation.NavigateTo($"/manage-event/{EventId}/Registrations");
+    }
 }
