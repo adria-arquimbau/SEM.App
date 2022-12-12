@@ -11,6 +11,7 @@
         <button class="@ScheduleButtonStyle menu-button" @onclick="() => ShowMenu(Pages.Event.MenuSection.Schedule)">Schedule</button>
         <button class="@NewsButtonStyle menu-button" @onclick="() => ShowMenu(Pages.Event.MenuSection.News)">News</button>
         <button class="@CompetitionButtonStyle menu-button" @onclick="() => ShowMenu(Pages.Event.MenuSection.Competition)">Competition</button>
+        <button class="@CompetitionButtonStyle menu-button" @onclick="() => ShowMenu(Pages.Event.MenuSection.QRCode)">QR Code</button>
     </div>
 </div>
 
@@ -29,6 +30,7 @@
     private string NewsButtonStyle = "btn btn-outline-dark btn-sm";
     private string CompetitionButtonStyle = "btn btn-outline-dark btn-sm";
     private string ScheduleButtonStyle = "btn btn-outline-dark btn-sm";
+    private string QrCodeButtonStyle = "btn btn-outline-dark btn-sm";
 
     protected override void OnInitialized()
     {
@@ -68,6 +70,11 @@
         {
             CompetitionButtonStyle = SelectedButton;
         }
+        
+        if (section == Pages.Event.MenuSection.QRCode)
+        {
+            QrCodeButtonStyle = SelectedButton;
+        }
     }
 
     private void SetALlButtonsOutline()
@@ -77,6 +84,7 @@
         CompetitionButtonStyle = OutlineButton;
         ScheduleButtonStyle = OutlineButton;
         RegistrationsButtonStyle = OutlineButton;
+        QrCodeButtonStyle = OutlineButton;
     }
 }
     

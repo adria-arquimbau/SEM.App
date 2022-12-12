@@ -76,7 +76,13 @@ else
                 <EventCompetition></EventCompetition>
             </div>
         }
-
+        @if (ShowMenuSection == MenuSection.QRCode)
+        {
+            <div class="event-news">
+                <EventQrCode></EventQrCode>
+            </div>
+        }
+        
         <div class="event-footer">
             <AuthorizeView Policy="admin-organizer">
                 @if (ICanManageThisEvent)
@@ -152,6 +158,7 @@ else
         Registrations,
         News,
         Competition,
-        Schedule
+        Schedule,
+        QRCode
     }  
 }   

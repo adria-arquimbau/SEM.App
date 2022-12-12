@@ -1,0 +1,75 @@
+﻿@using QRCoder
+@using SEM.App.Authentication
+@using System.Net.Http.Headers
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager Navigation
+@inject HttpClient HttpClient
+
+<div class="qrCode">
+    @if (registration != null)
+    {
+        <img src="@qrCode" width="300"/>
+       
+    }
+    @if (registration == null && ErrorMessage == null)
+    {
+        <SimpleLoading></SimpleLoading>
+    }
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid EventId { get; set; }
+    
+    private Registration? registration; 
+    private string qrCode = string.Empty;
+    private string? Token;
+    private string? ErrorMessage;
+        
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        if (!string.IsNullOrWhiteSpace(Token))
+        {
+            await GetRegistration();
+        }
+    }
+    
+    private async Task GetRegistration()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/Event/{EventId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            registration = await response.Content.ReadFromJsonAsync<Registration>();
+            qrCode = GenerateQRCode($"{Navigation.BaseUri}/manage-event/{EventId}/Check-in/{registration.Id}");
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = "Something went wrong while fetching the data, try again later.";
+        }
+    }
+    
+    private string GenerateQRCode(string input) 
+    {
+        using var qrGenerator = new QRCodeGenerator();
+        using var qrCodeData = qrGenerator.CreateQrCode(input, QRCodeGenerator.ECCLevel.Q);
+        using var qrCode = new PngByteQRCode(qrCodeData);
+        var graphic = qrCode.GetGraphic(10);
+        var base64String = Convert.ToBase64String(graphic, 0, graphic.Length); // Convert the bytes to base64 string  
+        return $"data:image/png;base64,{base64String}";
+    }
+    
+    private class Registration   
+    {
+        public Guid Id { get; set; }
+    }
+}
