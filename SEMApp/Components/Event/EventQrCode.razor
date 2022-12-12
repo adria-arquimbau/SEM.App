@@ -55,7 +55,7 @@
         }
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            ErrorMessage = "You are not registered for this event.";
+            ErrorMessage = "You must register for this event first, and have your registration accepted by the event organizer.";
             return;
         }
         if (!response.IsSuccessStatusCode)
