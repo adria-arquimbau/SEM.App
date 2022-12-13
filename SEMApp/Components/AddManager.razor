@@ -2,6 +2,7 @@
 @using System.Text
 @using System.Net.Http.Headers
 @using System.Text.Json
+@using SEM.App.Data
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
@@ -13,18 +14,9 @@
             <h4 class="modal-title">Add Manager</h4>
          </div>
          <div class="modal-body">
-            @*  <div class="mb-3"> *@
-            @*      <label for="name" class="form-label">Title</label> *@
-            @*      <input type="text" class="form-control" id="name" required @bind="@scheduleToPublish.Title" /> *@
-            @*  </div> *@
-            @* <div class="mb-3"> *@
-            @*    <label for="description" class="form-label">Description</label> *@
-            @*    <textarea type="text" class="form-control" id="description" required @bind="@scheduleToPublish.Description"></textarea> *@
-            @* </div> *@
-            @* <div class="mb-3"> *@
-            @*    <label for="location" class="form-label">Start Date/Time</label> *@
-            @*    <input type="datetime-local" @bind-value="@dateTimeNow" /> *@
-            @* </div> *@
+             <div class="mb-3">
+                 <p>User name</p><input class="form-control-bib" type="number">
+             </div>
          </div>
          <div class="modal-footer">
             @if (!RequestingAddManager)
@@ -46,11 +38,33 @@
 @code {
    [Parameter] public string? EventId { get; set; }
    [Parameter] public EventCallback OnClose { get; set; }
-   
+
+   private List<UserDto>? Users;
+
    private Guid? UserId { get; set; }
    private string ErrorMessage = string.Empty;
    private bool RequestingAddManager { get; set; }
-   
+   private bool RequestingUsers { get; set; }
+
+   private async Task GetUsersByContainingName(string name)
+   {
+      RequestingUsers = true;
+      var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+      var token = await customAuthStateProvider.GetToken();
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Users/{name}");
+      request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+      var response = await HttpClient.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+         Users = await response.Content.ReadFromJsonAsync<List<UserDto>>();
+      }
+      else
+      {
+         ErrorMessage = "Something went wrong. Please try again later.";
+      }
+      RequestingUsers = false;
+   }
+
    private void Cancel()
    {        
       OnClose.InvokeAsync();  
