@@ -2,7 +2,6 @@
 @attribute [Authorize(Policy = "admin-organizer")]
 
 @using SEM.App.Data
-@using SEM.App.Components.Loadings
 @using SEM.App.Components.EventManager
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
@@ -54,15 +53,13 @@ else
                 <EventCompetitionManager></EventCompetitionManager>
             </div>
         }
+        @if (ShowMenuSection == Event.MenuSection.Managers)
+        {
+            <div class="event-news">
+                <EventManagersManager EventId="@EventId"></EventManagersManager>
+            </div>
+        }
         
-        <div class="event-field">
-            @if (ErrorMessage != null)
-            {
-                <div class="alert alert-danger" role="alert">
-                    @ErrorMessage
-                </div>
-            }
-        </div>
         <div class="footer">
             <div class="event-field">
                 <button class="btn btn-outline-dark btn-sm" @onclick="GoToEvent">Go to event</button>
@@ -72,6 +69,14 @@ else
             </div>
             <div class="event-field">
                 <button class="btn btn-outline-dark btn-sm" @onclick="GoBack">Back</button>
+            </div>
+            <div class="event-field">
+                @if (ErrorMessage != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ErrorMessage
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -137,11 +142,16 @@ else
             var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl +  $"Events/{EventId}/delete");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             var response = await HttpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                GoBack();
+            }
             if (!response.IsSuccessStatusCode)
             {
                 ErrorMessage = "Something went wrong with our servers, try it again later.";
+                RequestingDeleteEvent = false;
             }
-            GoBack();
+            
         }
         DialogDeleteEventIsOpen = false;
     }

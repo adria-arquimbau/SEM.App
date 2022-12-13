@@ -1,0 +1,84 @@
+﻿@using SEM.App.Authentication
+@using System.Text
+@using System.Net.Http.Headers
+@using System.Text.Json
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject HttpClient HttpClient
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h4 class="modal-title">Add Manager</h4>
+         </div>
+         <div class="modal-body">
+            @*  <div class="mb-3"> *@
+            @*      <label for="name" class="form-label">Title</label> *@
+            @*      <input type="text" class="form-control" id="name" required @bind="@scheduleToPublish.Title" /> *@
+            @*  </div> *@
+            @* <div class="mb-3"> *@
+            @*    <label for="description" class="form-label">Description</label> *@
+            @*    <textarea type="text" class="form-control" id="description" required @bind="@scheduleToPublish.Description"></textarea> *@
+            @* </div> *@
+            @* <div class="mb-3"> *@
+            @*    <label for="location" class="form-label">Start Date/Time</label> *@
+            @*    <input type="datetime-local" @bind-value="@dateTimeNow" /> *@
+            @* </div> *@
+         </div>
+         <div class="modal-footer">
+            @if (!RequestingAddManager)
+            {  
+               <button type="button" class="btn btn-outline-dark btn-sm" @onclick=Create>Add</button>
+            }
+            else
+            {
+               <td>
+                  <LoadingButton ButtonType="dark" LoadingText="Adding"></LoadingButton>
+               </td>
+            }
+            <button type="button" class="btn btn-outline-dark btn-sm" @onclick="@Cancel">Go back</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+@code {
+   [Parameter] public string? EventId { get; set; }
+   [Parameter] public EventCallback OnClose { get; set; }
+   
+   private Guid? UserId { get; set; }
+   private string ErrorMessage = string.Empty;
+   private bool RequestingAddManager { get; set; }
+   
+   private void Cancel()
+   {        
+      OnClose.InvokeAsync();  
+   }  
+         
+   private async Task Create()
+   {
+      RequestingAddManager = true;
+      var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+      var token = await customAuthStateProvider.GetToken();
+      var jsonInString = JsonSerializer.Serialize(new
+      {
+         
+      });
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{UserId}")
+      {
+         Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+      };
+      request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+      var response = await HttpClient.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+         await OnClose.InvokeAsync();  
+      }
+      else
+      {
+         ErrorMessage = "Something went wrong. Please try again later.";
+      }
+      RequestingAddManager = false;
+   }
+}

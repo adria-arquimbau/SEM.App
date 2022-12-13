@@ -1,0 +1,108 @@
+﻿@using SEM.App.Authentication
+@using System.Net.Http.Headers
+@using System.Net
+@using SEM.App.Data
+@using SEM.App.Data.Models
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager Navigation
+@inject HttpClient HttpClient
+
+<div class="main">
+    <h3>EventManagersManager</h3>
+    <div>
+        <button class="btn btn-outline-dark btn-sm" @onclick="OpenAddManager">Add Manager</button>
+    </div>
+    @if (Managers != null)
+    {
+        <table class="table table-striped">
+        <thead>
+        <th scope="col">User</th>
+        <th scope="col">Role</th>
+        <th scope="col">Remove</th>
+        </thead>
+        @foreach (var manager in Managers)
+        {
+            <tbody>
+            <tr>    
+                <td>
+                    @manager.User.UserName
+                </td>
+                <td>
+                    @manager.Role
+                </td>
+                <td>
+                    @if (manager.Role != ManagerRole.Owner)
+                    {
+                        <button class="btn btn-outline-dark btn-sm" @onclick="() => RemoveManager(manager.Id)">Remove</button>
+                    }
+                </td>
+            </tr>
+            </tbody>
+        }
+    </table>
+    }
+    else
+    {
+        <SimpleLoading></SimpleLoading>
+    }
+
+</div>
+
+@if (AddAManagerIsOpen)
+{
+    <AddManager EventId="@EventId"
+        OnClose="@OnAddManagerClose"></AddManager>
+}
+
+@code {
+    [Parameter]
+    public string? EventId { get; set; }
+    
+    private string? Token;
+    private string? ErrorMessage;
+    private List<ManagersDto>? Managers;
+        
+    private bool AddAManagerIsOpen;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        Token = await customAuthStateProvider.GetToken();
+        if (!string.IsNullOrWhiteSpace(Token))
+        {
+            await GetManagers();
+        }
+    }
+    
+    private async Task GetManagers()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Managers = await response.Content.ReadFromJsonAsync<List<ManagersDto>>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = "Something went wrong while fetching the data, try again later.";
+        }
+    }   
+
+    private Task RemoveManager(Guid managerId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    private void OpenAddManager()
+    {
+        AddAManagerIsOpen = true;
+    }
+    
+    private async Task OnAddManagerClose()
+    {
+        AddAManagerIsOpen = false;
+        await GetManagers();
+    }
+}       
