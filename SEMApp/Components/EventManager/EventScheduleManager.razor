@@ -92,7 +92,7 @@
     private string? ErrorMessage;  
     private List<ScheduleDto>? Schedules;
     private Guid scheduleIdToDelete;
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseApiCallUrl();
     private string? Token;  
     private string message;
     private bool CreateScheduleIsOpen;
@@ -143,7 +143,7 @@
         if (isOk)
         {
             RequestingDeleteSchedule = true;
-            var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() +  $"events/{Event.Id}/schedule/{scheduleIdToDelete}");
+            var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseApiCallUrl() +  $"events/{Event.Id}/schedule/{scheduleIdToDelete}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             var response = await HttpClient.SendAsync(request);
             

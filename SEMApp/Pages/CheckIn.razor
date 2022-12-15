@@ -112,7 +112,7 @@
 
     private async Task GetRegistration()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Registrations/{RegistrationId}");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Registrations/{RegistrationId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
@@ -152,7 +152,7 @@
     private async Task CheckInRequest(bool checkedIn)
     {
         RequestingCheckIn = true;
-        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() + $"Registrations/{RegistrationId}/check-in/{checkedIn}");
+        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseApiCallUrl() + $"Registrations/{RegistrationId}/check-in/{checkedIn}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)

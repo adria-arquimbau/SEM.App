@@ -102,7 +102,7 @@
     private bool RequestingDelete;
     private bool RequestingUpdate;
     private string? Token;
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseApiCallUrl();
 
     protected override async Task OnInitializedAsync()
     {

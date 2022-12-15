@@ -22,7 +22,7 @@ public class UsersService
             ContainingName = containingName
         });
 
-        var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() +  "Users")
+        var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseApiCallUrl() +  "Users")
         {
             Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
         };
@@ -34,7 +34,7 @@ public class UsersService
     
     public async Task<bool> ConfirmEmail(string token, Guid userId)
     {
-        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() +  $"Users/confirm-email/{userId}");
+        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseApiCallUrl() +  $"Users/confirm-email/{userId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
 
@@ -43,7 +43,7 @@ public class UsersService
 
     public async Task<UserDto> GetMyUser(string token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() +  "Users/my-user");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() +  "Users/my-user");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
         
@@ -63,7 +63,7 @@ public class UsersService
             postalCode
         });   
         
-        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() + "Users")
+        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseApiCallUrl() + "Users")
         {
             Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
         };

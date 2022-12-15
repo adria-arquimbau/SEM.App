@@ -82,7 +82,7 @@
          scheduleToPublish.Description,
          DateTime = dateTimeNow
       });
-      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() + $"events/{EventId}/schedule")
+      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseApiCallUrl() + $"events/{EventId}/schedule")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };

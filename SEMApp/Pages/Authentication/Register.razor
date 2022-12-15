@@ -72,7 +72,7 @@
 
 @code {
     private RegisterRequest registerRequest = new();
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseApiCallUrl();
 
     private string repeatPassword = string.Empty;
     private string? FailedRegisterMessage;

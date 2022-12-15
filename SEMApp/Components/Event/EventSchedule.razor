@@ -56,7 +56,7 @@
     public SportEvent? Event { get; set; }
     private List<ScheduleDto>? Schedules;
 
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseApiCallUrl();
     private string? Token;  
     private string? ErrorMessage;
     

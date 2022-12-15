@@ -74,7 +74,7 @@
          NewsToUpdate.Title,
          NewsToUpdate.Description
       });
-      var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() + $"News/{NewsToUpdate.Id}")
+      var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseApiCallUrl() + $"News/{NewsToUpdate.Id}")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };

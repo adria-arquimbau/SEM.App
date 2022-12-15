@@ -47,7 +47,7 @@
     
     private async Task GetRegistration()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Registrations/Event/{EventId}");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Registrations/Event/{EventId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)

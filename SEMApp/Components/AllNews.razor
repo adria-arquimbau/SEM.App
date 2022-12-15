@@ -54,7 +54,7 @@
 @code {
     private List<GetNewsDto>? News;
     private string? ErrorMessage;
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseApiCallUrl();
 
     protected override async Task OnInitializedAsync()
     {

@@ -184,7 +184,7 @@
     private string? ErrorMessage;
     private const string TwoEmptySpaces = " ";
 
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseApiCallUrl();
     private string Token = string.Empty;
     
     private const string AcceptedState = "✅ Accepted";
@@ -230,7 +230,7 @@
     {
         RequestingRegistrationState = true;
         
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Events/{SportEvent.Id}/user-registered");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Events/{SportEvent.Id}/user-registered");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         
@@ -251,7 +251,7 @@
     {
         RequestingRegistrations = true;
         
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Events/{SportEvent.Id}/accepted-registrations");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Events/{SportEvent.Id}/accepted-registrations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             
         var response = await HttpClient.SendAsync(request);

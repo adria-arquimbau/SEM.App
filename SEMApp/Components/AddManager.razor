@@ -117,7 +117,7 @@
          ContainingName = containingName
       });
 
-      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() +  "Users")
+      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseApiCallUrl() +  "Users")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
@@ -149,7 +149,7 @@
       {
          Role = user.ManagerRoleToAdd.ToString()
       });
-      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}")
+      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseApiCallUrl() + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
