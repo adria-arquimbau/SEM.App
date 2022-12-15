@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using SEM.App.Data.Models;
 
 namespace SEM.App.Data;
 
@@ -91,4 +92,5 @@ public class UserDto
     public string Country { get; set; }
     public List<string> Roles { get; set; }
     public bool Requesting { get; set; }
+    public ManagerRole ManagerRoleToAdd { get; set; }
 }   

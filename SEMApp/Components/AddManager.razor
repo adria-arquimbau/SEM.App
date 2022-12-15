@@ -37,6 +37,7 @@
                      <table class="table table-striped">
                         <thead>
                         <th scope="col">Name</th>
+                        <th scope="col">Role to add</th>
                         <th scope="col">Action</th>
                         </thead>
                         @foreach (var user in Users.Where(user => !Managers.Exists(x => x.User.Id == user.Id)))
@@ -45,6 +46,15 @@
                            <tr>
                               <td>
                                  @user.UserName
+                              </td>
+                              <td>
+                                 <EditForm Model="user.ManagerRoleToAdd">
+                                    <InputSelect ValueExpression="@(() => user.ManagerRoleToAdd)" Value="user.ManagerRoleToAdd" ValueChanged="@((ManagerRole value) => ChangeManagerRoleToAdd(user, value))">
+                                         <option value="@ManagerRole.Basic">Basic</option>
+                                         <option value="@ManagerRole.CheckIn">Check in</option>
+                                         <option value="@ManagerRole.Admin">Admin</option>
+                                    </InputSelect>
+                                  </EditForm>
                               </td>
                               <td>
                                  @if (!user.Requesting)
@@ -129,7 +139,7 @@
       var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
       var token = await customAuthStateProvider.GetToken();
      
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{user.Id}");
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}");
       request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
       var response = await HttpClient.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -142,4 +152,10 @@
       }
       user.Requesting = false;
    }
+
+   private void ChangeManagerRoleToAdd(UserDto user, ManagerRole value)
+   {
+      user.ManagerRoleToAdd = value;
+   }
+   
 }
