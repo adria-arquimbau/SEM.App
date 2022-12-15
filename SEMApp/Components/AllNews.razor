@@ -18,7 +18,7 @@
                 <div class="lastNew" @onclick="() => GoToTheNews(news.EventId)">
                     <div class="lastNew-top">
                         <div>
-                           @news.Title
+                            @news.Title
                         </div>
                         <div class="lastNew-date">
                             @news.CreationDate.ToLongDateString()
@@ -43,11 +43,17 @@
             <SimpleLoading></SimpleLoading>
         }
     </div>
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @code {
-
     private List<GetNewsDto>? News;
+    private string? ErrorMessage;
     private static readonly string semApiUrl = ApiService.GetBaseUrl();
 
     protected override async Task OnInitializedAsync()
@@ -57,9 +63,15 @@
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"News");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
-        News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
         
-        await base.OnInitializedAsync();
+        if (response.IsSuccessStatusCode)
+        {
+            News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
     }
     
     private void GoToTheNews(Guid eventId)

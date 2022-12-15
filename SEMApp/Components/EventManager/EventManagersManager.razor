@@ -60,6 +60,12 @@
         <p>Basic => Check in registrations, create and edit schedules, create news</p>
         <p>Check in => Just check in registrations</p>
     </div>
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @if (AddAManagerIsOpen)

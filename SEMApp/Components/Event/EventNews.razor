@@ -45,6 +45,12 @@
             <SimpleLoading></SimpleLoading>
         }
     </div>
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @code {
@@ -52,6 +58,7 @@
     [Parameter]
     public Guid? EventId { get; set; }
     private List<GetNewsDto>? News;
+    private string? ErrorMessage;  
 
     private static readonly string semApiUrl = ApiService.GetBaseUrl();
 
@@ -62,9 +69,15 @@
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"News/Event/{EventId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
-        News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
         
-        await base.OnInitializedAsync();
+        if (response.IsSuccessStatusCode)
+        {
+            News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
     }
     
     private void GoToTheNews(Guid newsId)

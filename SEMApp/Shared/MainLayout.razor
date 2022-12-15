@@ -1,4 +1,5 @@
 ﻿@using SEM.App.Authentication
+@using SEM.App.Data
 
 @inherits LayoutComponentBase
 
@@ -7,34 +8,48 @@
 
 <PageTitle>Sport Event Manager</PageTitle>
 	
+@if (ErrorMessage == null)
+{
 	<div class="page">
 		<NavMenu />
 		<main>
-			 <AuthorizeView>
-				 <Authorized>
-					 <div class="login-register-container">
+			<AuthorizeView>
+				<Authorized>
+					<div class="login-register-container">
 						<a class="logout-button" @onclick="Logout" href="javascript:void(0)">Logout</a>
-					 </div>
-				 </Authorized>
-				 <NotAuthorized>
-					 <div class="login-register-container">
-						 <a class="login-button" href="/login">Login</a>
-						 <a class="register-button" href="/register">Register</a>
-					 </div>
-				 </NotAuthorized>
-             </AuthorizeView>
-				
+					</div>
+				</Authorized>
+				<NotAuthorized>
+					<div class="login-register-container">
+						<a class="login-button" href="/login">Login</a>
+						<a class="register-button" href="/register">Register</a>
+					</div>
+				</NotAuthorized>
+			</AuthorizeView>
+			
 			<article>
 				@Body
 			</article>
 		</main>
 	</div>
+}
+@if (ErrorMessage != null)
+{
+	<div class="alert alert-warning" role="alert">
+		@ErrorMessage
+	</div>
+}
 
 @code {
+	private string? ErrorMessage;
+	
 	protected override async Task OnInitializedAsync()
 	{
-		await HttpClient.GetAsync("https://sport-management-api.azurewebsites.net/hc");
-		await base.OnInitializedAsync();
+		var response = await HttpClient.GetAsync(ApiService.GetBaseUrl() + "hc");
+		if (!response.IsSuccessStatusCode)
+		{
+			ErrorMessage = Messages.MainServicesNotAvailable;
+		}
 	}
 
 	private async Task Logout()

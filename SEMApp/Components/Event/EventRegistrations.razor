@@ -1,6 +1,7 @@
 @using SEM.App.Data
 @using SEM.App.Components.Loadings
 @using SEM.App.Authentication
+@using System.Net.Http.Headers
 
 @inject EventsService EventsService
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -157,7 +158,12 @@
             </NotAuthorized>
         </AuthorizeView>
     </div>
-    
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 
@@ -175,6 +181,7 @@
     private bool RequestingRegistrationState { get; set; }
     
     private string? FailedRegistrationMessage;
+    private string? ErrorMessage;
     private const string TwoEmptySpaces = " ";
 
     private static readonly string semApiUrl = ApiService.GetBaseUrl();
@@ -222,16 +229,42 @@
     private async Task GetRegisteredState()
     {
         RequestingRegistrationState = true;
-        var iAmRegisteredResponse = await EventsService.IAmRegistered(SportEvent.Id, Token);
-        RegistrationState = iAmRegisteredResponse.RegistrationState;
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Events/{SportEvent.Id}/user-registered");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+        var response = await HttpClient.SendAsync(request);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadFromJsonAsync<IAmRegisteredResponse>();
+            RegistrationState = content?.RegistrationState;
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
+
         RequestingRegistrationState = false;
     }
     
     private async Task GetRegistrations()
     {
         RequestingRegistrations = true;
-        var registrations = await EventsService.GetAcceptedRegistrationsByEventId(SportEvent.Id, Token);
-        Registrations = registrations;
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Events/{SportEvent.Id}/accepted-registrations");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            
+        var response = await HttpClient.SendAsync(request);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            Registrations = await response.Content.ReadFromJsonAsync<List<RegistrationDto>>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
+   
         RequestingRegistrations = false;
     }
     

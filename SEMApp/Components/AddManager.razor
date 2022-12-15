@@ -50,11 +50,11 @@
                               <td>
                                  <EditForm Model="user.ManagerRoleToAdd">
                                     <InputSelect ValueExpression="@(() => user.ManagerRoleToAdd)" Value="user.ManagerRoleToAdd" ValueChanged="@((ManagerRole value) => ChangeManagerRoleToAdd(user, value))">
-                                         <option value="@ManagerRole.Basic">Basic</option>
-                                         <option value="@ManagerRole.CheckIn">Check in</option>
-                                         <option value="@ManagerRole.Admin">Admin</option>
+                                       <option value="@ManagerRole.Basic">Basic</option>
+                                       <option value="@ManagerRole.CheckIn">Check in</option>
+                                       <option value="@ManagerRole.Admin">Admin</option>
                                     </InputSelect>
-                                  </EditForm>
+                                 </EditForm>
                               </td>
                               <td>
                                  @if (!user.Requesting)
@@ -86,6 +86,12 @@
          </div>
       </div>
    </div>
+   @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @code {
@@ -95,7 +101,7 @@
 
    private List<UserDto>? Users;
    
-   private string ErrorMessage = string.Empty;
+   private string? ErrorMessage;
    private string UserSearchName = string.Empty;
    private bool RequestingAddManager { get; set; }
    private bool RequestingUsers { get; set; }
@@ -121,9 +127,9 @@
       {
          Users = await response.Content.ReadFromJsonAsync<List<UserDto>>();
       }
-      else
+      if (!response.IsSuccessStatusCode)
       {
-         ErrorMessage = "Something went wrong. Please try again later.";
+         ErrorMessage = Messages.ApiInternalServerErrorMessage;
       }
       RequestingUsers = false;
    }
@@ -149,13 +155,14 @@
       };
       request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
       var response = await HttpClient.SendAsync(request);
+      
       if (response.IsSuccessStatusCode)
       {
          await OnClose.InvokeAsync();  
       }
-      else
+      if (!response.IsSuccessStatusCode)
       {
-         ErrorMessage = "Something went wrong. Please try again later.";
+         ErrorMessage = Messages.ApiInternalServerErrorMessage;
       }
       user.Requesting = false;
    }

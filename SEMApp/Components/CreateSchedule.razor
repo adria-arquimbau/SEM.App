@@ -15,10 +15,10 @@
             <h4 class="modal-title">Create a Schedule</h4>
          </div>
          <div class="modal-body">
-             <div class="mb-3">
-                 <label for="name" class="form-label">Title</label>
-                 <input type="text" class="form-control" id="name" required @bind="@scheduleToPublish.Title" />
-             </div>
+            <div class="mb-3">
+               <label for="name" class="form-label">Title</label>
+               <input type="text" class="form-control" id="name" required @bind="@scheduleToPublish.Title" />
+            </div>
             <div class="mb-3">
                <label for="description" class="form-label">Description</label>
                <textarea type="text" class="form-control" id="description" required @bind="@scheduleToPublish.Description"></textarea>
@@ -46,6 +46,12 @@
          </div>
       </div>
    </div>
+   @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @code {
@@ -57,7 +63,7 @@
 
    private DateTime? dateTimeNow = DateTime.Now;
    
-   private string ErrorMessage = string.Empty;
+   private string? ErrorMessage;
    private bool RequestingCreateNews { get; set; } 
       
    private void Cancel()
@@ -86,9 +92,9 @@
       {
          await OnClose.InvokeAsync();  
       }
-      else
+      if (!response.IsSuccessStatusCode)
       {
-         ErrorMessage = "Something went wrong";
+         ErrorMessage = Messages.ApiInternalServerErrorMessage;
       }
       RequestingCreateNews = false;
    }

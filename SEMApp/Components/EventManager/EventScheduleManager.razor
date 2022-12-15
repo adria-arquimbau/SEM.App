@@ -62,9 +62,12 @@
         </div>
     }
     
-    <div class="alert alert-warning" role="alert">
-        @ErrorMessage
-    </div>
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @if (CreateScheduleIsOpen)

@@ -35,22 +35,34 @@
             <SimpleLoading></SimpleLoading>
         }
     </div>
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @code {
     private List<SportEvent>? Events;
-    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+    private string? ErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Events");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() +  "Events");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
-        Events = await response.Content.ReadFromJsonAsync<List<SportEvent>>();
         
-        await base.OnInitializedAsync();
+        if (response.IsSuccessStatusCode)
+        {
+            Events = await response.Content.ReadFromJsonAsync<List<SportEvent>>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
     }
     
     private void GoToEvent(Guid eventId)

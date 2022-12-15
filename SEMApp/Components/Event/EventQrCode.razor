@@ -62,7 +62,7 @@
         }
         if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = "Something went wrong while fetching the data, try again later.";
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
     }
     
@@ -70,12 +70,12 @@
     {
         using var qrGenerator = new QRCodeGenerator();
         using var qrCodeData = qrGenerator.CreateQrCode(input, QRCodeGenerator.ECCLevel.Q);
-        using var qrCode = new PngByteQRCode(qrCodeData);
-        var graphic = qrCode.GetGraphic(10);
+        using var pngQrCode = new PngByteQRCode(qrCodeData);
+        var graphic = pngQrCode.GetGraphic(10);
         var base64String = Convert.ToBase64String(graphic, 0, graphic.Length); // Convert the bytes to base64 string  
         return $"data:image/png;base64,{base64String}";
     }
-    
+        
     private class Registration   
     {
         public Guid Id { get; set; }

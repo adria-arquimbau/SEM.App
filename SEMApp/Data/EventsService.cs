@@ -17,15 +17,6 @@ public class EventsService
     {
        return await _httpClient.GetFromJsonAsync<List<SportEvent>>(ApiService.GetBaseUrl() + "Events");
     }
-    
-    public async Task<List<RegistrationDto>> GetAcceptedRegistrationsByEventId(Guid eventId, string token)
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Events/{eventId}/accepted-registrations");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            
-        var response = await _httpClient.SendAsync(request);
-        return await response.Content.ReadFromJsonAsync<List<RegistrationDto>>();        
-    }
 
     public async Task<SportEvent> GetEvent(Guid eventId)
     {
@@ -60,16 +51,6 @@ public class EventsService
         };
     }
 
-    public async Task<IAmRegisteredResponse> IAmRegistered(Guid eventId, string token)  
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Events/{eventId}/user-registered");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var response = await _httpClient.SendAsync(request);
-        
-        var content = await response.Content.ReadFromJsonAsync<IAmRegisteredResponse>();
-        return content;
-    }   
-    
     public async Task<List<SportEventOrganizer>> GetMyEventsAsOrganizer(string token)
     {   
         var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() +  "Events/organizer");

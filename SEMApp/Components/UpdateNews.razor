@@ -15,14 +15,14 @@
             <h4 class="modal-title">Update a News</h4>
          </div>
          <div class="modal-body">
-             <div class="mb-3">
-                 <label for="title" class="form-label">Title</label>
-                 <input type="text" class="form-control" id="title" required @bind="@NewsToUpdate.Title" />
-             </div>
-             <div class="mb-3">
-                 <label for="description" class="form-label">Description</label>
-                 <textarea type="text" class="form-control" id="description" required @bind="@NewsToUpdate.Description"></textarea>
-             </div>
+            <div class="mb-3">
+               <label for="title" class="form-label">Title</label>
+               <input type="text" class="form-control" id="title" required @bind="@NewsToUpdate.Title" />
+            </div>
+            <div class="mb-3">
+               <label for="description" class="form-label">Description</label>
+               <textarea type="text" class="form-control" id="description" required @bind="@NewsToUpdate.Description"></textarea>
+            </div>
          </div>
          <div class="modal-footer">
             @if (!RequestingUpdate)
@@ -42,6 +42,12 @@
          </div>
       </div>
    </div>
+   @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 @code {
@@ -50,7 +56,7 @@
    [Parameter]
    public EventCallback OnClose { get; set; }
 
-   private string ErrorMessage = string.Empty;
+   private string? ErrorMessage;
    private bool RequestingUpdate;
 
    private void Cancel()
@@ -79,10 +85,9 @@
          RequestingUpdate = false;
          await OnClose.InvokeAsync();
       }
-      else
+      if (!response.IsSuccessStatusCode)
       {
-         ErrorMessage = "Something went wrong";
+         ErrorMessage = Messages.ApiInternalServerErrorMessage;
       }
    }
-
 }

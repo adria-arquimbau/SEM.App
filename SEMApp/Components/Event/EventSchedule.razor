@@ -42,7 +42,12 @@
             }   
         </div>
     }
-    
+    @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
+    }
 </div>
 
 
@@ -53,6 +58,7 @@
 
     private static readonly string semApiUrl = ApiService.GetBaseUrl();
     private string? Token;  
+    private string? ErrorMessage;
     
     protected override async Task OnInitializedAsync()
     {
@@ -66,12 +72,15 @@
     {
         
         var response = await HttpClient.GetAsync(semApiUrl + $"events/{Event.Id}/schedules");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            Schedules = await response.Content.ReadFromJsonAsync<List<ScheduleDto>>();
+        }
         if (!response.IsSuccessStatusCode)
         {
-    
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
-
-        Schedules = await response.Content.ReadFromJsonAsync<List<ScheduleDto>>();
     }
 
     private List<ScheduleDays> GetScheduleOrganizedByDays()
