@@ -13,8 +13,8 @@ public class ManagerDto
 
 public enum ManagerRole
 {
-    Basic,
     CheckIn,
+    Basic,
     Admin,
     Owner
 }
