@@ -85,7 +85,7 @@
     
     private List<ScheduleDto>? Schedules;
     private Guid scheduleIdToDelete;    
-    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private const string semApiUrl = ApiService.GetBaseUrl();
     private string? Token;  
     private string message;
     private bool CreateScheduleIsOpen;
@@ -134,7 +134,7 @@
         if (isOk)
         {
             RequestingDeleteSchedule = true;
-            var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"events/{Event.Id}/schedule/{scheduleIdToDelete}");
+            var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() +  $"events/{Event.Id}/schedule/{scheduleIdToDelete}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             var response = await HttpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)

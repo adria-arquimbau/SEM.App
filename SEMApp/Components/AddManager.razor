@@ -111,7 +111,7 @@
          ContainingName = containingName
       });
 
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" +  "Users")
+      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() +  "Users")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
@@ -143,7 +143,7 @@
       {
          Role = user.ManagerRoleToAdd.ToString()
       });
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}")
+      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };

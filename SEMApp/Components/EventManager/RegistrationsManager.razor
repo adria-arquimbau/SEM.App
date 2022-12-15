@@ -162,7 +162,7 @@
     {
         registration.RequestingChangeStatus = true;   
 
-        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registration.Id}/{state}");
+        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() + $"Registrations/{registration.Id}/{state}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
 
@@ -184,7 +184,7 @@
             registration.Bib
         });   
         
-        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" + $"Registrations/{registration.Id}")
+        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() + $"Registrations/{registration.Id}")
         {
             Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
         };
@@ -204,7 +204,7 @@
         if (isOk)
         {
             RequestingDeleteRegistration = true;
-            var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Registrations/{registrationIdToDelete}/delete");
+            var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() +  $"Registrations/{registrationIdToDelete}/delete");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
             var response = await HttpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)

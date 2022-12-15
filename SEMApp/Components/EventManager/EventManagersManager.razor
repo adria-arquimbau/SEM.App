@@ -91,7 +91,7 @@
     
     private async Task GetManagers()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseUrl() + $"Managers/Event/{EventId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
@@ -110,7 +110,7 @@
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
      
-        var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/{manager.Id}");
+        var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() + $"Managers/{manager.Id}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)

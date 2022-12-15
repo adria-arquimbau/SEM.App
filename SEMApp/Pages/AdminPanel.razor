@@ -2,7 +2,6 @@
 @attribute [Authorize(Policy = "admin")]
 
 @using SEM.App.Data
-@using SEM.App.Components.Loadings
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 
@@ -122,7 +121,7 @@
     private async Task SetRole(Guid userId, string role)
     {
         RequestingUpdateStatus = true;
-        var request = new HttpRequestMessage(HttpMethod.Put, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/set-role/{userId}/role/{role}");
+        var request = new HttpRequestMessage(HttpMethod.Put, ApiService.GetBaseUrl() +  $"Users/set-role/{userId}/role/{role}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         await HttpClient.SendAsync(request);
 
@@ -133,7 +132,7 @@
     private async Task DeleteRole(Guid userId, string role)
     {   
         RequestingUpdateStatus = true;
-        var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" +  $"Users/delete-role/{userId}/role/{role}");
+        var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() +  $"Users/delete-role/{userId}/role/{role}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token); 
         await HttpClient.SendAsync(request);
         

@@ -109,7 +109,7 @@ else
     private bool RequestingDeleteEvent;
     
     private string Token = string.Empty;
-    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private const string semApiUrl = ApiService.GetBaseUrl();
 
     protected override async Task OnInitializedAsync()
     {

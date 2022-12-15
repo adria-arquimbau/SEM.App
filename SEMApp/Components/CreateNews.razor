@@ -68,7 +68,7 @@
          NewsToPublish.Title,
          NewsToPublish.Description
       });
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"News/event/{EventId}")
+      var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseUrl() + $"News/event/{EventId}")
       {
          Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
       };
