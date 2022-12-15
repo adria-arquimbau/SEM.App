@@ -139,7 +139,14 @@
       var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
       var token = await customAuthStateProvider.GetToken();
      
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}");
+      var jsonInString = JsonSerializer.Serialize(new
+      {
+         Role = user.ManagerRoleToAdd.ToString()
+      });
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{user.Id}/Role/{user.ManagerRoleToAdd}")
+      {
+         Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+      };
       request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
       var response = await HttpClient.SendAsync(request);
       if (response.IsSuccessStatusCode)
