@@ -2,12 +2,13 @@
 
 namespace SEM.App.Data.Models;
 
-public class ManagersDto
+public class ManagerDto
 {
     public Guid Id { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ManagerRole Role { get; set; }
     public UserDto User { get; set; }
+    public bool Requesting { get; set; }
 }
 
 public enum ManagerRole

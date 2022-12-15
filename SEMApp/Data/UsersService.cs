@@ -15,9 +15,17 @@ public class UsersService
         _httpClient = httpClient;
     }
     
-    public async Task<List<UserDto>> GetUsers(string token) 
+    public async Task<List<UserDto>> GetUsers(string token, string? containingName) 
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  "Users");
+        var jsonInString = JsonSerializer.Serialize(new
+        {   
+            ContainingName = containingName
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl +  "Users")
+        {
+            Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+        };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _httpClient.SendAsync(request);
         
@@ -82,4 +90,5 @@ public class UserDto
     public string City { get; set; }
     public string Country { get; set; }
     public List<string> Roles { get; set; }
-}  
+    public bool Requesting { get; set; }
+}   

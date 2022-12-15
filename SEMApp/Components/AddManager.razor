@@ -3,6 +3,7 @@
 @using System.Net.Http.Headers
 @using System.Text.Json
 @using SEM.App.Data
+@using SEM.App.Data.Models
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
@@ -14,21 +15,63 @@
             <h4 class="modal-title">Add Manager</h4>
          </div>
          <div class="modal-body">
-             <div class="mb-3">
-                 <p>User name</p><input class="form-control-bib" type="number">
-             </div>
+            <div class="mb-3">
+               <p>User name</p>
+               <input class="form-control-bib" type="text" @bind="UserSearchName" @bind:event="oninput" @onchange="() => GetUsersByContainingName(UserSearchName)">
+            </div>
+            <div>
+               @if (RequestingUsers)
+               {
+                  <SimpleLoading></SimpleLoading>
+               }
+               else
+               {
+                  @if (Users == null)
+                  {
+                     <div class="alert alert-warning" role="alert">
+                        Search for containg user name.
+                     </div>
+                  }
+                  @if (Users?.Count > 0)
+                  {
+                     <table class="table table-striped">
+                        <thead>
+                        <th scope="col">Name</th>
+                        <th scope="col">Action</th>
+                        </thead>
+                        @foreach (var user in Users.Where(user => !Managers.Exists(x => x.User.Id == user.Id)))
+                        {
+                           <tbody>
+                           <tr>
+                              <td>
+                                 @user.UserName
+                              </td>
+                              <td>
+                                 @if (!user.Requesting)
+                                 {
+                                    <button class="btn btn-outline-dark btn-sm" @onclick="@(() => Add(user))">Add</button>
+                                 }
+                                 else
+                                 {
+                                    <LoadingButton ButtonType="dark" LoadingText="Adding"></LoadingButton>
+                                 }
+                                 
+                              </td>
+                           </tr>
+                           </tbody>
+                        }
+                     </table>
+                  }
+                  @if (Users?.Count == 0)
+                  {
+                     <div class="alert alert-warning" role="alert">
+                        No users with this search criteria.
+                     </div>
+                  }
+               }
+            </div>
          </div>
          <div class="modal-footer">
-            @if (!RequestingAddManager)
-            {  
-               <button type="button" class="btn btn-outline-dark btn-sm" @onclick=Create>Add</button>
-            }
-            else
-            {
-               <td>
-                  <LoadingButton ButtonType="dark" LoadingText="Adding"></LoadingButton>
-               </td>
-            }
             <button type="button" class="btn btn-outline-dark btn-sm" @onclick="@Cancel">Go back</button>
          </div>
       </div>
@@ -37,21 +80,31 @@
 
 @code {
    [Parameter] public string? EventId { get; set; }
-   [Parameter] public EventCallback OnClose { get; set; }
+   [Parameter] public List<ManagerDto> Managers { get; set; }
+   [Parameter] public EventCallback OnClose { get; set; }   
 
    private List<UserDto>? Users;
-
-   private Guid? UserId { get; set; }
+   
    private string ErrorMessage = string.Empty;
+   private string UserSearchName = string.Empty;
    private bool RequestingAddManager { get; set; }
    private bool RequestingUsers { get; set; }
 
-   private async Task GetUsersByContainingName(string name)
+   private async Task GetUsersByContainingName(string containingName)
    {
       RequestingUsers = true;
       var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
       var token = await customAuthStateProvider.GetToken();
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Users/{name}");
+      
+      var jsonInString = JsonSerializer.Serialize(new
+      {   
+         ContainingName = containingName
+      });
+
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" +  "Users")
+      {
+         Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
+      };
       request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
       var response = await HttpClient.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -69,20 +122,14 @@
    {        
       OnClose.InvokeAsync();  
    }  
-         
-   private async Task Create()
-   {
-      RequestingAddManager = true;
+            
+   private async Task Add(UserDto user)
+   {  
+      user.Requesting = true;
       var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
       var token = await customAuthStateProvider.GetToken();
-      var jsonInString = JsonSerializer.Serialize(new
-      {
-         
-      });
-      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{UserId}")
-      {
-         Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
-      };
+     
+      var request = new HttpRequestMessage(HttpMethod.Post, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/Event/{EventId}/Add/{user.Id}");
       request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
       var response = await HttpClient.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -93,6 +140,6 @@
       {
          ErrorMessage = "Something went wrong. Please try again later.";
       }
-      RequestingAddManager = false;
+      user.Requesting = false;
    }
 }

@@ -34,7 +34,15 @@
                 <td>
                     @if (manager.Role != ManagerRole.Owner)
                     {
-                        <button class="btn btn-outline-dark btn-sm" @onclick="() => RemoveManager(manager.Id)">Remove</button>
+                        @if (!manager.Requesting)
+                        {
+                            <button class="btn btn-outline-dark btn-sm" @onclick="() => RemoveManager(manager)">Remove</button>
+                        }
+                        else
+                        {
+                            <LoadingButton ButtonType="dark" LoadingText="Removing"></LoadingButton>
+                        }
+                        
                     }
                 </td>
             </tr>
@@ -52,6 +60,7 @@
 @if (AddAManagerIsOpen)
 {
     <AddManager EventId="@EventId"
+                Managers="@Managers"
         OnClose="@OnAddManagerClose"></AddManager>
 }
 
@@ -61,7 +70,7 @@
     
     private string? Token;
     private string? ErrorMessage;
-    private List<ManagersDto>? Managers;
+    private List<ManagerDto>? Managers;
         
     private bool AddAManagerIsOpen;
     
@@ -82,19 +91,34 @@
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            Managers = await response.Content.ReadFromJsonAsync<List<ManagersDto>>();
+            Managers = await response.Content.ReadFromJsonAsync<List<ManagerDto>>();
         }
         if (!response.IsSuccessStatusCode)
         {
             ErrorMessage = "Something went wrong while fetching the data, try again later.";
         }
     }   
-
-    private Task RemoveManager(Guid managerId)
-    {
-        throw new NotImplementedException();
-    }
     
+    private async Task RemoveManager(ManagerDto manager)
+    {     
+        manager.Requesting = true;
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
+        var token = await customAuthStateProvider.GetToken();
+     
+        var request = new HttpRequestMessage(HttpMethod.Delete, "https://sport-management-api.azurewebsites.net/api/" + $"Managers/{manager.Id}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            await GetManagers();
+        }
+        else
+        {
+            ErrorMessage = "Something went wrong. Please try again later.";
+        }
+        manager.Requesting = false;
+    }
+
     private void OpenAddManager()
     {
         AddAManagerIsOpen = true;

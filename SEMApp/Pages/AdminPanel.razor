@@ -99,9 +99,9 @@
     private List<UserDto>? users;
     private string? Token;
         
-        private const string TrueCheck = "✅";
+    private const string TrueCheck = "✅";
     private const string FalseCheck = "❌";
-        private const string organizerRole = "organizer";
+    private const string organizerRole = "organizer";
 
     private bool RequestingUpdateStatus;
 
@@ -143,6 +143,6 @@
     
     private async Task GetUsers()
     {
-        users = await UsersService.GetUsers(Token!);
+        users = await UsersService.GetUsers(Token!, null);
     }
 }
