@@ -197,11 +197,14 @@
         var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl +  $"Events/{EventId}/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            myEvent = await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
+        }
         if (!response.IsSuccessStatusCode)
         {
-            GoBack();
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
-        myEvent = await response.Content.ReadFromJsonAsync<SportEventOrganizer>();
     }
     
     private async Task ChangeIsPublicState(bool isPublic)
@@ -212,17 +215,15 @@
         var response = await HttpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
+            await GetMyEventAsOrganizer();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
             ErrorMessage = "Something went wrong with our servers, try it again later.";
         }
-        await GetMyEventAsOrganizer();
         RequestingIsPublicStateChange = false;
     }
-    
-    private void GoBack()
-    {
-        Navigation.NavigateTo($"/organizer-panel");
-    }
-    
+
     private void Open()
     {
         ModalDisplay = "block;";    

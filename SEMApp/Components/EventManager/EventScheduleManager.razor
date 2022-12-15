@@ -25,11 +25,11 @@
     <h4>Schedule</h4>
     <button type="button" class="btn btn-outline-dark btn-sm" data-dismiss="modal" @onclick="OpenCreateSchedule">Add</button>
     
-    @if (Schedules == null)
+    @if (Schedules == null && ErrorMessage == null)
     {
         <SimpleLoading></SimpleLoading>
     }
-    else
+    @if (Schedules != null)
     {
         <div class="schedules">
             @foreach (var schedule in GetScheduleOrganizedByDays())
@@ -62,6 +62,9 @@
         </div>
     }
     
+    <div class="alert alert-warning" role="alert">
+        @ErrorMessage
+    </div>
 </div>
 
 @if (CreateScheduleIsOpen)
@@ -83,6 +86,7 @@
     [Parameter]
     public SportEventOrganizer? Event { get; set; }
     
+    private string? ErrorMessage;  
     private List<ScheduleDto>? Schedules;
     private Guid scheduleIdToDelete;
     private static readonly string semApiUrl = ApiService.GetBaseUrl();
@@ -103,12 +107,14 @@
     private async Task GetSchedules()
     {
         var response = await HttpClient.GetAsync(semApiUrl + $"events/{Event.Id}/schedules");
+        if (response.IsSuccessStatusCode)
+        {
+            Schedules = await response.Content.ReadFromJsonAsync<List<ScheduleDto>>();
+        }
         if (!response.IsSuccessStatusCode)
         {
-    
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
-
-        Schedules = await response.Content.ReadFromJsonAsync<List<ScheduleDto>>();
     }
 
     private void OpenCreateSchedule()
@@ -137,11 +143,16 @@
             var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() +  $"events/{Event.Id}/schedule/{scheduleIdToDelete}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             var response = await HttpClient.SendAsync(request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                await GetSchedules();
+            }
             if (!response.IsSuccessStatusCode)
             {
-               //TODO error message;
+                ErrorMessage = Messages.ApiInternalServerErrorMessage;
             }
-            await GetSchedules();
+            
             RequestingDeleteSchedule = false;
         }
         DialogDeleteScheduleIsOpen = false;
@@ -179,5 +190,4 @@
         public DateOnly Day { get; set; }
         public List<ScheduleDto>? Schedules { get; set; }
     }
-    
 }

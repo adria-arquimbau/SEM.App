@@ -113,6 +113,9 @@
             </tbody>
         }
     </table>
+    <div class="alert alert-warning" role="alert">
+        @ErrorMessage
+    </div>
 </div>
 
 @if (DialogDeleteRegistrationIsOpen)
@@ -147,7 +150,7 @@
     
     private bool DialogDeleteRegistrationIsOpen;
     private bool RequestingDeleteRegistration;  
-    private bool ErrorMessage;
+    private string? ErrorMessage;  
     
     private string message;
     private string Token;
@@ -166,12 +169,14 @@
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
 
+        if (response.IsSuccessStatusCode)
+        {
+            await RefreshEvent.InvokeAsync();
+        }
         if (!response.IsSuccessStatusCode)
         {
-            
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
-
-        await RefreshEvent.InvokeAsync();
         registration.RequestingChangeStatus = false;
     }
     
@@ -191,12 +196,16 @@
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
 
+        if (response.IsSuccessStatusCode)
+        {
+            await RefreshEvent.InvokeAsync();
+        }
         if (!response.IsSuccessStatusCode)
         {
-            
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
+        
         registration.RequestingUpdateBib = false;
-        await RefreshEvent.InvokeAsync();
     }
 
     private async Task OnDeleteRegistrationDialogClose(bool isOk)
@@ -207,12 +216,14 @@
             var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseUrl() +  $"Registrations/{registrationIdToDelete}/delete");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
             var response = await HttpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                await RefreshEvent.InvokeAsync();
+            }
             if (!response.IsSuccessStatusCode)
             {
-                ErrorMessage = true;
-                // ficar missatge de error 
+                ErrorMessage = Messages.ApiInternalServerErrorMessage;
             }
-            await RefreshEvent.InvokeAsync();
             RequestingDeleteRegistration = false;
         }
         DialogDeleteRegistrationIsOpen = false;
@@ -249,15 +260,22 @@
         var request = new HttpRequestMessage(HttpMethod.Get, "https://sport-management-api.azurewebsites.net/api/Events/" + $"{EventId}/export-registrations");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetToken());
         var response = await HttpClient.SendAsync(request);
-        var file = await response.Content.ReadAsByteArrayAsync();
         
-        var fileStream1 = new MemoryStream(file);
-        var fileStream = (Stream)fileStream1;
-        var fileName = $"registrations-{EventId}.csv";
+        if (response.IsSuccessStatusCode)
+        {
+            var file = await response.Content.ReadAsByteArrayAsync();
+            var fileStream1 = new MemoryStream(file);
+            var fileStream = (Stream)fileStream1;
+            var fileName = $"registrations-{EventId}.csv";
 
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
 
-        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
     }
 
     private void GoToCheckIn(Guid registrationId)

@@ -12,68 +12,71 @@
 
 <div class="eventNews">
     <button class="btn btn-outline-dark btn-sm" @onclick="OpenCreateNews">Create a News</button>
-        <div class="eventNews-separator"></div>
+    <div class="eventNews-separator"></div>
     @if (News == null)
-            {
-                <SimpleLoading></SimpleLoading>
-            }
-            else
-            {
-                foreach (var news in News)
-                {
-                    <div class="news">
-                        <Separator></Separator>
-                        <div class="eventNews-news-new-field">
-                            Ttile: @news.Title
-                        </div>
-                        <div class="eventNews-news-new-field">
-                            Creation date: @news.CreationDate
-                        </div>
-                        <div class="eventNews-news-new-field">
-                            Author: @news.AuthorName
-                        </div>
-                        <div class="eventNews-news-new-field">
-                            Description: @news.ShortDescription
-                        </div>
-                        <div class="eventNews-news-new-actions">
-                            <div class="eventNews-news-new-actions-button">
-                                @if (!RequestingDelete)
-                                {
-                                    <button class="btn btn-outline-dark btn-sm" @onclick="@(() => Delete(news.Id))">Delete</button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        <span class="sr-only">Deleating...</span>
-                                    </button>
-                                }
-                            </div>
-                            <div>
-                                @if (!RequestingUpdate)
-                                {
-                                    <button class="btn btn-outline-dark btn-sm" @onclick="@(() => OpenUpdateNews(news))">Update</button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-outline-dark btn-sm" type="button" disabled>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        <span class="sr-only">Updating...</span>
-                                    </button>
-                                }
-                            </div>
-
-
-                        </div>
+    {
+        <SimpleLoading></SimpleLoading>
+    }
+    else
+    {
+        foreach (var news in News)
+        {
+            <div class="news">
+                <Separator></Separator>
+                <div class="eventNews-news-new-field">
+                    Ttile: @news.Title
+                </div>
+                <div class="eventNews-news-new-field">
+                    Creation date: @news.CreationDate
+                </div>
+                <div class="eventNews-news-new-field">
+                    Author: @news.AuthorName
+                </div>
+                <div class="eventNews-news-new-field">
+                    Description: @news.ShortDescription
+                </div>
+                <div class="eventNews-news-new-actions">
+                    <div class="eventNews-news-new-actions-button">
+                        @if (!RequestingDelete)
+                        {
+                            <button class="btn btn-outline-dark btn-sm" @onclick="@(() => Delete(news.Id))">Delete</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">Deleating...</span>
+                            </button>
+                        }
                     </div>
-                    if (UpdateNewsIsOpen)
-                    {
-                        <UpdateNews NewsToUpdate="@NewsToUpdate"
-                                    OnClose="@OnUpdateNewsClose">
-                        </UpdateNews>
-                    }
-                }
+                    <div>
+                        @if (!RequestingUpdate)
+                        {
+                            <button class="btn btn-outline-dark btn-sm" @onclick="@(() => OpenUpdateNews(news))">Update</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-dark btn-sm" type="button" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="sr-only">Updating...</span>
+                            </button>
+                        }
+                    </div>
+
+
+                </div>
+            </div>
+            if (UpdateNewsIsOpen)
+            {
+                <UpdateNews NewsToUpdate="@NewsToUpdate"
+                            OnClose="@OnUpdateNewsClose">
+                </UpdateNews>
             }
+        }
+    }
+    <div class="alert alert-warning" role="alert">
+        @ErrorMessage
+    </div>
 </div>
 
 @if (CreateNewsIsOpen)
@@ -90,6 +93,7 @@
     private List<GetNewsDto>? News; 
     private GetNewsDto? NewsToUpdate; 
 
+    private string? ErrorMessage;  
     private bool UpdateNewsIsOpen;
     private bool CreateNewsIsOpen;
     private bool RequestingDelete;
@@ -115,18 +119,24 @@
         {
             await GetNews();
         }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
         RequestingDelete = false;
     }
     
     private async Task GetNews()
     {
         var response = await HttpClient.GetAsync(semApiUrl + $"News/event/{EventId}");
+        if (response.IsSuccessStatusCode)
+        {
+            News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
+        }
         if (!response.IsSuccessStatusCode)
         {
-    
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
-
-        News = await response.Content.ReadFromJsonAsync<List<GetNewsDto>>();
     }
     
     private void OpenCreateNews()

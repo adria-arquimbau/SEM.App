@@ -100,7 +100,7 @@
         }
         if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = "Something went wrong while fetching the data, try again later.";
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
     }   
     
@@ -117,9 +117,9 @@
         {
             await GetManagers();
         }
-        else
+        if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = "Something went wrong. Please try again later.";
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
         manager.Requesting = false;
     }
