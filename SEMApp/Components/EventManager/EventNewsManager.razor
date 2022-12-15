@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using SEM.App.Data.Models
 @using SEM.App.Components.Loadings
+@using SEM.App.Data
 @using SEM.App.Pages
 
 @inject HttpClient HttpClient
@@ -94,8 +95,8 @@
     private bool RequestingDelete;
     private bool RequestingUpdate;
     private string? Token;
-    private const string semApiUrl = ApiService.GetBaseUrl();
-    
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;

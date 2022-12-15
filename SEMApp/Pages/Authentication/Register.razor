@@ -1,5 +1,6 @@
 ﻿@page "/Register"
 @using System.Net
+@using SEM.App.Data
 
 @inject HttpClient httpClient
 @inject NavigationManager navManager
@@ -71,7 +72,7 @@
 
 @code {
     private RegisterRequest registerRequest = new();
-    private const string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
 
     private string repeatPassword = string.Empty;
     private string? FailedRegisterMessage;

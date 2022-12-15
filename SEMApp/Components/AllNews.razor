@@ -48,7 +48,7 @@
 @code {
 
     private List<GetNewsDto>? News;
-    private const string semApiUrl = ApiService.GetBaseUrl();
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
 
     protected override async Task OnInitializedAsync()
     {

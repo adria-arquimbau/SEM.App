@@ -176,8 +176,8 @@
     
     private string? FailedRegistrationMessage;
     private const string TwoEmptySpaces = " ";
-    
-    private const string semApiUrl = ApiService.GetBaseUrl();
+
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
     private string Token = string.Empty;
     
     private const string AcceptedState = "✅ Accepted";

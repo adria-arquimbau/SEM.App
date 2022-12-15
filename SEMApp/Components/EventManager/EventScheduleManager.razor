@@ -84,8 +84,8 @@
     public SportEventOrganizer? Event { get; set; }
     
     private List<ScheduleDto>? Schedules;
-    private Guid scheduleIdToDelete;    
-    private const string semApiUrl = ApiService.GetBaseUrl();
+    private Guid scheduleIdToDelete;
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
     private string? Token;  
     private string message;
     private bool CreateScheduleIsOpen;

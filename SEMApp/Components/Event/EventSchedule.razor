@@ -50,8 +50,8 @@
     [Parameter]
     public SportEvent? Event { get; set; }
     private List<ScheduleDto>? Schedules;
-    
-    private const string semApiUrl = ApiService.GetBaseUrl();
+
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
     private string? Token;  
     
     protected override async Task OnInitializedAsync()

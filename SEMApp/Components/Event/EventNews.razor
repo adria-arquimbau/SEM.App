@@ -2,6 +2,7 @@
 @using SEM.App.Data.Models
 @using SEM.App.Components.Loadings
 @using System.Net.Http.Headers
+@using SEM.App.Data
 
 @inject HttpClient HttpClient
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -51,9 +52,9 @@
     [Parameter]
     public Guid? EventId { get; set; }
     private List<GetNewsDto>? News;
-    
-    private const string semApiUrl = ApiService.GetBaseUrl();
-    
+
+    private static readonly string semApiUrl = ApiService.GetBaseUrl();
+
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
