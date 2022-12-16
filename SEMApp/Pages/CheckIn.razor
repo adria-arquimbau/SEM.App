@@ -1,5 +1,5 @@
 ﻿@page "/manage-event/{EventId:guid}/Check-in/{RegistrationId:guid}"
-@attribute [Authorize(Policy = "admin-organizer")]
+@attribute [Authorize(Policy = "admin-organizer-staff")]
 
 @using SEM.App.Authentication
 @using System.Net.Http.Headers

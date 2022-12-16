@@ -19,9 +19,14 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStat
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore(options =>
 {
-    options.AddPolicy("admin-organizer", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer));
-    options.AddPolicy("admin-organizer-user", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer, RoleConstants.User));
-    options.AddPolicy("admin", policy => policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin));
+    options.AddPolicy("admin-organizer-staff", policy => 
+        policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer, RoleConstants.Staff));
+    options.AddPolicy("admin-organizer", policy => 
+        policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer));
+    options.AddPolicy("admin-organizer-user", policy => 
+        policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin, RoleConstants.Organizer, RoleConstants.User));
+    options.AddPolicy("admin", policy => 
+        policy.RequireClaim(ClaimTypes.Role, RoleConstants.Admin));
     
 });
 await builder.Build().RunAsync();

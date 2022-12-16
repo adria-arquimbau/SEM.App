@@ -116,7 +116,7 @@
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
      
-        var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseApiCallUrl() + $"Managers/{manager.Id}");
+        var request = new HttpRequestMessage(HttpMethod.Delete, ApiService.GetBaseApiCallUrl() + $"Managers/{manager.Id}/Event/{EventId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
