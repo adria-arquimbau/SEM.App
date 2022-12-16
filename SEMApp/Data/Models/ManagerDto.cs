@@ -14,7 +14,7 @@ public class ManagerDto
 public enum ManagerRole
 {
     CheckIn,
-    Basic,
+    Staff,
     Admin,
     Owner
 }
