@@ -130,9 +130,7 @@ public class RegistrationDto
 public enum RegistrationRole    
 {   
     Staff,
-    Rider,
-    Marshal,    
-    RiderMarshal
+    Rider
 }     
 
 public enum RegistrationState

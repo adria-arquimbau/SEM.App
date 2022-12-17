@@ -1,11 +1,11 @@
 ﻿@page "/manage-event/{EventId:guid}/Check-in/{RegistrationId:guid}"
-@attribute [Authorize(Policy = "admin-organizer-staff")]
 
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 @using QRCoder
 @using System.Net
 @using SEM.App.Data
+
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
@@ -104,13 +104,12 @@
         Token = await customAuthStateProvider.GetToken();
         if (!string.IsNullOrWhiteSpace(Token))
         {
-            await GetRegistration();
+            await GetCheckIn();
         }
         qrCode = GenerateQRCode($"{Navigation.Uri}");
-        
     }
 
-    private async Task GetRegistration()
+    private async Task GetCheckIn()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Registrations/{RegistrationId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
@@ -119,9 +118,10 @@
         {
             registration = await response.Content.ReadFromJsonAsync<RegistrationCheckIn>();
         }
-        if (response.StatusCode == HttpStatusCode.Forbidden)
+        if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             ErrorMessage = "Only organizers and admins of the event can check in.";
+            return;
         }
         if (!response.IsSuccessStatusCode)
         {
@@ -157,7 +157,7 @@
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            await GetRegistration();
+            await GetCheckIn();
         }
         if (!response.IsSuccessStatusCode)
         {

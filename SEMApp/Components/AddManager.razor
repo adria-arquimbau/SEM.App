@@ -50,7 +50,7 @@
                               <td>
                                  <EditForm Model="user.ManagerRoleToAdd">
                                     <InputSelect ValueExpression="@(() => user.ManagerRoleToAdd)" Value="user.ManagerRoleToAdd" ValueChanged="@((ManagerRole value) => ChangeManagerRoleToAdd(user, value))">
-                                       <option value="@ManagerRole.Staff">Basic</option>
+                                       <option value="@ManagerRole.Staff">Staff</option>
                                        <option value="@ManagerRole.CheckIn">Check in</option>
                                        <option value="@ManagerRole.Admin">Admin</option>
                                     </InputSelect>
