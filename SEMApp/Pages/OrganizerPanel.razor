@@ -8,7 +8,6 @@
 @using System.Net.Http.Headers
 
 @inject AuthenticationStateProvider authenticationStateProvider
-@inject EventsService EventService
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
 
@@ -20,11 +19,11 @@
         <button class="btn btn-outline-dark btn-sm" @onclick="Open">Create Event</button>
     </div>
     
-    @if (myEvents == null)
+    @if (myEvents == null && ErrorMessage == null)
     {
         <SimpleLoading></SimpleLoading>
     }
-    else
+    @if (myEvents != null && ErrorMessage == null)
     {
         @foreach (var myEvent in myEvents)
         {
@@ -67,6 +66,12 @@
                 </div>
             </div>
         }
+    }
+     @if (ErrorMessage != null)
+    {
+        <div class="alert alert-warning" role="alert">
+            @ErrorMessage
+        </div>
     }
 </div>
 
@@ -158,6 +163,8 @@
 {
     private List<SportEventOrganizer>? myEvents;
     
+    private string? ErrorMessage;  
+    
     private const string IsPublic = "✅";
     private const string IsPrivate = "❌";
 
@@ -173,9 +180,22 @@
 
     private async Task RefreshEvents()
     {
+        //TODO: mirar perque un manager reb altres events
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
-        myEvents = await EventService.GetMyEventsAsOrganizer(token);
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() +  "Events/organizer");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await HttpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            myEvents = await response.Content.ReadFromJsonAsync<List<SportEventOrganizer>>();
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
     }
     
     // Modal Create Event

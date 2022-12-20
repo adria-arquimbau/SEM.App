@@ -50,15 +50,6 @@ public class EventsService
             SuccessRegistration = false
         };
     }
-
-    public async Task<List<SportEventOrganizer>> GetMyEventsAsOrganizer(string token)
-    {   
-        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() +  "Events/organizer");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var response = await _httpClient.SendAsync(request);
-        
-        return await response.Content.ReadFromJsonAsync<List<SportEventOrganizer>>();
-    }
 }
 
 public class IAmRegisteredResponse
