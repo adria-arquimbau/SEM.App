@@ -88,9 +88,7 @@
 
 @code {
     private List<SportEvent>? sportEvents;
-    private List<MyRegisteredSportEvent>? myRegisteredEvents; 
-    
-    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
+    private List<MyRegisteredSportEvent>? myRegisteredEvents;
 
     protected override async Task OnInitializedAsync()
     {
@@ -101,7 +99,7 @@
 
         if (!string.IsNullOrWhiteSpace(token))
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/Registered");
+            var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Events/Registered");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
             var response = await HttpClient.SendAsync(request);

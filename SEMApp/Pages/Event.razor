@@ -107,13 +107,12 @@ else
     private MenuSection ShowMenuSection = MenuSection.Information;
     
     private string Token = string.Empty;
-    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
 
     protected override async Task OnInitializedAsync()
     {
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         Token = await customAuthStateProvider.GetToken();
-        var response = await HttpClient.GetAsync(semApiUrl + $"Events/{EventId}");
+        var response = await HttpClient.GetAsync(ApiService.GetBaseApiCallUrl() + $"Events/{EventId}");
         if (!response.IsSuccessStatusCode)
         {
             BackToEvents();
@@ -136,7 +135,7 @@ else
 
     private async Task AskIfICanManageThisEvent()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, semApiUrl + $"Events/{EventId}/organizer");
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Events/{EventId}/organizer");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
 

@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components
 @using SEM.App.Authentication
 @using System.Net
+@using SEM.App.Data
 
 @inject HttpClient httpClient
 @inject AuthenticationStateProvider authStateProvider
@@ -84,8 +85,7 @@
 
 @code {
     private LoginRequest loginRequest = new();
-    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
-    
+
     private string? FailedLoginMessage;
     private string? changePasswordEmail;
     private string? sendedEmailToChangePasswordMessage;
@@ -99,7 +99,7 @@
     {
         FailedLoginMessage = null;
         requestingLogIn = true;
-        var loginResponse = await httpClient.PostAsJsonAsync(semApiUrl + "Auth/Login", loginRequest);
+        var loginResponse = await httpClient.PostAsJsonAsync(ApiService.GetBaseApiCallUrl() + "Auth/Login", loginRequest);
 
         if (loginResponse.IsSuccessStatusCode)
         {
@@ -125,7 +125,7 @@
         RequestingChangePassword = true;
         sendedEmailToChangePasswordMessage = null;
         errorSendedEmailToChangePasswordMessage = null;
-        var response = await httpClient.PostAsJsonAsync(semApiUrl + "Auth/change-password-request", changePasswordEmail);
+        var response = await httpClient.PostAsJsonAsync(ApiService.GetBaseApiCallUrl() + "Auth/change-password-request", changePasswordEmail);
 
         if (response.IsSuccessStatusCode)
         {

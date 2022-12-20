@@ -158,7 +158,6 @@
 {
     private List<SportEventOrganizer>? myEvents;
     
-    private const string semApiUrl = "https://sport-management-api.azurewebsites.net/api/";
     private const string IsPublic = "✅";
     private const string IsPrivate = "❌";
 
@@ -215,7 +214,7 @@
                 CloseRegistrationsDateTime = closeRegistrationsDateTime
             });   
         
-            var request = new HttpRequestMessage(HttpMethod.Post, semApiUrl + "Events")
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiService.GetBaseApiCallUrl() + "Events")
             {
                 Content = new StringContent(jsonInString, Encoding.UTF8, "application/json")
             };
