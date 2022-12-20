@@ -180,7 +180,6 @@
 
     private async Task RefreshEvents()
     {
-        //TODO: mirar perque un manager reb altres events
         var customAuthStateProvider = (CustomAuthenticationStateProvider)authenticationStateProvider;
         var token = await customAuthStateProvider.GetToken();
         

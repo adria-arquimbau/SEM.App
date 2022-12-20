@@ -5,6 +5,7 @@
 @using System.Net.Mime
 @using System.Text
 @using System.Text.Json
+@using System.Net
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
@@ -219,7 +220,11 @@
         }
         if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = "Something went wrong with our servers, try it again later.";
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
+        if (response.StatusCode == HttpStatusCode.NotAcceptable)
+        {
+            ErrorMessage = "Only Admins and Owners can change the public state of an event.";
         }
         RequestingIsPublicStateChange = false;
     }
@@ -261,11 +266,19 @@
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            await GetMyEventAsOrganizer();
+        }
         if (!response.IsSuccessStatusCode)
         {
-            ErrorMessage = "Something went wrong with our servers, try it again later.";
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
-        await GetMyEventAsOrganizer();
+        if (response.StatusCode == HttpStatusCode.NotAcceptable)
+        {
+            ErrorMessage = "Only Admins and Owners can edit the information of an event.";
+        }
+        
         RequestingUpdateInformation = false;
         Close();
     }
@@ -316,12 +329,19 @@
         var request = new HttpRequestMessage(HttpMethod.Delete, semApiUrl + $"Events/{EventId}/delete-image");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
+        if(response.IsSuccessStatusCode)
+        {
+            await GetMyEventAsOrganizer();
+        }
         if (!response.IsSuccessStatusCode)  
         {
-            ErrorMessage = "Something went wrong with our servers, try it again later.";
+            ErrorMessage = Messages.ApiInternalServerErrorMessage;
+        }
+        if (response.StatusCode == HttpStatusCode.NotAcceptable)
+        {
+            ErrorMessage = "Only Admins and Owners can edit the information of an event.";
         }
         imgUrl = null;
-        await GetMyEventAsOrganizer();
         RequestingDeleteImage = false;
     }   
 
@@ -336,14 +356,20 @@
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)  
+        {
+            await GetMyEventAsOrganizer();
+        }
         if (!response.IsSuccessStatusCode)  
         {
             ErrorMessage = "Something went wrong with our servers, try it again later.";
         }
-        await GetMyEventAsOrganizer();
+        if (response.StatusCode == HttpStatusCode.NotAcceptable)
+        {
+            ErrorMessage = "Only Admins and Owners can edit the information of an event.";
+        }
         RequestingUploadImage = false;
     }   
-
 }
 
 @* Modal Update Information *@
