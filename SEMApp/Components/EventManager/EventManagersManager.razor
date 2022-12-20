@@ -108,6 +108,10 @@
         {
             ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
+        if (response.StatusCode == HttpStatusCode.NotAcceptable)
+        {
+            ErrorMessage = "Only the Owner and Admins can review the managers.";
+        }
     }   
     
     private async Task RemoveManager(ManagerDto manager)
@@ -127,6 +131,11 @@
         {
             ErrorMessage = Messages.ApiInternalServerErrorMessage;
         }
+        if (response.StatusCode == HttpStatusCode.NotAcceptable)
+        {
+            ErrorMessage = "Only the Owner and Admins can remove managers.";
+        }
+        
         manager.Requesting = false;
     }
 

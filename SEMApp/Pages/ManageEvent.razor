@@ -6,6 +6,7 @@
 @using SEM.App.Authentication
 @using System.Net.Http.Headers
 @using Dialog = SEM.App.Components.Dialog
+@using System.Net
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
@@ -148,10 +149,15 @@ else
             }
             if (!response.IsSuccessStatusCode)
             {
-                ErrorMessage = "Something went wrong with our servers, try it again later.";
-                RequestingDeleteEvent = false;
+                ErrorMessage = Messages.ApiInternalServerErrorMessage;
+                
             }
-            
+            if (response.StatusCode == HttpStatusCode.NotAcceptable)
+            {
+                ErrorMessage = "Only the owner can delete this event.";
+                
+            }
+            RequestingDeleteEvent = false;
         }
         DialogDeleteEventIsOpen = false;
     }

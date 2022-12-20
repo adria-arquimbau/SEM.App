@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using SEM.App.Data
 @using SEM.App.Data.Models
+@using System.Net
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
@@ -164,6 +165,11 @@
       {
          ErrorMessage = Messages.ApiInternalServerErrorMessage;
       }
+      if (response.StatusCode == HttpStatusCode.NotAcceptable)
+      {
+         ErrorMessage = "Only the Owner and Admins can add managers.";
+      }
+      
       user.Requesting = false;
    }
 
