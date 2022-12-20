@@ -213,7 +213,7 @@
         var request = new HttpRequestMessage(HttpMethod.Put, semApiUrl +  $"Events/{EventId}/is-public/{isPublic}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var response = await HttpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             await GetMyEventAsOrganizer();
         }
