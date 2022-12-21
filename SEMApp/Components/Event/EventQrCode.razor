@@ -11,8 +11,8 @@
 <div class="qrCode">
     @if (registration != null)
     {
-        <img src="@qrCode" width="300"/>
-       
+        <img src="@qrCode" width="300" alt=""/>
+        <p>*Show this Qr to your Organizer for the check-in</p>
     }
     @if (registration == null && ErrorMessage == null)
     {
