@@ -7,11 +7,11 @@ public static class ApiService
 
     public static string GetBaseApiCallUrl()
     {
-        return  semApiUrl + "api/";   
+        return  localhostUrl + "api/";   
     }
     
     public static string GetBaseUrl()
     {
-        return semApiUrl;      
+        return localhostUrl;      
     }
 }
