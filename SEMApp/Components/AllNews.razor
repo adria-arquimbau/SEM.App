@@ -38,7 +38,7 @@
                 </div>
             }
         }
-        else
+        @if (News == null && ErrorMessage == null)
         {
             <SimpleLoading></SimpleLoading>
         }
