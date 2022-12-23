@@ -8,6 +8,7 @@
 
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject HttpClient HttpClient
+@inject IToastService toastService
 
 <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
    <div class="modal-dialog">
@@ -159,14 +160,16 @@
       
       if (response.IsSuccessStatusCode)
       {
+         toastService.ShowToast(ToastLevel.Success, $"User: {user.UserName} added with role: {user.ManagerRoleToAdd}", "Manager added");
          await OnClose.InvokeAsync();  
       }
-      if (!response.IsSuccessStatusCode)
+      else if (!response.IsSuccessStatusCode)
       {
          ErrorMessage = Messages.ApiInternalServerErrorMessage;
       }
-      if (response.StatusCode == HttpStatusCode.NotAcceptable)
+      else if (response.StatusCode == HttpStatusCode.NotAcceptable)
       {
+         toastService.ShowToast(ToastLevel.Error, "Only the Owner and Admins can add managers.", "Manager added");
          ErrorMessage = "Only the Owner and Admins can add managers.";
       }
       

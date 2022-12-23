@@ -1,5 +1,6 @@
 ﻿@using SEM.App.Authentication
 @using SEM.App.Data
+@using ToastPosition = Blazored.Toast.Configuration.ToastPosition
 
 @inherits LayoutComponentBase
 
@@ -39,6 +40,7 @@
 		@ErrorMessage
 	</div>
 }
+<BlazoredToasts Timeout="3" ShowCloseButton="false" ShowProgressBar="true" Position="ToastPosition.TopRight" RemoveToastsOnNavigation="true"/>
 
 @code {
 	private string? ErrorMessage;

@@ -7,11 +7,13 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
+@inject IToastService toastService
 
 <div class="main">
     <div>
         <button class="btn btn-outline-dark btn-sm" @onclick="OpenAddManager">Add Manager</button>
     </div>
+    
     @if (Managers != null)
     {
         <table class="table table-striped">
@@ -20,7 +22,7 @@
         <th scope="col">Role</th>
         <th scope="col">Remove</th>
         </thead>
-        @foreach (var manager in Managers)
+        @foreach (var manager in Managers)  
         {
             <tbody>
             <tr>    
@@ -68,6 +70,7 @@
     }
 </div>
 
+
 @if (AddAManagerIsOpen)
 {
     <AddManager EventId="@EventId"
@@ -78,9 +81,9 @@
 @code {
     [Parameter]
     public string? EventId { get; set; }
-    
+
     private string? Token;
-    private string? ErrorMessage;
+    private string? ErrorMessage;   
     private List<ManagerDto>? Managers;
         
     private bool AddAManagerIsOpen;
@@ -94,7 +97,7 @@
             await GetManagers();
         }
     }
-    
+
     private async Task GetManagers()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, ApiService.GetBaseApiCallUrl() + $"Managers/Event/{EventId}");
@@ -125,6 +128,7 @@
         var response = await HttpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
+            toastService.ShowToast(ToastLevel.Success, $"User: {manager.User.UserName} removed as a manager", "Manager removed");
             await GetManagers();
         }
         if (!response.IsSuccessStatusCode)
