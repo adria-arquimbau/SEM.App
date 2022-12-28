@@ -10,6 +10,7 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager Navigation
 @inject HttpClient HttpClient
+@inject IToastService toastService
 
 <div class="eventInformation">
     <div class="eventInformation-title">
@@ -314,7 +315,7 @@
         }
         else
         {
-            ErrorMessage = "Only jpeg and png files are allowed.";
+            toastService.ShowToast(ToastLevel.Warning, "Only jpeg and png files are allowed.", "Upload Image failed");
         }
     }
     
@@ -362,11 +363,13 @@
         }
         if (!response.IsSuccessStatusCode)  
         {
-            ErrorMessage = "Something went wrong with our servers, try it again later.";
+            imgUrl = null;
+            toastService.ShowToast(ToastLevel.Error, $"Something went wrong with our servers, try it again later.", "Upload Image failed");
         }
         if (response.StatusCode == HttpStatusCode.NotAcceptable)
         {
-            ErrorMessage = "Only Admins and Owners can edit the information of an event.";
+            toastService.ShowToast(ToastLevel.Warning, $"Only Admins and Owners can edit the information of an event.", "Upload Image failed");
+            imgUrl = null;
         }
         RequestingUploadImage = false;
     }   
