@@ -18,7 +18,7 @@
             {
                 <Separator></Separator>
                 <div>
-                    @schedule.Day.ToLongDateString()
+                    <b>@schedule.Day.ToLongDateString()</b>
                 </div>
                 
                 @foreach (var program in schedule.Schedules)
@@ -27,7 +27,7 @@
                     <div class="program">
                         <div class="program-top">
                             <div>
-                                @program.Title
+                                <u>@program.Title</u>
                             </div>
                             <div>
                                 @program.DateTime.ToShortTimeString()     
